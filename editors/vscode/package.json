@@ -1,0 +1,79 @@
+{
+  "name": "webc-lsp",
+  "displayName": "WebC \u2014 language server",
+  "description": "The WebC language server: diagnostics, completion, hover, definition, outline and quick fixes for a WebC project. No dependencies: it spawns `webc lsp`.",
+  "version": "0.1.0",
+  "publisher": "webc",
+  "license": "Apache-2.0",
+  "private": true,
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onLanguage:c",
+    "onLanguage:cpp"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "WebC",
+      "properties": {
+        "webc.lsp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Start the WebC language server for C sources in this workspace."
+        },
+        "webc.lsp.path": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "The webc binary. `~`, `${workspaceFolder}`, `${userHome}` and `${env:NAME}` are expanded, and a relative path is taken from the workspace folder. Empty means `build/webc` in the workspace if it exists, else `webc` on the PATH."
+        },
+        "webc.lsp.args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra arguments for `webc lsp` (for example --trace /tmp/lsp.jsonl)."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "webc.showLog",
+        "title": "Show the language server log",
+        "category": "WebC"
+      },
+      {
+        "command": "webc.restartServer",
+        "title": "Restart the language server",
+        "category": "WebC"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "webc.showLog"
+        },
+        {
+          "command": "webc.restartServer"
+        }
+      ]
+    }
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": false
+  },
+  "keywords": [
+    "webc",
+    "c23",
+    "lsp"
+  ]
+}

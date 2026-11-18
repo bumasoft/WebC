@@ -1,0 +1,595 @@
+/* The board's own look, and the only file in this app that names a colour or a size.
+   The view emits class names (`card`, `lane`, `drop-before`); what they look like is here.
+
+   Two tokens per colour, one theme: the dark half answers the reader's OS. The lane accents are
+   the only colour in the layout — everything else is a neutral so the cards, not the chrome, are
+   the thing you look at. */
+
+:root {
+  color-scheme: light;
+  --bg: #f5f6f9;
+  --bg-soft: #eef0f5;
+  --surface: #ffffff;
+  --surface-2: #fafbfd;
+  --lane: #eceff5;
+  --lane-line: #dfe3ec;
+  --fg: #14161c;
+  --fg-soft: #3d4353;
+  --muted: #58606f;
+  --faint: #6b7385;
+  --line: #e4e7ef;
+  --line-strong: #d5dae4;
+  --accent: #4b56e8;
+  --accent-hover: #3a45d4;
+  --accent-soft: rgba(75, 86, 232, 0.1);
+  --on-accent: #ffffff;
+  --ok: #15803d;
+  --ok-soft: rgba(21, 128, 61, 0.1);
+  --todo: #8a92a6;
+  --doing: #4b56e8;
+  --done: #17915a;
+  --shadow-sm: 0 1px 2px rgba(17, 21, 32, 0.06);
+  --shadow-card: 0 1px 2px rgba(17, 21, 32, 0.05), 0 2px 8px -2px rgba(17, 21, 32, 0.08);
+  --shadow-lift: 0 2px 4px rgba(17, 21, 32, 0.08), 0 18px 32px -12px rgba(17, 21, 32, 0.35);
+  --radius: 14px;
+  --radius-card: 11px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0b0e14;
+    --bg-soft: #131824;
+    --surface: #1a202d;
+    --surface-2: #222a3a;
+    --lane: #131823;
+    --lane-line: #2a3140;
+    --fg: #eef1f8;
+    --fg-soft: #ccd2e0;
+    --muted: #a4adc0;
+    --faint: #8f98ac;
+    --line: #2c3444;
+    --line-strong: #3b4457;
+    --accent: #8b95ff;
+    --accent-hover: #a3abff;
+    --accent-soft: rgba(139, 149, 255, 0.14);
+    --on-accent: #10131c;
+    --ok: #5fd39a;
+    --ok-soft: rgba(95, 211, 154, 0.12);
+    --todo: #7d8698;
+    --doing: #8b95ff;
+    --done: #4ecf92;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 10px -4px rgba(0, 0, 0, 0.7);
+    --shadow-lift: 0 4px 10px rgba(0, 0, 0, 0.5), 0 24px 44px -18px rgba(0, 0, 0, 0.9);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.5 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* One soft light behind the board: the only decoration on the page. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 320px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(680px 220px at 18% -40%, var(--accent-soft), transparent 70%);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+:where(button, li, input):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ---------------------------------------------------------------- the shell */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: min(1200px, 100% - 40px);
+  margin-inline: auto;
+  padding: 22px 0 34px;
+  min-height: 100dvh;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  box-shadow: var(--shadow-sm);
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 680;
+  letter-spacing: -0.015em;
+}
+
+.brand .sub {
+  margin: 1px 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.78125rem;
+  white-space: nowrap;
+}
+
+.presence svg { width: 14px; height: 14px; opacity: 0.8; }
+
+/* buttons: one primary, one quiet, one icon */
+.primary,
+.ghost,
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 13px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 0.84375rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 130ms ease, border-color 130ms ease, transform 130ms ease,
+    box-shadow 130ms ease;
+}
+
+.primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: var(--shadow-sm);
+}
+
+.primary:hover { background: var(--accent-hover); }
+.primary:active { transform: translateY(1px); }
+
+.ghost {
+  background: var(--surface);
+  border-color: var(--line-strong);
+  color: var(--fg-soft);
+}
+
+.ghost:hover { border-color: var(--muted); color: var(--fg); }
+
+.icon-btn {
+  width: 30px;
+  min-height: 30px;
+  padding: 0;
+  color: var(--muted);
+  border-radius: 8px;
+}
+
+.icon-btn:hover { background: var(--bg-soft); color: var(--fg); }
+
+svg { width: 16px; height: 16px; flex: none; }
+
+/* the keyboard hint inside the primary button */
+.primary kbd {
+  margin-left: 2px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.18);
+  color: inherit;
+  font: 600 0.6875rem/1.6 var(--mono);
+}
+
+/* ---------------------------------------------------------------- the lanes */
+
+.lanes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch; /* a lane is a column you can drop into, not a box that hugs its cards */
+  flex: 1;
+  min-height: 0;
+}
+
+.lane {
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+  height: 100%;
+  padding: 10px;
+  border: 1px solid var(--lane-line);
+  border-radius: var(--radius);
+  background: var(--lane);
+  transition: border-color 130ms ease, background 130ms ease, box-shadow 130ms ease;
+}
+
+.lane.is-target {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--lane));
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.lane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 4px 10px;
+}
+
+.lane-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.lane-name .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--todo);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--todo) 18%, transparent);
+}
+
+.lane-doing .dot { background: var(--doing); box-shadow: 0 0 0 3px color-mix(in srgb, var(--doing) 18%, transparent); }
+.lane-done .dot { background: var(--done); box-shadow: 0 0 0 3px color-mix(in srgb, var(--done) 18%, transparent); }
+
+.lane-name h2 {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font: 600 0.6875rem/1 var(--mono);
+}
+
+/* ---------------------------------------------------------------- the cards */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex: 1;
+  min-height: 46px; /* an empty lane is still a drop target */
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none; /* a finger drags the card, not the page */
+  transition: transform 130ms ease, box-shadow 130ms ease, border-color 130ms ease,
+    opacity 130ms ease;
+}
+
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--line-strong);
+}
+
+.card:active { cursor: grabbing; }
+
+.card .title {
+  font-size: 0.875rem;
+  line-height: 1.42;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+/* the delete button rides in the card's bottom-right corner, out of the way until wanted */
+.card-del {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  color: var(--faint);
+  opacity: 0;
+  transition: opacity 130ms ease, background 130ms ease, color 130ms ease;
+}
+
+.card-del svg { width: 14px; height: 14px; }
+.card:hover .card-del, .card:focus-within .card-del { opacity: 1; }
+.card-del:hover { background: var(--bg-soft); color: var(--danger, #c22a3b); }
+
+/* the card being carried: still in its lane, drained of colour, and never the pointer's target */
+.card.is-source {
+  opacity: 0.4;
+  box-shadow: none;
+  cursor: grabbing;
+}
+
+/* the seam: where the card would land, drawn on the card it would land next to */
+.card.drop-before::before,
+.card.drop-after::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.card.drop-before::before { top: -5px; }
+.card.drop-after::after { bottom: -5px; }
+
+/* a lane with nothing in it, while something is in the air */
+.blank {
+  display: grid;
+  place-items: center;
+  min-height: 64px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-card);
+  color: var(--faint);
+  font-size: 0.8125rem;
+  list-style: none;
+}
+
+.blank.is-hot {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.lane-foot {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  padding: 7px 8px;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 550;
+  text-align: left;
+  transition: background 130ms ease, color 130ms ease;
+}
+
+.lane-foot svg { width: 14px; height: 14px; }
+.lane-foot:hover { background: var(--surface); color: var(--fg); }
+
+/* ---------------------------------------------------------------- the card in the air */
+
+/* named drag-ghost, not ghost: `ghost` is this app's quiet *button*, and the panel's Cancel
+   button wearing a fixed position and a rotation is the collision that taught us that. */
+.drag-ghost {
+  position: fixed;
+  z-index: 40;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(1.2deg);
+  filter: drop-shadow(0 18px 26px rgba(17, 21, 32, 0.28));
+}
+
+.drag-ghost .card {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lift);
+  cursor: grabbing;
+  opacity: 1;
+  padding-bottom: 10px;
+}
+
+.drag-ghost .card-del { display: none; }
+
+/* While something is carried, the delete corners stop being clickable — the pointer is a drag,
+   and the card it happens to be over would otherwise light its own trash can up. `:has` is the
+   honest selector here: the ghost is a sibling of the board, not a child of the carried card. */
+.is-dragging .card-del,
+body:has(.drag-ghost) .card-del { opacity: 0; pointer-events: none; }
+
+/* ---------------------------------------------------------------- the hint line */
+
+.keys {
+  margin: 0;
+  color: var(--faint);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+kbd {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--muted);
+  font: 500 0.6875rem/1.5 var(--mono);
+}
+
+/* ---------------------------------------------------------------- the dialog */
+
+/* `overlay.css` paints the panel with `--bg`, which is the page's own colour: a box the colour
+   of the page it covers. On a board the panel is a surface, one step up from the lanes. */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(17, 21, 32, 0.08), 0 24px 60px -20px rgba(17, 21, 32, 0.45);
+  padding: 22px;
+}
+
+.scrim {
+  backdrop-filter: blur(1.5px);
+  background: color-mix(in srgb, #0b0e14 38%, transparent);
+}
+
+#new_card { width: min(420px, calc(100vw - 32px)); }
+
+.dialog-sub {
+  margin: -4px 0 14px;
+  color: var(--muted);
+  font-size: 0.84375rem;
+}
+
+.dialog-sub strong { color: var(--fg); font-weight: 650; }
+
+form label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+}
+
+input::placeholder { color: var(--faint); }
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* ---------------------------------------------------------------- narrow
+   A kanban is a horizontal thing. Under 760px the lanes become a scroller of one-column-wide
+   snaps instead of three squeezed columns — the cards stay full size and the board stays a
+   board, which is what a board on a phone has to do. */
+
+@media (max-width: 760px) {
+  .app {
+    width: 100%;
+    padding: 16px 0 24px;
+    gap: 16px;
+  }
+
+  .top { padding: 0 16px; }
+
+  .lanes {
+    grid-auto-flow: column;
+    grid-auto-columns: min(84vw, 320px);
+    grid-template-columns: none;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    padding: 2px 16px 10px;
+    scrollbar-width: none;
+  }
+
+  .lanes::-webkit-scrollbar { display: none; }
+
+  /* A phone is not a wall: one column at a time, as tall as its cards. A lane the height of
+     the screen with two cards in it reads as a broken layout, not as room to drop into. */
+  .lanes { align-items: start; }
+
+  .lane {
+    scroll-snap-align: center;
+    min-height: 0;
+    height: auto;
+  }
+
+  .keys { padding: 0 16px; }
+}
+
+/* the motion module's own switch: anything that moves is off for a reader who asked */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .card:hover { transform: none; }
+  .drag-ghost { transform: translate(-50%, -50%); }
+}

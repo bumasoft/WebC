@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebC · todos, in wasm</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- the component renders here, from wasm; nothing on this page is server-rendered -->
+  <div id="root"></div>
+  <script src="/webc.js"></script>
+  <script>
+    (async () => {
+      await WebC.start({ el: '#root', wasm: '/app.wasm' });
+    })().catch((e) => {
+      document.querySelector('#root').textContent = 'wasm failed: ' + e.message;
+      console.error(e);
+    });
+  </script>
+</body>
+</html>

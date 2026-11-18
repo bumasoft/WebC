@@ -1,0 +1,21 @@
+# Normalise line endings on checkout so a Windows contributor cannot rewrite the
+# whole tree. The C sources and shell scripts are LF only.
+* text=auto eol=lf
+
+*.c    text eol=lf
+*.h    text eol=lf
+*.sh   text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+Makefile text eol=lf
+
+# Binary and packaged output
+*.png  binary
+*.jpg  binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.a    binary
+*.o    binary
+*.wasm binary
+*.tar.gz binary

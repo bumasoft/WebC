@@ -1,0 +1,142 @@
+name: CI
+
+# Every gate the repository has, on every push and every pull request. The release
+# workflow only ever ran on a `v*` tag, so until this file existed the first time
+# these gates ran on CI was the day of a release.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays: the fuzzers get a longer budget than a PR does
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # tools/fmt-baseline.txt was cut with this exact version: clang-format changes
+  # its mind between releases, so the pin is what makes fmt-check deterministic.
+  CLANG_FORMAT_VERSION: 23.1.4
+
+jobs:
+  test:
+    name: build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/wasi-sdk
+      - name: Build
+        run: make -j$(getconf _NPROCESSORS_ONLN)
+      # The release matrix builds an Intel-Mac artefact, and nothing in the local gate ever
+      # compiled that branch of the #ifs: an `#if defined(__APPLE__)` covering only Apple
+      # silicon broke src/task.c and src/profile.c on x86_64 and nobody knew, because the
+      # macos-13 row had never been run. This is the whole tree preprocessed and type-checked
+      # for the other architecture, in seconds, without a second runner.
+      - name: The Intel Mac branch of every #if
+        run: |
+          fails=0
+          for f in src/*.c tools/webc/*.c; do
+            clang -std=c23 --target=x86_64-apple-darwin -I include -I build/gen \
+              -D_DARWIN_C_SOURCE=1 -D_GNU_SOURCE=1 -DWEBC_PREFIX='"x"' -Werror \
+              -fsyntax-only "$f" || fails=$((fails + 1))
+          done
+          test "$fails" -eq 0
+      - name: Test
+        run: make test
+      - name: Developer surface
+        run: make dx
+      - name: Language server
+        run: make lsp
+      - name: MCP server
+        run: make mcp
+
+  # Linux is a supported platform since Phase 3: the epoll backend is the default there and
+  # this job is required, not `continue-on-error`.
+  linux:
+    name: build and test (linux)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsqlite3-dev zlib1g-dev nodejs sqlite3
+      # clang 21 is the floor: the suite uses #embed, which clang 18 does not have.
+      - name: clang 21
+        run: |
+          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 21
+          sudo ln -sf /usr/bin/clang-21 /usr/local/bin/clang
+          clang --version
+      - uses: ./.github/actions/wasi-sdk
+      - name: Build
+        run: make -j"$(nproc)"
+      - name: Test
+        run: make test
+      - name: DX budget
+        run: make dx
+      - name: LSP
+        run: make lsp
+      - name: MCP
+        run: make mcp
+
+  docs:
+    name: documentation site
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the CLI (make skill-check needs it)
+        run: make -j$(getconf _NPROCESSORS_ONLN)
+      - name: Regenerate the site
+        run: make site
+      - name: The committed site must match its sources
+        run: |
+          if [ -n "$(git status --porcelain website/)" ]; then
+            echo "::error::website/ is generated and committed — run 'make site' and commit the result"
+            git status --porcelain website/
+            git --no-pager diff --stat website/
+            exit 1
+          fi
+      - name: Every relative link resolves
+        run: python3 tools/check-links.py website --anchors
+      - name: Every C sample in the docs compiles
+        run: make snippets
+      - name: The agent skill leaves are current
+        run: make skill-check
+      - name: Every C source carries its licence header
+        run: sh scripts/spdx.sh --check
+      - name: One version, everywhere
+        run: make check-version
+      - name: The installer refuses a tarball nobody vouched for
+        run: make install-test
+
+  fmt:
+    name: formatting (ratchet)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the pinned clang-format
+        run: python3 -m pip install --disable-pip-version-check "clang-format==${CLANG_FORMAT_VERSION}"
+      - name: Check
+        run: make fmt-check
+
+  # Too slow for every push, and the fuzzers want a longer budget than a PR gives
+  # them. Weekly, plus on demand.
+  fuzz:
+    name: fuzzers (60s)
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev zlib1g-dev
+      - name: Fuzz
+        run: make fuzz FUZZ_TIME=60

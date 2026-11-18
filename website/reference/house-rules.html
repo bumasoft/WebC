@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Reference">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1. House rules · WebC</title>
+<meta name="description" content="Reference §1.">
+<meta property="og:title" content="1. House rules · WebC">
+<meta property="og:description" content="Reference §1.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/reference/house-rules.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="1. House rules · WebC">
+<meta name="twitter:description" content="Reference §1.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html" aria-current="true">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html" class="is-active" aria-current="page">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../reference/index.html">Reference</a><span class="crumbs__sep">/</span><span class="crumbs__here">1. House rules</span></div>
+    <article class="article">
+      <h1 id="top">1. House rules</h1>
+<p class="page-kicker" id="house-rules">Reference · <code>docs/reference.md</code></p><ol><li><strong>One way to do it.</strong> If two APIs do the same thing, one of them is a bug.</li><li><strong>No hidden allocation.</strong> Every allocation happens through <code>wm_alloc</code> or an explicit<p><code>Arena*</code>. There is no GC and no hidden copy.</p></li><li><strong>One noun, one macro.</strong> <code>text(...)</code> is markup, <code>text(status, …)</code> is a response: a<p>name means one thing, and a call site never has two of them to choose between.</p></li><li><strong>Compile-time over run-time.</strong> Model descriptors, route tables and validation are<p>all built by macros the compiler checks; nothing is parsed from a config file at run time except <code>webc.json</code> (the CLI).</p></li><li><strong>The reason is next to the code.</strong> A non-obvious choice is explained where it is<p>made, in the comment above it, and in the page of this reference that covers it.</p></li></ol>
+<hr>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/docs/reference.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../reference/index.html"><span class="pager__dir">Previous</span><span class="pager__title">Reference: how to read it</span></a>
+<a class="pager__link pager__link--next" href="../reference/core-strings-memory-errors.html"><span class="pager__dir">Next</span><span class="pager__title">2. Core: strings, memory, errors</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

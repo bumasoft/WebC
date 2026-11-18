@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Reference">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7. HTTP · WebC</title>
+<meta name="description" content="Reference §7.">
+<meta property="og:title" content="7. HTTP · WebC">
+<meta property="og:description" content="Reference §7.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/reference/http.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="7. HTTP · WebC">
+<meta name="twitter:description" content="Reference §7.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html" aria-current="true">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html" class="is-active" aria-current="page">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../reference/index.html">Reference</a><span class="crumbs__sep">/</span><span class="crumbs__here">7. HTTP</span></div>
+    <article class="article">
+      <h1 id="top">7. HTTP</h1>
+<p class="page-kicker" id="http">Reference · <code>docs/reference.md</code></p><div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">GET(&quot;/users/:id&quot;) {
+  i64 id = path_i64(&quot;id&quot;);
+  return json(200, User, user_find(id));
+}</code></pre></div>
+<p>Routes are declared at file scope (a C function cannot be defined inside a function), <code>GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS/ANY</code>, with <code>_MW</code> variants that attach per-route middleware. Matching order is static segment &gt; <code>:param</code> &gt; <code>*wildcard</code>; <code>HEAD</code> falls back to <code>GET</code>; a trailing slash is not a different route; a known path with the wrong method is 405, not 404.</p>
+<p>Request helpers: <code>path(name)</code> and <code>query_text(name)</code> are <code>Text</code> — the one string type an app names; <code>path_i64(name)</code>, <code>query_i64(name, d)</code>, <code>req_query_bool(name, d)</code> are the numbers they stand for. Then <code>query(name)</code> (the raw <code>str</code>, for a value that may be binary), <code>header(name)</code>, <code>cookie(name)</code>, <code>req-&gt;body</code>, <code>req-&gt;peer</code>, <code>req-&gt;request_id</code>, <code>req-&gt;arena</code>.</p>
+<p>Responses — one spelling each, and <code>text</code>/<code>html</code> take a C string or a <code>Text</code> alike:</p>
+<div class="table-wrap"><table><thead><tr><th>call</th><th>what it sends</th></tr></thead><tbody><tr><td><code>json(status, Model, ptr)</code></td><td>one row as JSON</td></tr><tr><td><code>json(status, collection)</code> / <code>json_list(status, collection)</code></td><td>a collection as JSON; <code>json_list</code> is the spelling the compiler checks</td></tr><tr><td><code>json(status, text)</code></td><td>a body you already built</td></tr><tr><td><code>text(status, s)</code> / <code>html(status, s)</code></td><td><code>text/plain</code> / <code>text/html</code></td></tr><tr><td><code>page(View, ctx)</code>, <code>page_with(status, View, ctx)</code></td><td>a view inside the shell</td></tr><tr><td><code>res_error(status, code, msg)</code></td><td>an error body in the shape the client expects</td></tr><tr><td><code>redirect(url)</code></td><td>303 with a <code>Location</code></td></tr><tr><td><code>res_file</code>, <code>res_download</code>, <code>res_bytes</code>, <code>res_stream</code>, <code>res_sse</code>, <code>res_upgrade</code></td><td>the rest</td></tr><tr><td><code>res_cookie</code>, <code>res_header(_str)</code></td><td>a header on the response</td></tr></tbody></table></div>
+<p>The last line of a mutation route, either way a browser asks it — a form post gets its redirect back to the page, a JSON call gets the row it changed:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">return (wc_body_is_form() ? redirect(\&quot;/\&quot;) : json(200, Card, k));   // == wc_body_is_form() ? redirect(&quot;/&quot;) : json(200, Card, k)</code></pre></div>
+<p>Bodies: <code>TRY_BODY(Model, var)</code> parses JSON, <code>TRY_FORM(Model, var)</code> parses <code>application/x-www-form-urlencoded</code>; both validate with the same code the browser would run, and return 422 with <code>{error, message, status}</code> on a failure.</p>
+<p>Typed extractors take the model's name and fail the <em>request</em> on bad input (400 <code>invalid_body</code> for malformed JSON, 422 <code>invalid_form</code> for a form that parses but does not validate — the message names the field):</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">POST(&quot;/accounts/:id/deposit&quot;) {
+  Deposit d = body_json(Deposit);     // or body_form(Deposit), body_bytes(), header_i64(&quot;x-count&quot;)
+  return json(202, Deposit, &amp;d);
+}</code></pre></div>
+<p>A route can be <strong>named</strong> with a second argument, and then a URL is built from the pattern instead of spelled again — <code>url_to()</code> fills <code>:params</code> from (name, value) pairs, <code>link_to(Model, row)</code> from the model's own route. A name that is not registered, or a parameter the pattern wants and the call did not pass, panics with the route table rather than producing a 404 a reader finds:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">GET(&quot;/a/:slug&quot;, &quot;story&quot;) { … }
+GET(&quot;/s/:slug&quot;, &quot;section&quot;) { … }
+
+href(url_to(&quot;story&quot;, &quot;slug&quot;, st-&gt;slug));      // → /a/the-last-ferry
+href(url_to(&quot;home&quot;));                          // a route with no parameters
+href(link_to(Story, st));                      // WEBC_MODEL_ROUTE(Story, &quot;/a/:slug&quot;)</code></pre></div>
+<p>A page's context is filled in by <strong>field name</strong> when the view names its type with <code>view(Name, CtxType *c)</code>, or <code>declare_view(Name, CtxType);</code> in a header — the same view and its context type in one line, which is how a route in another file names it too. Every name is then checked by the compiler — a typo is <code>field designator 'sectoin' does not refer to any field in type 'SectionPage_ctx'; did you mean 'section'?</code> — and the route reads as prose:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">view(SectionPage, SectionCtx *c) { el(&quot;h1&quot;) { text(c-&gt;section-&gt;name); } }
+
+GET(&quot;/s/:slug&quot;) {
+  const Section *sec = must(site_section(site, path(&quot;slug&quot;)), &quot;no such section&quot;);
+  return render(SectionPage, .site = site, .section = sec, .list = stories_in(sec));
+}</code></pre></div>
+<p><code>must(ptr, msg…)</code> answers 404 with that sentence when the pointer is null (the whole route, not a paragraph); <code>must_with(status, ptr, msg…)</code> for another status. <code>render_with(status, Name, .field = …)</code> is the same page with a status. <code>page(View, ctx)</code> stays for the one-value case (<code>page(Notes, db_all(Note))</code>).</p>
+<p>Route groups are a runtime scope (routes self-register before <code>main</code>, so a lexical block cannot wrap them):</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">group(&quot;/api/v1&quot;) {
+  webc_use(mw_auth_bearer(token));                       // applies to this scope only
+  webc_route_add(&quot;GET&quot;, &quot;/me&quot;, me, nullptr, 0);           // prefix becomes /api/v1/me
+  group(&quot;/admin&quot;) { webc_route_add(&quot;GET&quot;, &quot;/stats&quot;, stats, nullptr, 0); }  // prefixes compose
+}</code></pre></div>
+<p>An outbound client (dogfooded by <code>webc get</code>):</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WRespC r;
+WErrRes e = http_get(arena, &quot;https://example.com/api&quot;, &amp;r);
+r.status; r.body; r.content_type; r.location;
+
+// a POST with headers, following at most 5 redirects
+WErrRes e2 = http_do_follow(arena, (WClient){ .method = &quot;POST&quot;, .url = url, .body = json,
+                                               .headers = hdrs, .nheaders = 2 }, 5, &amp;r);</code></pre></div>
+<p>Framing is <code>Connection: close</code> plus chunked decoding; redirects are <em>returned</em> unless you ask for them; TLS needs <code>-DWEBC_TLS=openssl</code> (§16).</p>
+<p>Testing without a socket: <code>Response r = webc_test_request(&quot;GET&quot;, &quot;/users/1&quot;);</code></p>
+<h2 id="7b-the-page-head">7b. The page head<a class="h-anchor" href="#7b-the-page-head" aria-label="Link to this section">#</a></h2>
+<p><code>page()</code> splices a view into the <code>&lt;div id=&quot;root&quot;&gt;</code> of an HTML file, so the <code>&lt;head&gt;</code> is the file's — but the title, the canonical URL and the social cards are per page. These fill the head of the response being built; the splice happens on the way out and <em>before anything compresses the body</em> (§8b), so it works for <code>page()</code>, for <code>html()</code>, and for a document you assemble by hand — and it reaches a browser that sent <code>Accept-Encoding: gzip</code>, which is all of them:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">GET(&quot;/s/:slug&quot;) {
+  head_title(fmt(&quot;%s — The Meridian&quot;, s-&gt;name));
+  head_meta(&quot;description&quot;, s-&gt;blurb);
+  head_prop(&quot;og:title&quot;, s-&gt;name);              // &lt;meta property=&quot;og:title&quot; …&gt;
+  head_link(&quot;canonical&quot;, fmt(&quot;https://example.com/s/%s&quot;, s-&gt;slug));
+  head_html(&quot;&lt;meta name=\&quot;theme-color\&quot; content=\&quot;#fbf8f1\&quot;&gt;&quot;);  // anything else
+  head_html(partial(&quot;site/head&quot;));   // a file of chrome (§12d4), rather than nine of those
+  head_ld(ld_blog_posting(.headline = s-&gt;name, .url = abs_url(path)));  // structured data
+  return page(200, Section, &amp;ctx);
+}</code></pre></div>
+<p>A <code>&lt;title&gt;</code> the shell already has is replaced where it stands (the file keeps its shape); everything else is appended at the end of <code>&lt;head&gt;</code>. Text is escaped once, on the way in. A response with no <code>&lt;/head&gt;</code> — a fragment, JSON — is left alone.</p>
+<p><code>head_ld()</code> is the one exception to &quot;text is escaped on the way in&quot;, and it exists because a <code>&lt;script&gt;</code> body is two languages at once. JSON's own escaping does not escape <code>&lt;</code>, so a value containing <code>&lt;/script&gt;</code> closes the element and the rest of the document is read as markup — with whatever nonce the framework splices into every <code>&lt;script&gt;</code> on the way out. <code>head_ld()</code> escapes the document for the context (<code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, U+2028/U+2029 as <code>\uXXXX</code>) and writes nothing at all for an empty document, because an empty block is invalid rather than neutral. Never build one with <code>head_html(fmt(&quot;…&quot;))</code>: <code>webc lint</code> names that line.</p>
+<h2 id="7b1-a-page-is-a-value-head-and-wpage">7b1. A page is a value: <code>head()</code> and <code>WPage</code><a class="h-anchor" href="#7b1-a-page-is-a-value-head-and-wpage" aria-label="Link to this section">#</a></h2>
+<p>Five <code>head_*</code> calls in a row are five chances to forget one, and the reader's theme is a sixth thing to remember per route. A page context that begins with <code>WPage</code> gets all of it from <code>render()</code>:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// app.h — the context is shared, and so is the page
+typedef struct SectionCtx {
+  WPage page;               // head + environment, first field
+  Site site;
+  const Section *section;
+  const VecStory *list;
+} SectionCtx;
+declare_view(SectionPage, SectionCtx);
+
+// server.c — the route says what the page is
+GET(&quot;/s/:slug&quot;, &quot;section&quot;) {
+  return render(SectionPage,
+                .page = head(.title = fmt(&quot;%s — The Meridian&quot;, sec-&gt;name),
+                             .desc = sec-&gt;blurb,
+                             .og_title = sec-&gt;name,
+                             .canonical = fmt(&quot;https://example.com/s/%s&quot;, sec-&gt;slug)),
+                .site = site, .section = sec, .list = list);
+}</code></pre></div>
+<p>A project may keep its headers in folders — one per concern — and it may keep them apart from the sources too (<code>src/models/people.h</code>, <code>src/views/admin/editor.h</code>). Every <code>.h</code> under <code>src/</code> is the project's for the engine, whatever folder it is in: <code>WEBC_MODEL</code>, <code>Vec(T)</code> and <code>declare_view</code> are found in all of them, and a <code>#include &quot;app.h&quot;</code> in a nested file resolves because <code>-I src</code> is on every compile line.</p>
+<p><code>head(...)</code> is a compound literal, so every name in it is checked by the compiler. <code>render()</code>, <code>page()</code> and <code>page_with()</code> all call <code>webc_page_begin(&amp;ctx)</code> <em>before</em> the view runs: it fills <code>page.env</code> from the request and records the head, which is spliced into the document before anything compresses it (§8b) — the one-value <code>page(View, ctx)</code> form included, which is what makes the two spellings the same page:</p>
+<div class="table-wrap"><table><thead><tr><th><code>page.head</code></th><th>becomes</th></tr></thead><tbody><tr><td><code>title</code></td><td><code>&lt;title&gt;</code>, and <code>og:title</code> unless <code>og_title</code> is given (<code>og_title = &quot;&quot;</code> suppresses it)</td></tr><tr><td><code>desc</code></td><td><code>&lt;meta name=&quot;description&quot;&gt;</code> — skipped when empty</td></tr><tr><td><code>og_type</code>, <code>og_image</code>, <code>og_site</code></td><td><code>og:type</code>, <code>og:image</code>, <code>og:site_name</code></td></tr><tr><td><code>section_name</code></td><td><code>&lt;meta name=&quot;article:section&quot;&gt;</code></td></tr><tr><td><code>canonical</code>, <code>alternate</code></td><td><code>&lt;link rel=&quot;canonical&quot;&gt;</code>, <code>&lt;link rel=&quot;alternate&quot;&gt;</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th><code>page.env</code> (filled, read in the view)</th><th></th></tr></thead><tbody><tr><td><code>theme</code></td><td>the <code>theme</code> cookie when it is <code>light</code> or <code>dark</code>, otherwise <code>&quot;&quot;</code></td></tr><tr><td><code>dark</code></td><td><code>theme == &quot;dark&quot;</code></td></tr><tr><td><code>path</code></td><td>this request's path — where a form should send the reader back to</td></tr><tr><td><code>query</code></td><td><code>?q=</code> as text, <code>&quot;&quot;</code> when absent</td></tr></tbody></table></div>
+<p>A theme in <code>env.theme</code> is also written as <code>data-theme</code> on <code>&lt;html&gt;</code>, so the first byte is already the right colour. The types live in <code>&lt;webc/page.h&gt;</code> (shared), because the context is compiled for both targets and a view may read <code>c-&gt;page.env.dark</code>; only filling it needs a request. A page with no title logs one line per route, because a document that is wrong in the tab is otherwise silent.</p>
+<p>The <code>head_*</code> functions still exist for a response you assemble by hand — <code>webc_page_begin(&amp;page)</code> with a local <code>WPage</code> is the same thing without <code>render()</code>.</p>
+<h2 id="7b2-and">7b2. <code>&lt;html&gt;</code> and <code>&lt;body&gt;</code><a class="h-anchor" href="#7b2-and" aria-label="Link to this section">#</a></h2>
+<p>A page's document element is per request too: a site that server-renders the reader's theme needs the attribute in the markup <em>before the first byte</em>, or the page flashes the wrong edition. <code>html_attr()</code> and <code>body_attr()</code> splice into <code>&lt;html …&gt;</code> and <code>&lt;body …&gt;</code> on the way out, the same way the head does, so an app never has to assemble a whole document by hand:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">GET(&quot;/&quot;) {
+  html_attr(&quot;data-theme&quot;, theme_from_cookie());    // &lt;html lang=&quot;en&quot; data-theme=&quot;dark&quot;&gt;
+  body_attr(&quot;class&quot;, &quot;is-front&quot;);
+  return page(FrontPage, ctx);
+}</code></pre></div>
+<h2 id="7c-cookies">7c. Cookies<a class="h-anchor" href="#7c-cookies" aria-label="Link to this section">#</a></h2>
+<p><code>res_cookie(res, name, value, attrs)</code> adds <code>Path=/</code>, <code>HttpOnly</code> and <code>SameSite=Lax</code> for you, and <code>Secure</code> on a TLS request. <code>attrs</code> is <em>extra</em> attributes (<code>Max-Age=60</code>, <code>SameSite=Strict</code>, …); an attribute you name yourself replaces the default instead of following it, so nothing appears twice on the wire.</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">res_cookie(res, &quot;theme&quot;, &quot;dark&quot;, &quot;Max-Age=31536000&quot;);
+res_cookie(res, &quot;session&quot;, token, &quot;HttpOnly; SameSite=Lax&quot;);   // exactly once each</code></pre></div>
+<hr>
+<h2 id="7d-a-stream-that-stays-correct-the-sse-pattern">7d. A stream that stays correct: the SSE pattern<a class="h-anchor" href="#7d-a-stream-that-stays-correct-the-sse-pattern" aria-label="Link to this section">#</a></h2>
+<p><code>res_sse(fn, ctx)</code> hands the response body to <code>fn</code>, which owns a socket for as long as it runs. Three facts shape every correct stream, and none of them is obvious:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">typedef struct Sub { bool used, live; ChanInt wake; i64 uid, last_v; Response *r; } Sub;
+static Sub g_subs[64];
+static WMutex g_mu;              // zeroed is an unlocked mutex
+static i64 g_vers = 1;
+
+static void bump(void) {         // any mutation ends here
+  wmutex_lock(&amp;g_mu);
+  g_vers++;
+  for (i32 i = 0; i &lt; 64; i++)
+    if (g_subs[i].live) { i32 one = 1; wchan_try_send_typed(g_subs[i].wake.c, &amp;one, sizeof one); }
+  wmutex_unlock(&amp;g_mu);
+}
+
+GET(&quot;/api/stream&quot;) {
+  // …find a free slot, fill it, then:
+  return res_sse(stream_run, &amp;g_subs[slot]);
+}
+
+static void stream_run(Response *r, void *vp) {
+  Sub *s = vp;
+  s-&gt;r = r; s-&gt;live = true; s-&gt;last_v = g_vers;
+  bump();                        // the newcomer's presence is news; its first frame follows
+  WFrame fr;                     // two generations: a frame dies when the next one
+  frame_init(&amp;fr, 96 * 1024);    // replaces it (a stream's memory discipline, as a verb)
+  for (;;) {
+    i64 sig = 0;
+    SelCase cs[1] = {SEL_RECV(s-&gt;wake.c, &amp;sig)};
+    i32 got = select_wait(cs, 1, 15000);        // wake, or heartbeat every 15 s
+    if (got == SELECT_CLOSED) break;
+    if (got == SELECT_TIMEOUT) { if (!sse_send_text(r, &quot;ping&quot;, str_lit(&quot;1&quot;))) break; continue; }
+    if (g_vers == s-&gt;last_v) continue;
+    Arena *prev = frame_begin(&amp;fr);             // the fresh generation, made current
+    str frame = snapshot_json(prev);
+    bool ok = sse_send_text(r, &quot;sync&quot;, frame);
+    frame_end(&amp;fr, prev);
+    if (!ok) break;                             // a dead socket fails on write
+    s-&gt;last_v = g_vers;
+  }
+  frame_free(&amp;fr);
+  wmutex_lock(&amp;g_mu); s-&gt;used = s-&gt;live = false; wchan_close(s-&gt;wake.c); wmutex_unlock(&amp;g_mu);
+  sse_end(r);
+  bump();                                       // someone left: presence is news too
+}</code></pre></div>
+<ul><li>The client half is <code>webc_subscribe(&quot;/api/stream&quot;, &quot;sync&quot;, on_frame)</code>; a frame the<p>bridge does not know by name (the <code>ping</code> above) is ignored, which is what heartbeats want. Decode frames into a private generation arena and <code>persist()</code> anything that must outlive the frame — the pattern is §13d's <code>WLive</code>, spelled out by hand.</p></li><li>Presence is the subscriber list itself; a stale entry leaves when its next write<p>fails, which the heartbeat bounds to one interval.</p></li><li>A stream parks its task on the channel and on writes; the stall monitor does not<p>count it (it is a streamed response, not a stuck handler).</p></li></ul>
+<h2 id="7e-a-file-and-the-part-of-it-the-client-asked-for">7e. A file, and the part of it the client asked for<a class="h-anchor" href="#7e-a-file-and-the-part-of-it-the-client-asked-for" aria-label="Link to this section">#</a></h2>
+<p><code>res_file(status, path)</code> is a complete HTTP file response, not a path and a length. It answers the four questions a file has: <em>is this the copy you have</em> (304), <em>all of it or part</em> (200/206), <em>where does it end</em> (416), and <em>may I resume</em> (<code>Accept-Ranges: bytes</code>).</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">GET(&quot;/media/:name&quot;) { return res_file(200, path(&quot;name&quot;)); }   // seekable, resumable
+GET(&quot;/export&quot;)      { return res_download(200, &quot;/tmp/report.csv&quot;, &quot;q3 report.csv&quot;); }</code></pre></div>
+<div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">$ curl -D- -H 'Range: bytes=0-1023' /app.wasm
+HTTP/1.1 206 Partial Content
+Accept-Ranges: bytes
+Content-Range: bytes 0-1023/96359
+Content-Length: 1024</code></pre></div>
+<p>What it decides, and why each one is not optional:</p>
+<div class="table-wrap"><table><thead><tr><th>request</th><th>answer</th></tr></thead><tbody><tr><td><code>Range: bytes=0-99</code></td><td>206, <code>Content-Range: bytes 0-99/907</code></td></tr><tr><td><code>bytes=800-</code> / <code>bytes=-100</code></td><td>206, to the end / the last 100 bytes</td></tr><tr><td><code>bytes=0-99999</code></td><td>206, clamped to the last byte — not an error</td></tr><tr><td><code>bytes=907-</code> (a 907-byte file)</td><td>416 with <code>Content-Range: bytes */907</code></td></tr><tr><td><code>bytes=0-9,20-29</code></td><td>200, the whole file: a server MAY ignore <code>Range</code>, and no browser</td></tr></tbody></table></div>
+<p>asks for <code>multipart/byteranges</code> | | <code>bytes=99-1</code>, <code>bytes=x-y</code>, <code>items=0-9</code> | 200, the whole file: malformed ranges are ignored | | <code>Range</code> on a <code>POST</code> | ignored: a range is a GET/HEAD idea | | <code>If-None-Match</code> / <code>If-Modified-Since</code> | 304, and the validator wins over the range | | <code>If-Range: &lt;current ETag&gt;</code> | 206; a stale tag or a weak one gets 200, full | | <code>Range</code> + <code>Accept-Encoding: gzip</code> | 206, <strong>identity</strong>: never compressed (below) |</p>
+<p>Three consequences worth knowing:</p>
+<ul><li><strong>A 206 is never compressed.</strong> The offsets in <code>Content-Range</code> are offsets into the<p>bytes the client asked about, so a compressed 206 is a deflate stream with a byte count that means nothing; and <code>mw_compress()</code> reads a file into memory to gzip it, which would turn a 1 KB range request into a whole-file read. The middleware skips 206/416, and <code>res_file()</code> resolves the range before the middleware sees the response.</p></li><li><strong><code>If-Range</code> is what makes a resumed download safe.</strong> A client that lost its connection<p>re-asks with the tag it has; if the file changed underneath it the answer is 200 and the whole new file, because splicing two versions is worse than a re-download.</p></li><li><strong><code>res_download()</code> escapes the name twice.</strong> An ASCII fallback (<code>&quot;; rm -rf ~</code> becomes<p><code>attachment; filename=&quot;_; rm -rf ~_&quot;</code>) and <code>filename*=UTF-8''…</code> for names the fallback cannot spell — a quote or a semicolon reaching a header is response splitting.</p></li></ul>
+<p>This is also what <code>webc serve</code> and <code>mw_static()</code> serve, because both go through the same <code>res_file()</code>: a deployment with no nginx in front of it still has a media server.</p>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/docs/reference.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../reference/concurrency.html"><span class="pager__dir">Previous</span><span class="pager__title">6. Concurrency</span></a>
+<a class="pager__link pager__link--next" href="../reference/middleware.html"><span class="pager__dir">Next</span><span class="pager__title">8. Middleware</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#7b-the-page-head">7b. The page head</a></li>
+<li class="toc__l2"><a href="#7b1-a-page-is-a-value-head-and-wpage">7b1. A page is a value: head() and WPage</a></li>
+<li class="toc__l2"><a href="#7b2-and">7b2. &amp;lt;html&amp;gt; and &amp;lt;body&amp;gt;</a></li>
+<li class="toc__l2"><a href="#7c-cookies">7c. Cookies</a></li>
+<li class="toc__l2"><a href="#7d-a-stream-that-stays-correct-the-sse-pattern">7d. A stream that stays correct: the SSE pattern</a></li>
+<li class="toc__l2"><a href="#7e-a-file-and-the-part-of-it-the-client-asked-for">7e. A file, and the part of it the client asked for</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

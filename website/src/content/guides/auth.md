@@ -1,0 +1,227 @@
+Accounts need three things and this framework has exactly three: a password hash, a signed cookie,
+and a way to read the cookie back. There is no session table, no user model, no library to install —
+`<webc/auth.h>` is one header with nine functions, and `examples/accounts` is a working app built on
+it.
+
+Every snippet here is a whole file: it declares the model it uses and includes the header it needs.
+
+## The pieces
+
+| Call | Signature | What it is for |
+| --- | --- | --- |
+| `auth_hash(password)` | `const char *` → `Text` | hash a password on signup; allocates in the current scope, like `fmt()` |
+| `auth_verify(stored, password)` | `const char *`, `const char *` → `bool` | check a password on login; constant-time compare |
+| `auth_hash_password(a, password)` | `Arena*`, `str` → `str` | the same hash when the value is already a `str` |
+| `auth_hash_password_iters(a, password, n)` | …, `u32` → `str` | the same, with your iteration count instead of 210 000 |
+| `auth_set_session(&res, secret, uid)` | `Response*`, `str`, `i64` | sign a session cookie onto a response |
+| `auth_clear_session(&res)` | `Response*` | expire it on logout |
+| `auth_get_session(req, secret, &uid)` | `Request*`, `str`, `i64*` → `bool` | read and verify the cookie |
+| `auth_require_session(req, secret)` | `Request*`, `str` → `i64` | the same, `0` when absent, invalid or expired |
+| `auth_secret()`, `auth_secret_set(s)` | → `str` | the signing secret, resolved once per process |
+
+Two constants: `WEBC_SESSION_COOKIE` is `"session"`, `WEBC_SESSION_TTL_S` is one week.
+
+The two passwords flavours are not redundancy. A model field is a `Text` (`const char *`), and so is
+every form value, so the `Text` pair is what an app calls; the `str` pair is for code that already
+holds a length and a pointer.
+
+## A password is a hash, and the hash is a string
+
+```c
+// src/app.h — the app's own user model: the framework has no opinion about it
+#include <webc/shared.h>
+#include <webc/auth.h>
+
+WEBC_MODEL(Account, (id, i64, .pk = true),
+                    (email, Text, .required = true, .unique = true),
+                    (password_hash, Text, .required = true),
+                    (created_at, i64))
+Vec(Account)
+
+// What a form posts. Two fields, and `.min = 8` is the whole password policy.
+WEBC_MODEL(Credentials, (email, Text, .required = true),
+                        (password, Text, .required = true, .min = 8))
+```
+
+`auth_hash` returns `pbkdf2-sha256$210000$<salt-b64>$<hash-b64>` — the iteration count, the salt and
+the hash in one string, so the stored value is self-describing and the cost can be raised later
+without a migration: `auth_verify` reads the iteration count out of the stored value and re-derives
+with it. Per-password salt, PBKDF2-SHA256, and a comparison that does not return early on the first
+differing byte.
+
+What matters for an app is that the *hash* is the string in the row, and the password never is.
+`auth_hash` allocates in the current scope, which in a handler is the request's arena — the value is
+valid until the response is written, which is exactly as long as it is needed, and `db_save` has
+copied it by then.
+
+## Signing up, and signing in
+
+```c
+// src/server.c — signup, login, logout: the three routes accounts need
+#include <webc/server.h>
+#include <webc/auth.h>
+
+WEBC_MODEL(Account, (id, i64, .pk = true),
+                    (email, Text, .required = true, .unique = true),
+                    (password_hash, Text, .required = true),
+                    (created_at, i64))
+WEBC_MODEL(Credentials, (email, Text, .required = true),
+                        (password, Text, .required = true, .min = 8))
+declare_view(Signup)
+declare_view(Signin)
+
+static Text g_error;   // the sentence the page shows after a failed post
+
+POST("/signup") {
+  Credentials in;
+  if (!body_try(Credentials, &in)) {         // the model refused the post
+    g_error = persist(body_error());
+    return page_with(422, Signup, g_error);
+  }
+  Account a = {.email = text_copy(in.email),
+               .password_hash = auth_hash(in.password),
+               .created_at = now()};
+  if (!db_try_save(Account, &a)) {           // a unique email, already taken
+    g_error = persist("that email is already registered");
+    return page_with(409, Signup, g_error);
+  }
+  Response res = redirect("/me");
+  auth_set_session(&res, auth_secret(), a.id);   // the cookie rides this response
+  return res;
+}
+
+POST("/login") {
+  Credentials in;
+  if (!body_try(Credentials, &in))
+    return page_with(422, Signin, "check your email and password");
+  WQuery *qy = q("");
+  q_str(qy, "em", (str){in.email, strlen(in.email)});
+  Account *a = db_find(Account, "email = :em", qy);
+  // One sentence for a wrong email and a wrong password, on purpose: telling them
+  // apart is an oracle for which addresses have accounts.
+  if (!a || !auth_verify(a->password_hash, in.password)) {
+    g_error = persist("that email and password do not match");
+    return page_with(401, Signin, g_error);
+  }
+  Response res = redirect("/me");
+  auth_set_session(&res, auth_secret(), a->id);
+  return res;
+}
+
+POST("/logout") {
+  Response res = redirect("/login");
+  auth_clear_session(&res);
+  return res;
+}
+```
+
+Both POSTs redirect, so the page after a signup is a GET and a refresh does not post twice.
+
+## The guard is one call
+
+```c
+// src/server.c — a page that requires a session; the guard is one call
+#include <webc/server.h>
+#include <webc/auth.h>
+
+WEBC_MODEL(Account, (id, i64, .pk = true), (email, Text, .required = true))
+declare_view(Me)
+
+GET("/me") {
+  i64 uid = auth_require_session(req, auth_secret());
+  if (!uid) return redirect("/login");        // absent, tampered with, or expired
+  Account *me = db_get(Account, uid);
+  if (!me) return redirect("/login");        // a cookie for an account that is gone
+  return page(Me, me);
+}
+```
+
+The second check is not paranoia: the cookie is signed, so it cannot be forged, but it also cannot
+know that the row was deleted. A row that is gone is a redirect, not a 500.
+
+Where a handler must answer itself — an API route that returns 401 JSON rather than a redirect —
+`auth_get_session(&uid)` gives the boolean and the id separately.
+
+## The cookie, exactly
+
+`auth_set_session` writes `<uid>.<expiry>.<hmac>` into a cookie named `session`, with
+`HttpOnly; SameSite=Lax`, valid for `WEBC_SESSION_TTL_S` (604800 seconds). Signed, never encrypted:
+the browser and the user can read the id and the expiry, and cannot change either without
+invalidating the HMAC. That is why there is no session table — the server trusts the signature, and
+a revoked session is a deleted account rather than a row that has to be found.
+
+`SameSite=Lax` is the cross-site request story for a form-driven app: a POST from another origin
+does not carry the cookie. If you need a session cookie on a cross-site POST, use a token, and a
+token is application code.
+
+## The secret
+
+`auth_secret()` resolves once per process, in this order:
+
+1. `auth_secret_set(value)` — what a test calls, so the cookies a test mints are the cookies it
+   verifies;
+2. `WEBC_SECRET`, the environment variable, which is what a deployment sets;
+3. `data/.webc-secret` — a file the dev loop writes on first boot, so a restart does not log
+   everybody out (getting this wrong costs an afternoon: every reload looks like broken auth);
+4. a random secret for this process, **with a log line that says sessions will not survive a
+   restart**.
+
+In production, set `WEBC_SECRET` and treat it like the database password: changing it invalidates
+every session, and losing it is not recoverable.
+
+## Testing it
+
+A test mints a cookie and sends it back, with no socket in between:
+
+```c
+// tests/accounts_test.c — signup mints a session; the header is on the response
+#include <webc/test.h>
+
+static Response signup(const char *email, const char *password) {
+  char body[256];
+  int n = snprintf(body, sizeof body, "email=%s&password=%s", email, password);
+  return webc_test_request_ex("POST", "/signup",
+                              "Content-Type: application/x-www-form-urlencoded",
+                              body, (size_t)n);
+}
+
+TEST(signup_mints_a_session) {
+  Response r = signup("grace@example.com", "hunter2hunter2");
+  ASSERT_EQ(r.status, 303);
+  // the Set-Cookie the response carried, read without a browser
+  ASSERT_HEADER_CONTAINS(r, "Set-Cookie", "session=");
+}
+
+TEST(a_short_password_is_422) {
+  ASSERT_EQ(signup("short@example.com", "abc").status, 422);
+}
+```
+
+`TEST_SETUP(boot)` pins the secret (`auth_secret_set(str_lit("test-secret"))`) and points the app at
+`sqlite::memory:`, so every test starts from an empty database; `WEBC_TEST_DB=postgres://… webc test`
+runs the same suite against a live Postgres, which is the only way to know a login flow is portable.
+`examples/accounts/tests/accounts_test.c` is the whole version, including the cookie jar.
+
+## What it is not
+
+- **Not a user model.** `Account` is the app's, with the app's fields and the app's migrations; the
+  header only knows how to hash and how to sign.
+- **Not roles or permissions.** A role is a column and a check in the handler; there is no ACL
+  engine to learn, and no `@requires_role` decorator that hides the check.
+- **Not password reset, email verification, or OAuth.** Each is a route, a token you store, and a
+  mail you send (`webc/mail.h`); making them a module would make them a decision the app did not
+  take.
+- **Not a CSRF token.** `SameSite=Lax` covers the form case; a cross-site flow needs a token the app
+  owns.
+- **Not a rate limit.** That is `webc/limits.h`, and it is one line in the login route:
+  `if (!rate_ok("login", 5, 15 * 60 * 1000)) return res_error(429, "slow_down", "Too many attempts.")`
+  — five attempts per quarter hour per key, in a fixed window, from the header that documents it.
+
+## Related
+
+- **[Models and migrations](../guides/models.md)** — the `Account` model, `.unique`, and the
+  migration that makes it a constraint.
+- **[Forms](../guides/forms.html)** — `body_try`, `page_with(422, …)`, and the error under a field.
+- **[The standard library](../guides/stdlib.html)** — `mail` for a reset link, `limits` for the
+  throttle.
+- Reference [§10 Auth](../reference/auth.html) and [§9 Database](../reference/database.html).

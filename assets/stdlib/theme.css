@@ -1,0 +1,14 @@
+/* theme: the page paints itself from the tokens theme_head() writes, and nothing here
+   names a colour: dark mode is `var(--bg)` already being something else. */
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  -webkit-text-size-adjust: 100%;
+}
+body { margin: 0; }
+code, kbd, pre, samp { font-family: var(--font-mono, ui-monospace, monospace); }
+a { color: var(--acc); text-underline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--acc) 28%, transparent); }
+hr { border: 0; border-top: 1px solid var(--line); }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }

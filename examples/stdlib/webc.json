@@ -1,0 +1,7 @@
+{
+  "name": "stdlib",
+  "mode": "web",
+  "target": "wasm",
+  "client": ["src/app.c"],
+  "dev": { "port": 9992 }
+}

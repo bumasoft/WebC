@@ -1,0 +1,271 @@
+# The release pipeline: one tag (`v*`), four platforms, one tarball each.
+#
+# A tarball is the whole framework tree an installed CLI needs at run time —
+# bin/webc, build/libwebc.a, build/gen (the generated headers an app compile
+# reads), include/, src/ (the framework sources a `--target wasm` build compiles),
+# assets/ (the bridge and the shelf stylesheets), skills/
+# and docs/ (`webc new` writes the skill into the app; the MCP server reads
+# the reference), tools/client (the client-half test harness), tools/learn
+# (`webc learn` copies its lessons from here) and examples/board
+# (`webc new --template=board` copies it). scripts/install.sh untars exactly
+# this shape, which is why the CLI can find its tree through its own binary
+# (prefix.c) with nothing baked in.
+#
+# The version file inside the tree is what install.sh names the directory by,
+# so `~/.local/share/webc/<ver>` is a real version, not a tag guess.
+#
+# Four jobs, in order, because a release that publishes something nobody ran is
+# worse than a release that did not happen:
+#
+#   test   the suite on the tag itself — a tag cannot package untested code
+#   build  the matrix: four platforms, four tarballs, each attested
+#   smoke  each tarball is *unpacked and used*: --version, doctor, `webc new`,
+#          the generated project's own tests, and a wasm build of its browser half
+#   release  only for a tag, and only when every smoke job passed
+#
+# `workflow_dispatch` with `dry_run: true` (the default) runs the first three and
+# publishes nothing: the artefacts land on the workflow run. That is how this
+# pipeline gets tested before a tag exists.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "build and smoke the four tarballs, publish no Release"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  id-token: write      # attest-build-provenance signs with the workflow identity
+  attestations: write
+
+jobs:
+  test:
+    name: the suite, before anything is packaged
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsqlite3-dev zlib1g-dev nodejs sqlite3
+      - name: clang 21
+        run: |
+          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 21
+          sudo ln -sf /usr/bin/clang-21 /usr/local/bin/clang
+          clang --version
+      - uses: ./.github/actions/wasi-sdk
+      - name: Build and test
+        run: make -j"$(nproc)" && make test
+      - name: One version, everywhere
+        run: make check-version
+
+  build:
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-latest,  platform: darwin-aarch64 }
+          - { os: macos-15-intel, platform: darwin-x86_64 }
+          - { os: ubuntu-latest, platform: linux-x86_64 }
+          - { os: ubuntu-24.04-arm, platform: linux-aarch64 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install deps (linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libsqlite3-dev zlib1g-dev
+
+      # clang 21 is the floor (the suite and the CLI use #embed); the distro clang is older.
+      - name: clang 21 (linux)
+        if: runner.os == 'Linux'
+        run: |
+          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 21
+          sudo ln -sf /usr/bin/clang-21 /usr/local/bin/clang
+          clang --version
+
+      # A release whose tag and VERSION disagree is a release that lies about itself, and
+      # the tarball's `version` file is what install.sh names the tree after. On a dry run
+      # the ref is a branch, so there is no tag to agree with.
+      - name: the tag and VERSION agree
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          test -f VERSION || { echo "::error::no VERSION file"; exit 1; }
+          v=$(cat VERSION)
+          test "$GITHUB_REF_NAME" = "v$v" || {
+            echo "::error::tag $GITHUB_REF_NAME does not match VERSION $v"; exit 1; }
+
+      - name: build
+        run: make
+
+      - name: assemble the release tree
+        run: |
+          mkdir -p dist/webc/bin
+          cp build/webc dist/webc/bin/webc
+          strip dist/webc/bin/webc || true
+          mkdir -p dist/webc/build
+          cp build/libwebc.a dist/webc/build/
+          cp -R build/gen dist/webc/build/gen
+          cp -R include dist/webc/include
+          # `webc build --target wasm` compiles FRONTEND_SRC — core.c, react.c, dom.c, the
+          # model layer, the bridge glue — out of <prefix>/src/ instead of the .a, because a
+          # wasm build needs them as objects, not as a host archive. An install without
+          # src/ builds servers and cannot build a browser half at all; the smoke job's
+          # last step is what says so.
+          cp -R src dist/webc/src
+          cp -R assets dist/webc/assets
+          cp -R skills dist/webc/skills
+          cp -R docs dist/webc/docs
+          mkdir -p dist/webc/examples
+          cp -R examples/board dist/webc/examples/board
+          mkdir -p dist/webc/tools
+          cp -R tools/client dist/webc/tools/client
+          cp -R tools/learn dist/webc/tools/learn   # `webc learn` copies its lessons from here
+          echo "$(cat VERSION)" > dist/webc/version
+
+      - name: tar
+        run: |
+          cd dist
+          tar czf "webc-${{ matrix.platform }}.tar.gz" webc
+          if command -v shasum >/dev/null; then shasum -a 256 "webc-${{ matrix.platform }}.tar.gz"; \
+            else sha256sum "webc-${{ matrix.platform }}.tar.gz"; fi \
+            > "webc-${{ matrix.platform }}.tar.gz.sha256"
+
+      # Build provenance is a public-repository feature: on a private user-owned repo the
+      # action fails with "Feature not available for user-owned private repositories", and
+      # this job is the only thing that would ever say so. It runs from the day the
+      # repository is public, and until then the .sha256 beside the tarball is the record.
+      - name: attest what was built
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/webc-${{ matrix.platform }}.tar.gz
+
+      # The artefacts go to the run, not to a Release: `release` decides later, and only
+      # after the smoke job has proved that each tarball actually works.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: webc-${{ matrix.platform }}
+          path: |
+            dist/webc-${{ matrix.platform }}.tar.gz
+            dist/webc-${{ matrix.platform }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  # The tarball is assembled by an explicit `cp` list, and one forgotten directory is a
+  # release that installs and then cannot compile. This job is what catches it: it takes
+  # the artefact nobody has touched, unpacks it the way install.sh does, and uses it as a
+  # user would.
+  smoke:
+    name: smoke (${{ matrix.platform }})
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-latest,  platform: darwin-aarch64 }
+          - { os: macos-15-intel, platform: darwin-x86_64 }
+          - { os: ubuntu-latest, platform: linux-x86_64 }
+          - { os: ubuntu-24.04-arm, platform: linux-aarch64 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: webc-${{ matrix.platform }}
+          path: ${{ runner.temp }}/art
+
+      # The check install.sh makes, made here: if this fails, the installer would refuse
+      # the artefact we are about to publish.
+      - name: the published digest matches the tarball
+        shell: bash
+        run: |
+          set -eu
+          cd "$RUNNER_TEMP/art"
+          T="webc-${{ matrix.platform }}.tar.gz"
+          if command -v sha256sum >/dev/null 2>&1; then GOT=$(sha256sum "$T" | cut -d' ' -f1)
+          else GOT=$(shasum -a 256 "$T" | cut -d' ' -f1); fi
+          WANT=$(cut -d' ' -f1 "$T.sha256")
+          echo "digest $GOT"
+          [ -n "$WANT" ] && [ "$WANT" = "$GOT" ] || { echo "::error::digest mismatch"; exit 1; }
+
+      - name: unpack the way install.sh does
+        shell: bash
+        run: tar xzf "$RUNNER_TEMP/art/webc-${{ matrix.platform }}.tar.gz" -C "$RUNNER_TEMP"
+
+      - name: the artefact runs and resolves its own tree
+        shell: bash
+        run: |
+          set -eu
+          WEB="$RUNNER_TEMP/webc/bin/webc"
+          V=$(cat "$RUNNER_TEMP/webc/version")
+          echo "tarball says version $V"
+          "$WEB" --version | tee /dev/stderr | grep -qx "webc $V"
+          "$WEB" doctor
+          "$WEB" doctor | grep -q "$RUNNER_TEMP/webc" \
+            || { echo "::error::the CLI did not resolve its own tree"; exit 1; }
+
+      - name: a project it generates builds and passes its own tests
+        shell: bash
+        run: |
+          set -eu
+          export PATH="$RUNNER_TEMP/webc/bin:$PATH"
+          cd "$RUNNER_TEMP"
+          webc new smoke --template=fullstack
+          cd smoke
+          webc test
+
+      # The browser half is half the promise, and it is the half whose toolchain is not on
+      # the runner by default. (The composite action needs a checkout, which this job does
+      # not do — it works on a downloaded artefact — so it repeats the two commands.)
+      - name: wasi-sdk 34
+        shell: bash
+        run: |
+          set -eu
+          case "${{ matrix.platform }}" in
+            darwin-aarch64) A=arm64-macos ;;
+            darwin-x86_64)  A=x86_64-macos ;;
+            linux-aarch64)  A=arm64-linux ;;
+            linux-x86_64)   A=x86_64-linux ;;
+          esac
+          curl -fsSL -o "$RUNNER_TEMP/wasi.tar.gz" \
+            "https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-34/wasi-sdk-34.0-$A.tar.gz"
+          mkdir -p "$RUNNER_TEMP/wasi"
+          tar xzf "$RUNNER_TEMP/wasi.tar.gz" -C "$RUNNER_TEMP/wasi" --strip-components=1
+          test -x "$RUNNER_TEMP/wasi/bin/clang"
+          echo "WASI_SDK_PATH=$RUNNER_TEMP/wasi" >> "$GITHUB_ENV"
+
+      - name: the browser half compiles from the packaged tree
+        shell: bash
+        run: |
+          set -eu
+          export PATH="$RUNNER_TEMP/webc/bin:$PATH"
+          cd "$RUNNER_TEMP/smoke"
+          webc build --target wasm
+          test -s .webc/app.wasm || { echo "::error::no wasm module was produced"; exit 1; }
+          ls -l .webc/app.wasm
+
+  # Only a tag publishes, and only when `dry_run` is not true. On a dry run this job is
+  # skipped and the tarballs stay on the workflow run.
+  release:
+    needs: [build, smoke]
+    if: startsWith(github.ref, 'refs/tags/') && inputs.dry_run != true
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/rel
+          merge-multiple: true
+      - name: what is being published
+        run: ls -l "$RUNNER_TEMP/rel"
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ runner.temp }}/rel/webc-*.tar.gz
+            ${{ runner.temp }}/rel/webc-*.tar.gz.sha256
+          fail_on_unmatched_files: true

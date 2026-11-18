@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Guides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redis and the query cache · WebC</title>
+<meta name="description" content="Caching result sets by generation, and the room around them.">
+<meta property="og:title" content="Redis and the query cache · WebC">
+<meta property="og:description" content="Caching result sets by generation, and the room around them.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/guides/data.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Redis and the query cache · WebC">
+<meta name="twitter:description" content="Caching result sets by generation, and the room around them.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html" aria-current="true">Guides</a>
+<a href="../reference/index.html">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html" class="is-active" aria-current="page">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../guides/http.html">Guides</a><span class="crumbs__sep">/</span><span class="crumbs__here">Redis and the query cache</span></div>
+    <article class="article">
+      <h1 id="top">Redis and the query cache</h1>
+<p>Two things go between your app and its database: a <strong>cache</strong> that is invisible when it works, and <strong>Redis</strong> for the state that is not a row. Neither is a dependency you have to install twice — the sqlite driver is linked in, and the postgres, MySQL (<a href="../guides/mysql.html">the third driver</a>) and Redis clients speak the wire protocols directly.</p>
+<h2 id="the-query-cache">The query cache<a class="h-anchor" href="#the-query-cache" aria-label="Link to this section">#</a></h2>
+<p>Every statement in the framework goes through one function, <code>WRes db_exec()</code>, so the cache is one function too. It stores the <em>result set</em> — the same <code>WRes</code> a driver returns — and replays it, which means <code>db_all</code>, <code>db_one</code>, a view and a test all get a cache without knowing it.</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">REDIS_URL=redis://127.0.0.1:6379/0
+WEBC_QUERY_CACHE=1          # off unless this is set: a cache nobody asked for is a surprise</code></pre></div>
+<p>Nothing to call. With those two variables a <code>select</code> is served from Redis, a write invalidates it, and the app keeps its shape:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/stories.c — the same calls, with a cache between the third and the fourth
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Story, (id, i64, .pk = true), (title, Text), (published, Text))
+Vec(Story)
+
+void read_twice_then_write(void) {
+  WDB *db = db_default();
+
+  // first: the database
+  VecStory *top   = db_all_ordered(db, Story, &quot;published desc&quot;);
+  // second: Redis, same rows
+  VecStory *again = db_all_ordered(db, Story, &quot;published desc&quot;);
+
+  Story s = {.title = &quot;a story&quot;, .published = &quot;2024-01-01&quot;};
+  // bumps stories' generation
+  db_insert(db, Story, &amp;s);
+
+  // a miss: the write was seen
+  VecStory *fresh = db_all_ordered(db, Story, &quot;published desc&quot;);
+  (void)top; (void)again; (void)fresh;
+}</code></pre></div>
+<p><strong>Invalidation is a generation counter per table</strong>, not a tag set and not <code>SCAN</code>. A write does <code>INCR webc:{&lt;app&gt;}:g:&lt;table&gt;</code> — one hop, O(1), atomic across processes — and a cached read's key carries the generations it was read under. When a counter moves the key changes, so the old entry is never read again and dies of old age. There is no invalidation walk, and no thundering herd on expiry.</p>
+<p><strong>What is never cached</strong>, because each one is a wrong answer waiting to happen:</p>
+<div class="table-wrap"><table><thead><tr><th>Skipped</th><th>Why</th></tr></thead><tbody><tr><td>any write</td><td>they invalidate; caching a write is not a thing</td></tr><tr><td>a read inside a transaction</td><td>it must see its own writes, and it may be rolled back</td></tr><tr><td>a statement with a volatile function (<code>now()</code>, <code>random()</code>, …)</td><td>the answer is not a function of the inputs</td></tr><tr><td><code>for update</code> / <code>for share</code></td><td>it takes locks; replaying it takes none</td></tr><tr><td><code>/* no-cache */ select …</code>, or anything inside <code>nocache { … }</code></td><td>the author said no</td></tr><tr><td>a statement with no tables (<code>select 1</code>)</td><td>nothing to invalidate it with</td></tr></tbody></table></div>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/jobs.c — the three knobs, for what the automatic rules cannot see
+#include &lt;webc/server.h&gt;
+#include &lt;webc/qcache.h&gt;
+
+WEBC_MODEL(Story, (id, i64, .pk = true), (title, Text))
+Vec(Story)
+
+void after_a_bulk_job(void) {
+  cache_bust(Story);        // a job rewrote rows the query path never saw
+  qcache_ttl(Story, 5000);  // this model's rows go stale on their own schedule
+  qcache_flush();           // every entry: the hammer, for a migration
+}</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>Variable</th><th>Default</th><th>Decides</th></tr></thead><tbody><tr><td><code>WEBC_QUERY_CACHE</code></td><td>off</td><td>the whole feature</td></tr><tr><td><code>WEBC_CACHE_TTL_MS</code></td><td>30000</td><td>how long an entry lives</td></tr><tr><td><code>WEBC_CACHE_TTL_JITTER</code></td><td>10</td><td>percent, so a thousand entries do not expire together</td></tr><tr><td><code>WEBC_CACHE_MAX_BYTES</code></td><td>262144</td><td>a bigger result is served but not cached</td></tr><tr><td><code>WEBC_CACHE_MS</code></td><td>5</td><td>the cache's budget per statement; over it, the database answers</td></tr><tr><td><code>WEBC_CACHE_GEN_MS</code></td><td>0</td><td>0 is exact; a window saves a hop and stops seeing other processes' writes for that long</td></tr></tbody></table></div>
+<h2 id="redis">Redis<a class="h-anchor" href="#redis" aria-label="Link to this section">#</a></h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/presence.c — every Redis verb is one line, and every one takes (key, value)
+#include &lt;webc/server.h&gt;
+#include &lt;webc/redis.h&gt;
+
+void touch(str token, str msg, str payload, f64 score) {
+  redis_set(&quot;visits:home&quot;, &quot;1&quot;);                     // a key
+  // 2 — atomic, and the new value
+  i64 n = redis_incr(&quot;visits:home&quot;);
+  redis_set_ex(&quot;session:abc&quot;, token, 1800 * 1000);   // the same, with a TTL in ms
+  // .p == nullptr when the key is absent
+  str v = redis_get(&quot;session:abc&quot;);
+  redis_del(&quot;session:abc&quot;);                          // and the key goes
+  redis_hset(&quot;user:7&quot;, &quot;theme&quot;, &quot;dark&quot;);             // hashes
+  // lists: the handle is explicit
+  redis_lpush_(redis(), str_lit(&quot;queue:mail&quot;), msg);
+  redis_sadd_(redis(), str_lit(&quot;online&quot;), str_lit(&quot;user:7&quot;));  // sets
+  redis_zadd_(redis(), str_lit(&quot;board&quot;), score, str_lit(&quot;ada&quot;)); // sorted sets
+  redis_publish(&quot;chat&quot;, payload);                    // pub/sub
+  printf(&quot;%lld %.*s\n&quot;, (long long)n, (int)v.n, v.p);
+}</code></pre></div>
+<p><code>redis()</code> is the process-wide handle from <code>REDIS_URL</code>; <code>redis_open(url)</code> is one you own and <code>redis_close()</code> frees. The string and counter verbs have a short form that uses the default handle; the list, set and sorted-set verbs only have the explicit-handle form (<code>redis_lpush_(redis(), …)</code>, which is also the form every verb has when the handle is yours). Every call is fail-open, and asking is one line:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/health.c — asking costs one line, and the answer is never fatal
+#include &lt;webc/server.h&gt;
+#include &lt;webc/redis.h&gt;
+#include &lt;webc/log.h&gt;
+
+void check_redis(void) {
+  if (!redis_ok(redis()))
+    // never the password
+    log_warn(&quot;redis is down&quot;, { &quot;why&quot;, redis_error(redis()) });
+}</code></pre></div>
+<p>The Redis connection parks like every other fd in the runtime, so a slow reply costs a task, not a thread. Twenty commands in a row are one round trip with a pipeline; a subscription is a task:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/chat.c — a subscription is a task, and unsubscribing joins it
+#include &lt;webc/server.h&gt;
+#include &lt;webc/redis.h&gt;
+
+static void on_msg(str channel, str payload, void *arg) {
+  (void)arg;
+  log_info(&quot;chat&quot;, { &quot;channel&quot;, channel }, { &quot;payload&quot;, payload });
+}
+
+void follow(WRedis *r) {
+  WSub *s = redis_subscribe(r, str_lit(&quot;chat&quot;), on_msg, nullptr);
+  if (s) redis_unsubscribe(s);   // synchronous: closes, wakes the task, joins it
+}</code></pre></div>
+<h2 id="which-one-is-which">Which one is which<a class="h-anchor" href="#which-one-is-which" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Need</th><th>Use</th></tr></thead><tbody><tr><td>a result set read a thousand times per second</td><td>the query cache (nothing to call)</td></tr><tr><td>a counter, a session, a queue, a presence set</td><td>Redis</td></tr><tr><td>work that must outlive the request</td><td><code>jobs.h</code> — a table, a lease, a retry</td></tr><tr><td>a fan-out to every tab in a room</td><td>SSE rooms (<code>live.h</code>), with Redis pub/sub behind them when there is more than one process</td></tr></tbody></table></div>
+<h2 id="see-also">See also<a class="h-anchor" href="#see-also" aria-label="Link to this section">#</a></h2>
+<ul><li>Reference <a href="../reference/database.html">§9 Database</a> — the whole of it, including the pool and<p>the transaction rules.</p></li><li><a href="../guides/live.html">Real-time</a> — the layer above this one.</li></ul>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/website/src/content/guides/data.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../guides/stdlib.html"><span class="pager__dir">Previous</span><span class="pager__title">The standard library</span></a>
+<a class="pager__link pager__link--next" href="../guides/live.html"><span class="pager__dir">Next</span><span class="pager__title">Real-time: SSE and live rooms</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#the-query-cache">The query cache</a></li>
+<li class="toc__l2"><a href="#redis">Redis</a></li>
+<li class="toc__l2"><a href="#which-one-is-which">Which one is which</a></li>
+<li class="toc__l2"><a href="#see-also">See also</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

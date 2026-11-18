@@ -1,0 +1,35 @@
+WebC
+Copyright 2026 Victor-Marian Bușoi
+
+This product is WebC, a C23 web application framework.
+Project home: https://github.com/bumasoft/WebC
+
+The file LICENSE contains the canonical Apache License 2.0 text as published at
+https://www.apache.org/licenses/LICENSE-2.0.txt
+(sha256 cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30),
+with only the copyright line in the appendix filled in. The terms themselves are
+unmodified.
+
+WebC links against, but does not vendor, the following third-party software. No
+third-party source code is copied into this repository, and no part of it is
+redistributed in WebC's source tree or in its release archives.
+
+  SQLite — https://sqlite.org
+      Public domain. Linked as libsqlite3 when the SQLite driver is used.
+
+  zlib — https://zlib.net
+      zlib license. Linked as -lz for HTTP response compression.
+
+  OpenSSL — https://www.openssl.org
+      Apache License 2.0. Optional and off by default: only linked when the
+      toolchain is built with WEBC_TLS=openssl.
+
+  wasi-sdk — https://github.com/WebAssembly/wasi-sdk
+      Apache License 2.0 with LLVM exceptions. An optional external toolchain used
+      to compile the browser half of an application. Not linked, not redistributed.
+
+The C sources in src/, include/webc/ and tools/ are original to this project and
+carry no third-party attribution.
+
+If you distribute a modified version of WebC, keep this file and add your own
+attribution notices here, as section 4(d) of the license requires.

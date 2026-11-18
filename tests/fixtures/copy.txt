@@ -1,0 +1,3 @@
+A file, not a string literal: **bold**, *italic*, `code` and [a link](/about).
+
+Second paragraph with a stray 100% and an ampersand & a <tag>.

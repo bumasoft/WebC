@@ -1,0 +1,82 @@
+name: Bug report
+description: Something the framework does, and should not, or does not, and should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **A security bug does not belong here.** Do not open an issue for one — use
+        [the private advisory channel](https://github.com/bumasoft/WebC/security/advisories/new)
+        instead. See [SECURITY.md](https://github.com/bumasoft/WebC/blob/main/SECURITY.md).
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The command you ran, and what it said. Paste the output, not a summary of it.
+      placeholder: |
+        $ webc build
+        error: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: The smallest thing that shows it
+      description: >
+        A few lines of C, a `webc.json` and a route are usually enough. If it only happens in a big
+        app, cut it down until cutting more makes it go away — that cut-down version is what gets
+        fixed, and it is also the shape of the regression test.
+      render: c
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version and platform
+      description: The output of `webc version`, and your OS and architecture.
+      placeholder: "webc 0.1.0 · macOS 15 arm64 · clang 21.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: "`webc doctor`"
+      description: >
+        It prints what the binary was built from, the framework tree it resolved, and the toolchain
+        it can see — which is most of what a first diagnosis needs.
+      render: shell
+    validations:
+      required: false
+
+  - type: dropdown
+    id: half
+    attributes:
+      label: Which half
+      options:
+        - both (a `webc.json` with a `frontend`)
+        - server only
+        - browser only (wasm)
+        - not the app at all — the CLI, the LSP, or the tests
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: tried
+    attributes:
+      label: Before you opened this
+      options:
+        - label: I searched the existing issues.
+          required: true
+        - label: I read the reference section the source cites (`SPEC §n`) if there was one.
+          required: false

@@ -1,0 +1,34 @@
+/* dnd: the three states a carried row has, and nothing else.
+   `dnd_row()` is the only place these class names are written, so they are a contract between
+   the header and this sheet — an app may restyle them, and it may not rename them without
+   changing the call that emits them. */
+
+[draggable="true"] {
+  cursor: grab;
+}
+
+.dnd-dragging {
+  opacity: .4;
+}
+
+/* the line the row would land on: an inset shadow rather than a border, so the row does not
+   move by a pixel when a drop target appears under the pointer */
+.dnd-from {
+  outline: 1px dashed color-mix(in srgb, var(--fg, #111) 25%, transparent);
+  outline-offset: -1px;
+}
+
+.dnd-over {
+  box-shadow: inset 0 2px 0 0 var(--acc, #3b82f6);
+}
+
+.dnd-over.dnd-after {
+  box-shadow: inset 0 -2px 0 0 var(--acc, #3b82f6);
+}
+
+/* a drop is a click on a device without a pointer: the keyboard contract `dnd_keys()` writes
+   into `aria-keyshortcuts` needs the row to be focusable, and focus has to be visible */
+[draggable="true"]:focus-visible {
+  outline: 2px solid var(--acc, #3b82f6);
+  outline-offset: 2px;
+}

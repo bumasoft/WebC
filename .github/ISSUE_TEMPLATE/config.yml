@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: A security vulnerability
+    url: https://github.com/bumasoft/WebC/security/advisories/new
+    about: Private advisory — please do not open an issue for one. See SECURITY.md.
+  - name: A question, or "is this the right shape?"
+    url: https://github.com/bumasoft/WebC/discussions
+    about: Ask before building against an API that may not be the one you want.
+  - name: The documentation
+    url: https://bumasoft.github.io/WebC/
+    about: The guides and the reference, one page per section — searchable with ⌘K.

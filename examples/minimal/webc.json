@@ -1,0 +1,6 @@
+{
+  "name": "minimal",
+  "mode": "web",
+  "target": "wasm",
+  "client": ["main.c"]
+}

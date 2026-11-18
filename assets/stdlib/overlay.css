@@ -1,0 +1,56 @@
+/* overlay: the scrim, the panel, the drawer, the menu, the toast and the tip.
+   theme_head()'s tokens are the only colours; a page without a theme still gets a
+   usable, readable box because every value has a fallback. */
+/* the backdrop and the panel are siblings (overlay.h): a scrim wrapping the panel cannot
+   tell a click outside from a click inside, so the panel is positioned on its own */
+.scrim {
+  position: fixed; inset: 0; z-index: 40;
+  background: color-mix(in srgb, #000 42%, transparent);
+}
+.panel {
+  position: fixed; inset: 0; margin: auto; z-index: 41;
+  width: fit-content; height: fit-content;
+  max-width: min(560px, calc(100vw - 48px)); max-height: calc(100vh - 48px);
+  overflow: auto;
+  background: var(--bg, #fff); color: var(--fg, #111);
+  border-radius: 14px; padding: 20px;
+  box-shadow: 0 20px 60px -20px rgb(0 0 0 / 0.45);
+}
+.panel:focus { outline: none; }
+.panel.drawer {
+  inset: 0 0 0 auto; margin: 0;
+  width: min(380px, 92vw); max-height: 100vh; height: 100%; border-radius: 0;
+}
+
+.menu {
+  z-index: 30; min-width: 180px; padding: 6px;
+  background: var(--bg, #fff); color: var(--fg, #111);
+  border: 1px solid var(--line, #ddd); border-radius: 10px;
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.3);
+  display: grid; gap: 2px;
+}
+.menu-item {
+  text-align: left; padding: 7px 10px; border: 0; border-radius: 7px;
+  background: none; color: inherit; font: inherit; cursor: pointer;
+}
+.menu-item:hover { background: color-mix(in srgb, currentColor 8%, transparent); }
+.menu-item.off { opacity: 0.45; pointer-events: none; }
+
+.toasts { position: fixed; inset: auto 16px 16px auto; z-index: 50; display: grid; gap: 8px; }
+.toast {
+  padding: 10px 14px; border-radius: 10px;
+  background: var(--fg, #111); color: var(--bg, #fff);
+  box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.5);
+}
+.toast.ok { background: #1f7a4a; color: #fff; }
+.toast.bad { background: #b03434; color: #fff; }
+
+.tip { position: relative; display: inline-block; cursor: help; }
+.tip::after {
+  content: attr(data-tip);
+  position: absolute; inset: auto auto calc(100% + 6px) 50%; translate: -50% 0;
+  padding: 5px 8px; border-radius: 7px; white-space: nowrap; font-size: 12px;
+  background: var(--fg, #111); color: var(--bg, #fff);
+  opacity: 0; pointer-events: none; transition: opacity 120ms;
+}
+.tip:hover::after, .tip:focus-visible::after { opacity: 1; }

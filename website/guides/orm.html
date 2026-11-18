@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Guides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The ORM: filters, relations, writes · WebC</title>
+<meta name="description" content="Typed filters, relations read with no query, pages and trees — and what each costs.">
+<meta property="og:title" content="The ORM: filters, relations, writes · WebC">
+<meta property="og:description" content="Typed filters, relations read with no query, pages and trees — and what each costs.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/guides/orm.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The ORM: filters, relations, writes · WebC">
+<meta name="twitter:description" content="Typed filters, relations read with no query, pages and trees — and what each costs.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html" aria-current="true">Guides</a>
+<a href="../reference/index.html">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html" class="is-active" aria-current="page">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../guides/http.html">Guides</a><span class="crumbs__sep">/</span><span class="crumbs__here">The ORM: filters, relations, writes</span></div>
+    <article class="article">
+      <h1 id="top">The ORM: filters, relations, writes</h1>
+<p>A model is a row; the ORM is how you ask for rows without writing SQL. There is no unit of work, no lazy proxy and no second query language: a filter names the model's <strong>fields</strong>, so the compiler checks it, a relation is declared once next to the fields it points at, and a page or a whole tree of rows is one call each.</p>
+<p>That is the whole design. Everything below is the same idea at four sizes: one value, a condition, a relation, a page.</p>
+<h2 id="one-field-one-value">One field, one value<a class="h-anchor" href="#one-field-one-value" aria-label="Link to this section">#</a></h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/todos.c — the server half: one row, a list, a count, all by one field
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Todo, (id, i64, .pk = true), (title, str, .max = 200), (done, bool))
+Vec(Todo)
+
+static void lookups(str title) {
+  // the first row, or null — a typo in &quot;tittle&quot; panics and lists the real fields
+  Todo *one = db_by(Todo, &quot;title&quot;, title);
+  // a collection
+  VecTodo *open = db_all_by(Todo, &quot;done&quot;, 0);
+  // how many, without reading them
+  i64 n = db_count_by(Todo, &quot;done&quot;, 0);
+  (void)one;
+  (void)open;
+  (void)n;
+}</code></pre></div>
+<p>The field name is checked against the model's descriptor, and the value is always a bound parameter: the clause is built from the field, never from a string you typed. <code>db_by(db, Todo, &quot;id&quot;, 3)</code> is the same call on a handle you own (a test, a second database).</p>
+<p>A string literal goes through <code>str_lit()</code>, because <code>_Generic</code> does not decay an array — the reference <a href="../reference/database.html">§9a</a> has the long version of why.</p>
+<h2 id="a-filter-with-more-than-one-condition">A filter with more than one condition<a class="h-anchor" href="#a-filter-with-more-than-one-condition" aria-label="Link to this section">#</a></h2>
+<p><code>WWhere</code> builds the clause <em>and</em> its bound values from the descriptor. Nothing is pasted, so a value containing a quote is a value containing a quote.</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/todos.c — the server half: three conditions, an order, a limit, one statement
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Todo, (id, i64, .pk = true), (title, str), (done, bool),
+           (owner, i64), (created, i64))
+Vec(Todo)
+
+static void recent(i64 me) {
+  WWhere w;
+  ww_init(&amp;w, nullptr);              // nullptr: the current arena owns the clause
+  ww_eq_i64(&amp;w, Todo, owner, me);    // one bound value
+  ww_eq_bool(&amp;w, Todo, done, false);
+  ww_order(&amp;w, Todo, created, true); // desc
+  ww_limit(&amp;w, 20, 0);               // the query cuts; the caller stops truncating
+
+  VecTodo *rows = db_all_w(db_default(), Todo, &amp;w);   // ordered and limited
+  Todo *first = db_one(db_default(), Todo, &amp;w);       // one row; limit 1 is implied
+  i64 total = db_count_w(db_default(), Todo, &amp;w);     // how many match
+  ww_free(&amp;w);
+  (void)rows;
+  (void)first;
+  (void)total;
+}</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>call</th><th>clause it writes</th></tr></thead><tbody><tr><td><code>ww_eq_i64</code> / <code>ww_ne_i64</code></td><td><code>= ?</code> / <code>&lt;&gt; ?</code></td></tr><tr><td><code>ww_gt_i64</code> / <code>ww_gte_i64</code> / <code>ww_lt_i64</code> / <code>ww_lte_i64</code></td><td><code>&gt; ?</code> / <code>&gt;= ?</code> / <code>&lt; ?</code> / <code>&lt;= ?</code></td></tr><tr><td><code>ww_eq_bool(&amp;w, Todo, done, false)</code></td><td>a bool, spelled the driver's way</td></tr><tr><td><code>ww_eq_str(&amp;w, Todo, title, s)</code></td><td>string equality</td></tr><tr><td><code>ww_like(&amp;w, Todo, title, pattern)</code></td><td><code>like</code> — the pattern is yours, wildcards included</td></tr><tr><td><code>ww_contains(&amp;w, Todo, title, q)</code></td><td><code>lower(col) like lower(?) escape '!'</code>, escaped for you</td></tr><tr><td><code>ww_order(&amp;w, Todo, created, true)</code></td><td><code>order by … desc</code> (<code>true</code>) or asc (<code>false</code>)</td></tr><tr><td><code>ww_limit(&amp;w, 20, 40)</code></td><td><code>limit 20 offset 40</code></td></tr></tbody></table></div>
+<p>Two of those are worth a sentence more:</p>
+<ul><li><strong><code>ww_limit</code> belongs to the query, not to your loop.</strong> Reading forty rows to keep two is the shape<p>this removes, and an <code>offset</code> with no <code>limit</code> (illegal in sqlite and MySQL) is repaired from the driver's declared capability instead of in every app.</p></li><li><strong><code>ww_contains</code> owns the escaping.</strong> <code>%</code>, <code>_</code> and <code>!</code> in the user's words are escaped and the<p>clause says <code>escape '!'</code> — not a backslash, which is an escape character <em>inside a string literal</em> on MySQL and makes <code>escape '\'</code> a syntax error there.</p></li></ul>
+<p>The field name is a compile-time check: <code>ww_eq_i64(&amp;w, Todo, onwer, 1)</code> does not compile. A field that is not a column (a <code>.sql()</code> override aside) is the same error.</p>
+<h2 id="one-question-over-several-columns">One question over several columns<a class="h-anchor" href="#one-question-over-several-columns" aria-label="Link to this section">#</a></h2>
+<p>A search box is one question about three columns, and answering it by filtering a whole table in memory is a page that works on your laptop:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/todos.c — the server half: one question, two columns, one clause
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Todo, (id, i64, .pk = true), (title, str), (body, str))
+Vec(Todo)
+
+static VecTodo *search(str q) {
+  WWhere w;
+  ww_init(&amp;w, nullptr);
+  ww_or_begin(&amp;w);
+  ww_contains(&amp;w, Todo, title, q);
+  ww_contains(&amp;w, Todo, body, q);
+  ww_or_end(&amp;w);
+  VecTodo *rows = db_all_w(db_default(), Todo, &amp;w);
+  ww_free(&amp;w);
+  return rows;
+}</code></pre></div>
+<h2 id="aggregates">Aggregates<a class="h-anchor" href="#aggregates" aria-label="Link to this section">#</a></h2>
+<p>The same filter answers a number instead of rows — <code>db_sum</code>, <code>db_min</code>, <code>db_max</code>, <code>db_avg</code>:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/stories.c — the server half: aggregates over the conditions, not over a page
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Story, (id, i64, .pk = true), (section, str), (views, i64))
+Vec(Story)
+
+static void totals(str section) {
+  WWhere w;
+  ww_init(&amp;w, nullptr);
+  ww_eq_str(&amp;w, Story, section, section);
+  ww_order(&amp;w, Story, views, true);   // ignored by the aggregates below
+  ww_limit(&amp;w, 10, 0);                // and so is this
+  i64 views = db_sum(db_default(), Story, views, &amp;w);
+  i64 top = db_max(db_default(), Story, views, &amp;w);
+  f64 mean = db_avg(db_default(), Story, views, &amp;w);   // f64 even for an i64 column
+  ww_free(&amp;w);
+  (void)views;
+  (void)top;
+  (void)mean;
+}</code></pre></div>
+<p><code>order by</code> and <code>limit</code> are <strong>stripped</strong> before the aggregate: a sum of the first page is a different question, and it is the one whose wrong answer looks plausible. No rows, or every row <code>NULL</code>, is <code>0</code> — the sum of nothing is nothing, not an error.</p>
+<p><strong>One column, plus one, in one statement.</strong> <code>db_increment(Todo, t, views)</code> is <code>update … set views = views + 1</code>, which is not the same thing as <code>t-&gt;views += 1; db_save(Todo, t);</code> — that rewrites the whole row (a <code>str</code> body and all) to change a counter, and loses a concurrent increment.</p>
+<h2 id="relations-declared-once-read-with-no-query">Relations: declared once, read with no query<a class="h-anchor" href="#relations-declared-once-read-with-no-query" aria-label="Link to this section">#</a></h2>
+<p>A relation is a <strong>declaration</strong>, not a lazy proxy. Two lines go next to the models, in the header both halves include:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/app.h — the shared header: the only place a foreign-key column is named
+#include &lt;webc/shared.h&gt;
+
+WEBC_MODEL(Section, (id, i64, .pk = true), (slug, str, .unique = true), (name, str))
+Vec(Section)
+WEBC_MODEL(Story, (id, i64, .pk = true), (title, str), (section, str))
+Vec(Story)
+
+// Story.section holds a Section.slug, and a section has many stories
+WEBC_MODEL_REF(Story, section, Section, slug)
+WEBC_MODEL_MANY(Section, stories, Story, section)</code></pre></div>
+<p><code>WEBC_MODEL_REF</code> is pure data: it registers &quot;this field points at that key&quot; and nothing else. It costs one constructor call at startup and no memory per row, and it is what <code>prefetch</code> reads — which is why the column name appears exactly once in the app.</p>
+<p>Then the handler runs <strong>one query for the whole page</strong> and the view reads the links:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/pages.c — the server half: one prefetch for the list, no query in the view
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Section, (id, i64, .pk = true), (slug, str), (name, str))
+Vec(Section)
+WEBC_MODEL(Story, (id, i64, .pk = true), (title, str), (section, str))
+Vec(Story)
+WEBC_MODEL_REF(Story, section, Section, slug)
+WEBC_MODEL_MANY(Section, stories, Story, section)
+
+static void load(void) {
+  VecSection *all = db_all_ordered(db_default(), Section, &quot;name&quot;);
+  prefetch(all, Section, stories);     // ONE query, however many sections
+  VecStory *recent = db_all_ordered(db_default(), Story, &quot;id desc&quot;);
+  prefetch(recent, Story, section);    // and one for the other direction
+  (void)all;
+  (void)recent;
+}</code></pre></div>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/view.c — both halves: no query at all, the links were built for this request
+#include &lt;webc/shared.h&gt;
+
+WEBC_MODEL(Section, (id, i64, .pk = true), (slug, str), (name, str))
+Vec(Section)
+WEBC_MODEL(Story, (id, i64, .pk = true), (title, str), (section, str))
+Vec(Story)
+WEBC_MODEL_REF(Story, section, Section, slug)
+WEBC_MODEL_MANY(Section, stories, Story, section)
+
+static void draw(const Section *sec, const Story *st) {
+  const Section *owner = ref(Story, st, section);   // the row, or null
+  VecStory *kids = refs(Section, sec, stories);     // VecStory *, or empty
+  (void)owner;
+  (void)kids;
+}</code></pre></div>
+<ul><li><strong>One statement per collection, not per row.</strong> 2 000 sections are 2 000 owner keys, chunked into<p>groups of 512, so the parameter count never meets a server's ceiling.</p></li><li><strong><code>ref()</code> never fetches.</strong> A relation nobody prefetched reads as <code>null</code>; a collection nobody<p>prefetched reads as <em>empty</em> and logs <code>relation read without a prefetch</code> once, naming the model and the field — because an empty list that was never fetched is a page that lost its rows in silence.</p></li><li><strong>Hops chain left to right.</strong> <code>prefetch(all, Section, stories, author)</code> is two statements: the<p>stories of every section on the page, then the authors those stories named. Three hops is the limit; deeper is a loop in the app, because a path string is a second query language nobody asked for.</p></li><li><strong>The links belong to the request.</strong> The server clears the link table at every request boundary, and<p>per test — so a view can never read last request's rows, including the case the pool makes easy to get wrong, where the request arena comes back at the same address.</p></li><li><strong><code>prefetch_on(db, all, Section, stories)</code></strong> is the same on a handle you own. In the browser half<p>there is no database, so a document's rows are joined with <code>wc_doc_join()</code> after they decode.</p></li></ul>
+<h2 id="questions-across-a-relation">Questions <em>across</em> a relation<a class="h-anchor" href="#questions-across-a-relation" aria-label="Link to this section">#</a></h2>
+<p>A filter can reach through a relation without changing the shape of the result — which matters, because the ORM reads rows back into models and a join changes the row shape:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/stories.c — the section's name in the conditions, the story's shape out
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Section, (id, i64, .pk = true), (slug, str), (name, str))
+Vec(Section)
+WEBC_MODEL(Story, (id, i64, .pk = true), (title, str), (section, str))
+Vec(Story)
+WEBC_MODEL_REF(Story, section, Section, slug)
+
+static VecStory *in_open_sections(str q) {
+  WWhere sec;
+  ww_init(&amp;sec, nullptr);
+  ww_contains(&amp;sec, Section, name, q);
+
+  WWhere w;
+  ww_init(&amp;w, nullptr);
+  // section in (select slug from sections where lower(name) like lower(?))
+  ww_in_ref(&amp;w, Story, section, &amp;sec);
+  // order by the section's name, through the relation
+  ww_order_ref(&amp;w, Story, section, Section, name, false);
+  VecStory *rows = db_all_w(db_default(), Story, &amp;w);
+  ww_free(&amp;w);     // the outer filter first: the inner clause is part of its SQL
+  ww_free(&amp;sec);
+  return rows;
+}</code></pre></div>
+<p><code>ww_not_in_ref</code> is the same clause negated. <code>ww_order_ref</code> is a correlated subquery, so it costs one index lookup per row on the referenced key — fine for a page of rows, and the honest alternative for a whole table is an indexed column on the row itself.</p>
+<h2 id="a-page-of-a-list">A page of a list<a class="h-anchor" href="#a-page-of-a-list" aria-label="Link to this section">#</a></h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/stories.c — two statements, a clamped page number, and its fields
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Story, (id, i64, .pk = true), (section, str), (views, i64))
+Vec(Story)
+
+static void second_page(str section) {
+  WWhere w;
+  ww_init(&amp;w, nullptr);
+  ww_eq_str(&amp;w, Story, section, section);
+  ww_order(&amp;w, Story, views, true);
+  WPager pg = {.page = 2, .limit = 20};       // limit 0 means 20
+  VecStory *rows = db_page(db_default(), Story, &amp;w, &amp;pg);
+  ww_free(&amp;w);
+  // pg.total, pg.pages, pg.has_prev, pg.has_next; past the end clamps
+  (void)rows;
+}</code></pre></div>
+<p>Two statements on purpose: the count is what tells the pager how many pages there are, and a window cannot answer it. <code>page</code> is clamped into <code>1..pages</code>, so an out-of-range page number is the same list rather than an empty render or a 404. Between the two statements a concurrent insert can shift every row by one; the framework does not open a transaction to hide it, because doubling the cost of every list render to hide a race nobody has hit is the wrong trade.</p>
+<h2 id="a-tree-of-rows">A tree of rows<a class="h-anchor" href="#a-tree-of-rows" aria-label="Link to this section">#</a></h2>
+<p>Rows that belong to a row are written as one thing, and the foreign key comes from the <code>MANY</code> declaration rather than from your fingers:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/orders.c — the server half: a parent and its lines in one transaction
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Order, (id, i64, .pk = true), (total, i64))
+Vec(Order)
+WEBC_MODEL(OrderLine, (id, i64, .pk = true), (order, i64), (sku, str), (qty, i64))
+Vec(OrderLine)
+
+// OrderLine.order holds Order.id
+WEBC_MODEL_MANY(Order, lines, OrderLine, order)
+
+static void place(Order *o, VecOrderLine *lines) {
+  i64 written = 0;
+  // each line's `order` is filled from o-&gt;id; joins an open tx, or opens one
+  if (db_save_all(db_default(), Order, o, lines, &amp;written) != (i64)lines-&gt;n) return;
+  (void)written;
+}</code></pre></div>
+<p><code>db_save_all</code> takes the <strong>collection</strong>, not a field name: matching the vector's own descriptor against the declaration is what makes a typo impossible, and a collection that is not declared on the model is a panic naming the declaration to add — not a write into the wrong column. <code>db_delete_tree</code> is the same in the other direction, children first, because an app's migration may not have <code>on delete cascade</code>.</p>
+<h2 id="what-it-does-not-do">What it does not do<a class="h-anchor" href="#what-it-does-not-do" aria-label="Link to this section">#</a></h2>
+<ul><li><strong>No <code>group by</code>.</strong> &quot;Per kind, how many and how much&quot; is a filtered read plus a sum in C, or an<p>aggregate per group in the app. Adding the verb is the fix; a hand-written join in one handler is not.</p></li><li><strong>No lazy loading.</strong> Nothing fetches on read. A view that needs rows gets them from a handler that<p>prefetched them, which is the property that keeps a page's query count fixed.</p></li><li><strong>No unit of work.</strong> A save is a statement; a tree of saves is <code>db_save_all</code> inside <code>tx_scope</code><p>(<a href="../guides/models.html">Models and migrations</a>).</p></li><li><strong>No dialect in your code.</strong> Identifiers, <code>offset</code>, <code>returning</code> and multi-statement files are<p>declared per driver (<a href="../guides/mysql.html">MySQL and MariaDB</a>), so the same filter runs on sqlite, postgres and MySQL.</p></li></ul>
+<h2 id="count-the-queries">Count the queries<a class="h-anchor" href="#count-the-queries" aria-label="Link to this section">#</a></h2>
+<p>The ORM's promise is a <em>constant</em> number of statements per page, and a stopwatch cannot check that. <code>db_statement_count()</code> can, and <code>WEBC_TRACE_DB=1</code> prints the same number as one line per statement:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// tests/app_test.c — the assertion that keeps a page's query count fixed
+#include &lt;webc/test.h&gt;
+
+TEST(a_page_asks_a_fixed_number_of_questions) {
+  u64 before = db_statement_count();
+  // the request goes here
+  ASSERT_EQ(db_statement_count() - before, 3);
+}</code></pre></div>
+<p>That test is where an N+1 gets caught: <code>prefetch</code> is one statement for the list and one per hop, so a page that grows a query per row fails a test instead of becoming a slow page nobody can reproduce. A typical seven-page app holds <code>/table</code> at three statements and <code>/books</code> at five, measured at three rows and again at fifteen.</p>
+<h2 id="see-also">See also<a class="h-anchor" href="#see-also" aria-label="Link to this section">#</a></h2>
+<ul><li>Reference <a href="../reference/database.html">§9 Database</a> — §9a to §9a4 are this guide in reference voice.</li><li><a href="../guides/models.html">Models and migrations</a> — the declaration this rests on.</li><li><a href="../guides/mysql.html">MySQL and MariaDB</a> — the third driver, and the four capabilities it declares.</li><li>Reference <a href="../reference/database.html">§9 Database</a> — relations as declarations, the driver<p>capability table, and how a driver classifies its own errors.</p></li></ul>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/website/src/content/guides/orm.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../guides/models.html"><span class="pager__dir">Previous</span><span class="pager__title">Models and migrations</span></a>
+<a class="pager__link pager__link--next" href="../guides/mysql.html"><span class="pager__dir">Next</span><span class="pager__title">MySQL and MariaDB</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#one-field-one-value">One field, one value</a></li>
+<li class="toc__l2"><a href="#a-filter-with-more-than-one-condition">A filter with more than one condition</a></li>
+<li class="toc__l2"><a href="#one-question-over-several-columns">One question over several columns</a></li>
+<li class="toc__l2"><a href="#aggregates">Aggregates</a></li>
+<li class="toc__l2"><a href="#relations-declared-once-read-with-no-query">Relations: declared once, read with no query</a></li>
+<li class="toc__l2"><a href="#questions-across-a-relation">Questions across a relation</a></li>
+<li class="toc__l2"><a href="#a-page-of-a-list">A page of a list</a></li>
+<li class="toc__l2"><a href="#a-tree-of-rows">A tree of rows</a></li>
+<li class="toc__l2"><a href="#what-it-does-not-do">What it does not do</a></li>
+<li class="toc__l2"><a href="#count-the-queries">Count the queries</a></li>
+<li class="toc__l2"><a href="#see-also">See also</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

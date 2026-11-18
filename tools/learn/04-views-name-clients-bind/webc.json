@@ -1,0 +1,15 @@
+{
+  "name": "learn04",
+  "version": "0.1.0",
+  "server": [
+    "src/server.c"
+  ],
+  "shared": [
+    "src/view.c"
+  ],
+  "client": [
+    "src/client.c"
+  ],
+  "database": "sqlite:data/dev.db",
+  "port": 18004
+}

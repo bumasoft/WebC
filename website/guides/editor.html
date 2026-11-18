@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Guides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The editor: LSP and VS Code · WebC</title>
+<meta name="description" content="Diagnostics, completion, hover and quick fixes — from one binary, in any editor.">
+<meta property="og:title" content="The editor: LSP and VS Code · WebC">
+<meta property="og:description" content="Diagnostics, completion, hover and quick fixes — from one binary, in any editor.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/guides/editor.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The editor: LSP and VS Code · WebC">
+<meta name="twitter:description" content="Diagnostics, completion, hover and quick fixes — from one binary, in any editor.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html" aria-current="true">Guides</a>
+<a href="../reference/index.html">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html" class="is-active" aria-current="page">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../guides/http.html">Guides</a><span class="crumbs__sep">/</span><span class="crumbs__here">The editor: LSP and VS Code</span></div>
+    <article class="article">
+      <h1 id="top">The editor: LSP and VS Code</h1>
+<p><code>webc lsp</code> is the language server, and it ships in the binary you already have: no Node, no second download, no build step. The VS Code extension in <code>editors/vscode/</code> is a thin client for it — no dependencies, nothing fetched from a registry — and every other editor talks to the same command over stdio.</p>
+<p>What it is for is the seam between WebC and C. <code>GET(…)</code>, <code>view(…)</code>, <code>el(…)</code> and the model tuples are macros, so the compiler's answer to a typo is <code>use of undeclared identifier 'view_Nope'</code> behind five frames of <code>WC_CAT</code>. The server answers &quot;no view named <code>Nope</code> in this project — <code>view(Nope)</code> draws it, or <code>declare_view(Nope)</code> in the shared header announces it&quot;, and offers the line to add.</p>
+<h2 id="what-it-knows">What it knows<a class="h-anchor" href="#what-it-knows" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>LSP capability</th><th>what you get</th></tr></thead><tbody><tr><td><code>publishDiagnostics</code></td><td>WebC's own errors (a route in the wrong half, an unknown view or model field, a stdlib module in the wrong file set) and the compiler's, with the DSL's bytes left to the DSL engine</td></tr><tr><td>completion</td><td>inside a <code>WEBC_MODEL</code> tuple: field kinds, models, enums and every <code>.qualifier</code>; inside <code>el(…)</code>: HTML tags; inside <code>page(…)</code>/<code>mount(…)</code>: the project's views; inside <code>#include &lt;webc/…&gt;</code>: the shelf, filtered by the half this file compiles for</td></tr><tr><td>hover</td><td>a macro's doc line, its shape and <strong>which half</strong> it belongs to; a model's fields and the file it is declared in; a view's signature and where it is drawn</td></tr><tr><td>go-to-definition</td><td>the model, the view, the action or the route handler the name refers to</td></tr><tr><td>references</td><td>every place that name is used</td></tr><tr><td>document and workspace symbols</td><td>the outline: models, views, actions, routes</td></tr><tr><td>code actions (<code>quickfix</code>)</td><td>two fixes, the ones a person actually makes: close an unclosed block, and add <code>declare_view(Name)</code> to the shared header</td></tr></tbody></table></div>
+<p>The diagnostics have codes, so a rule in <code>webc lint</code> and an underline in the editor are the same sentence:</p>
+<div class="table-wrap"><table><thead><tr><th>code</th><th>what it says</th></tr></thead><tbody><tr><td><code>no-view</code></td><td><code>page(Nope)</code> names a view nothing draws — with the fix that adds <code>declare_view(Nope)</code> to the header both halves include</td></tr><tr><td><code>unclosed</code>, <code>unclosed-block</code></td><td><code>el(&quot;li&quot;) {</code> never closed: one error, not thirty, and the fix closes it</td></tr><tr><td><code>no-vec</code></td><td><code>db_all(Todo)</code> without a <code>Vec(Todo)</code> — the diagnostic names the line to add</td></tr><tr><td><code>not-a-model</code></td><td>a <code>db_*(…)</code> call whose first argument is not a <code>WEBC_MODEL</code> type</td></tr><tr><td><code>no-action</code></td><td><code>on_click(name)</code> with no <code>action(name)</code> to bind</td></tr><tr><td><code>half-module</code></td><td>a stdlib header that may not appear in this half (<code>webc/mail.h</code> in a shared file)</td></tr></tbody></table></div>
+<p>It knows all of that from the sources — including models declared in shared headers, which no <code>webc.json</code> lists — and never reads <code>.webc/</code>, so a fresh clone is a working workspace.</p>
+<p>Two things it deliberately does <strong>not</strong> do:</p>
+<ul><li><strong>Format a document.</strong> <code>clang-format</code> rewrites <code>el(&quot;h1&quot;) { text(&quot;Todos&quot;); }</code> into four lines, which<p>is not this language's style. Whole-document formatting is refused with that reason; range formatting outside a DSL block is what <code>webc lsp</code> offers instead. <code>webc fmt</code> exists, but it is clang-format over the whole tree — point it at a project whose DSL blocks you have already formatted by hand, or expect it to disagree with you.</p></li><li><strong>Second-guess the compiler.</strong> A diagnostic inside a DSL macro's own parentheses is dropped: those<p>bytes are the WebC engine's to explain. A block that never closed stops the compiler half from running at all, so an unbalanced brace is one error instead of thirty.</p></li></ul>
+<p>Positions are UTF-16 (as the protocol requires) and every save sends the whole buffer: a WebC file is small, and a full text sync cannot desynchronise from the editor's copy.</p>
+<h2 id="in-vs-code-cursor-antigravity">In VS Code, Cursor, Antigravity, …<a class="h-anchor" href="#in-vs-code-cursor-antigravity" aria-label="Link to this section">#</a></h2>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash"># run it from this repository, without installing anything
+code --extensionDevelopmentPath=&quot;$PWD/editors/vscode&quot; --new-window /path/to/a/webc/project</code></pre></div>
+<p><code>code</code> is any VS Code–compatible CLI. To install it for good, copy the folder into the editor's extension directory as <code>webc.webc-lsp-0.1.0/</code> (<code>~/.vscode/extensions/</code> for VS Code, <code>~/.antigravity-ide/extensions/</code> for Antigravity), or <code>vsce package</code> it into a <code>.vsix</code>. A symlink rather than a copy tracks the folder:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">ln -s &quot;$PWD/editors/vscode&quot; ~/.vscode/extensions/webc.webc-lsp-0.1.0</code></pre></div>
+<p>Three settings, and two commands:</p>
+<div class="table-wrap"><table><thead><tr><th>setting</th><th>meaning</th></tr></thead><tbody><tr><td><code>webc.lsp.path</code></td><td>the <code>webc</code> binary. <code>~</code>, <code>${workspaceFolder}</code>, <code>${userHome}</code> and <code>${env:NAME}</code> are expanded and a relative path is taken from the workspace folder. Empty: <code>build/webc</code> in the workspace or a parent, else <code>webc</code> on the <code>PATH</code></td></tr><tr><td><code>webc.lsp.args</code></td><td>extra arguments, e.g. <code>[&quot;--trace&quot;, &quot;/tmp/lsp.jsonl&quot;]</code></td></tr><tr><td><code>webc.lsp.enabled</code></td><td>start the server at all (default <code>true</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>command</th><th>what it does</th></tr></thead><tbody><tr><td><code>WebC: Show the language server log</code></td><td>the channel, including every diagnostic the server sent</td></tr><tr><td><code>WebC: Restart the language server</code></td><td>respawn without reloading the window</td></tr></tbody></table></div>
+<p>Changing a setting restarts the client in place — a setting that is read once at activation and never again is the reason &quot;I set the correct path and it still fails&quot; exists. When the binary cannot start, there is <strong>one</strong> message that says which of the three it is (not found, not executable, exited) with the resolved path and the last lines of the server's stderr, because &quot;set <code>webc.lsp.path</code>&quot; shown to someone who already did is the fastest way to teach them their setting is ignored.</p>
+<h2 id="any-other-editor">Any other editor<a class="h-anchor" href="#any-other-editor" aria-label="Link to this section">#</a></h2>
+<p>The command is <code>webc lsp --root &lt;project&gt;</code>; everything else is the editor's LSP client.</p>
+<div class="code" data-lang="lua"><div class="code__bar"><span class="code__lang">lua</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-lua">-- ~/.config/nvim/lua/webc.lua — Neovim 0.8+, the built-in client
+vim.api.nvim_create_autocmd({ &quot;BufRead&quot;, &quot;BufNewFile&quot; }, {
+  pattern = { &quot;*.c&quot;, &quot;*.h&quot; },
+  callback = function()
+    if vim.fn.filereadable(vim.fn.getcwd() .. &quot;/webc.json&quot;) == 1 then
+      vim.lsp.start({ name = &quot;webc&quot;, cmd = { &quot;webc&quot;, &quot;lsp&quot;, &quot;--root&quot;, vim.fn.getcwd() } })
+    end
+  end,
+})</code></pre></div>
+<div class="code" data-lang="elisp"><div class="code__bar"><span class="code__lang">elisp</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-elisp">;; ~/.emacs.d/init.el — eglot, which ships with Emacs 29
+(add-to-list 'eglot-server-programs
+             '((c-mode c-ts-mode) . (&quot;webc&quot; &quot;lsp&quot; &quot;--root&quot; &quot;.&quot;)))</code></pre></div>
+<p>Anything that can spawn a process and speak LSP works the same way: Helix, Zed, Sublime, Emacs with <code>lsp-mode</code>. The server announces its capabilities at <code>initialize</code>, so an editor that offers fewer features simply uses fewer.</p>
+<h2 id="living-beside-clangd">Living beside clangd<a class="h-anchor" href="#living-beside-clangd" aria-label="Link to this section">#</a></h2>
+<p>C editors have their own language server, and it is clangd. <code>webc lsp</code> writes <code>compile_commands.json</code> at the project root — the flags <code>webc build</code> uses, one entry per source — which clangd looks for without being told anything. That file is why clangd agrees with <code>webc build</code> about include paths instead of inventing errors: measured in this repository, twenty-one invented errors became none. <code>WEBC_LSP_NO_COMPILE_COMMANDS=1</code> turns it off for a project that manages its own.</p>
+<p>Run both if you like. clangd is right about C and has no idea what <code>el(&quot;li&quot;) { … }</code> means; the WebC server is right about the DSL and asks the compiler about the C.</p>
+<h2 id="when-it-looks-broken">When it looks broken<a class="h-anchor" href="#when-it-looks-broken" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>symptom</th><th>the cause</th></tr></thead><tbody><tr><td>&quot;no diagnostics at all&quot;</td><td><code>webc.lsp.enabled</code> is false, or the workspace has no <code>webc.json</code> — the server needs a project, not a folder</td></tr><tr><td>the extension's message names a path you did not type</td><td><code>webc.lsp.path</code> was wrong and <code>~</code>/<code>${…}</code> were expanded; the message shows the <em>resolved</em> path</td></tr><tr><td>completions for models are empty</td><td>the models are declared in a file the project does not list — put them in the shared header, where both halves can see them</td></tr><tr><td>clangd floods the file with errors</td><td><code>compile_commands.json</code> is missing or stale; open a <code>.c</code> file and save it, and the server rewrites it</td></tr><tr><td>a diagnostic stays after the fix</td><td>save the file: the compiler half runs on save when a check costs more than 120 ms</td></tr></tbody></table></div>
+<p><code>--trace FILE</code> writes every message the server saw and sent as JSONL, which is the fastest way to report a problem with the editor integration rather than with your code.</p>
+<h2 id="the-gate">The gate<a class="h-anchor" href="#the-gate" aria-label="Link to this section">#</a></h2>
+<p><code>make lsp</code> is what keeps the two halves honest:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">make lsp        # --selftest, then a replayed session, then the client's resolver tests
+webc lsp --bench                        # what one request costs
+webc lsp --replay tests/lsp/sessions/todo.jsonl --record   # re-record after a wire change</code></pre></div>
+<p><code>--selftest</code> asserts what the server says about a real project (diagnostics, a hover, a definition, a quick fix) and <code>--replay</code> diffs the whole protocol against a recorded session, so a change to the wire is a diff in review rather than a bug report. <code>--bench</code> exists because a language server that stutters is a language server people turn off.</p>
+<p>The client's own test is <code>editors/vscode/resolve.test.js</code> (no dependencies, run by <code>make lsp</code> when <code>node</code> is present): it checks the resolver against every way a path can be wrong — missing, a directory, not executable, relative, on no <code>PATH</code> — because a client that silently ignores the setting is a broken window.</p>
+<h2 id="see-also">See also<a class="h-anchor" href="#see-also" aria-label="Link to this section">#</a></h2>
+<ul><li>Reference <a href="../reference/the-cli.html">§14d The language server</a> — the design, in reference voice.</li><li><a href="../guides/agents.html">Agentic coding</a> — the same diagnostics as data, through <code>webc mcp</code>.</li><li>Reference <a href="../reference/the-cli.html">§12</a> — why there are two engines with one line between<p>them.</p></li><li><a href="../guides/testing.html">Testing</a> — <code>webc test</code>, which is the other half of not guessing.</li></ul>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/website/src/content/guides/editor.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../guides/testing.html"><span class="pager__dir">Previous</span><span class="pager__title">Testing</span></a>
+<a class="pager__link pager__link--next" href="../guides/agents.html"><span class="pager__dir">Next</span><span class="pager__title">Agentic coding</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#what-it-knows">What it knows</a></li>
+<li class="toc__l2"><a href="#in-vs-code-cursor-antigravity">In VS Code, Cursor, Antigravity, …</a></li>
+<li class="toc__l2"><a href="#any-other-editor">Any other editor</a></li>
+<li class="toc__l2"><a href="#living-beside-clangd">Living beside clangd</a></li>
+<li class="toc__l2"><a href="#when-it-looks-broken">When it looks broken</a></li>
+<li class="toc__l2"><a href="#the-gate">The gate</a></li>
+<li class="toc__l2"><a href="#see-also">See also</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

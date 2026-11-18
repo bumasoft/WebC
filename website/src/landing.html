@@ -1,0 +1,219 @@
+<section class="hero">
+  <div class="hero__in">
+    <div class="hero__copy">
+      <p class="hero__badge"><b>v$version</b> · C23 · no GC · one binary</p>
+      <h1>Web apps in C, <br><em>end to end</em>.</h1>
+      <p class="hero__sub">
+        Routes, models, forms and the DOM are C you compile — once for the server, once for the
+        browser. Arenas instead of a collector, green threads instead of callbacks, and a gate on
+        every surface instead of a promise.
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="docs/quickstart.html">Quickstart
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8h9M8.5 4.5L12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn--ghost" href="reference/index.html">Read the reference</a>
+      </div>
+      <p class="hero__meta">
+        <span><code>webc new myapp --template=fullstack</code></span>
+        <span>$stat_modules opt-in modules</span>
+        <span>$stat_headers headers</span>
+      </p>
+    </div>
+
+    <div class="hero__code">
+      <div class="code" data-lang="c">
+        <div class="code__bar">
+          <span class="code__name">src/view.c</span>
+          <button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button>
+        </div>
+<pre><code class="lang-c">// src/view.c — one page, rendered on the server
+// and again in the browser
+#include &lt;webc/shared.h&gt;
+
+WEBC_MODEL(Todo, (id, i64, .pk = true), (title, Text), (done, bool))
+Vec(Todo)
+
+view(Todos, VecTodo *todos) {
+  el("main") {
+    el("h1") { text("Todos"); }
+
+    el("form") { post_to("/api/todos");
+      el("input") { name("title"); required(); }
+    }
+
+    el("ul") {
+      for_each(t, (*todos)) {      // keyed: a row keeps its node
+        el("li") { class_(t-&gt;done ? "done" : "");
+          el("span") { text(t-&gt;title); }
+        }
+      }
+    }
+  }
+}</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="section__head section__head--center">
+    <p class="eyebrow">in the browser</p>
+    <h2>This is not a server framework with a client bolted on</h2>
+    <p>The page below is wasm: the same views, the same model, compiled by the same compiler. It
+       is a real <code>webc dev</code> session — no JavaScript framework, no bundler, no build step
+       between the edit and the screen.</p>
+  </div>
+  <div class="window">
+    <div class="window__bar"><i></i><i></i><i></i><span>localhost:9999 · examples/web · wasm</span></div>
+    <img src="assets/media/wasm-todo.gif" alt="A wasm todo app: an item typed into the field and added, the list re-rendering from C"
+         width="1120" height="250" loading="lazy" decoding="async">
+  </div>
+  <p class="section__more"><a class="btn btn--ghost" href="examples/web.html">The client-only example</a></p>
+</section>
+
+<section class="section section--tight">
+  <div class="stats">
+    <div class="stat"><b>$stat_api</b><span>public names, counted by <code>webc api</code></span></div>
+    <div class="stat"><b>$stat_modules</b><span>opt-in standard-library modules</span></div>
+    <div class="stat"><b>$stat_examples</b><span>example apps that build and pass their tests</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section__head">
+    <p class="eyebrow">the shape of it</p>
+    <h2>One language. Two halves. No bridge to write.</h2>
+    <p>The server renders the page; the same views compile to wasm and hydrate the markup the
+       server already sent. An action is a function, a render follows it, and the boundary between
+       the halves is a file listing — not an API.</p>
+  </div>
+
+  <div class="split">
+    <div>
+      <h3>Routes are declarations</h3>
+      <div class="code" data-lang="c"><div class="code__bar"><span class="code__name">src/server.c</span></div>
+<pre><code class="lang-c">// src/server.c — routes are declarations
+#include &lt;webc/server.h&gt;
+
+WEBC_MODEL(Todo, (id, i64, .pk = true), (title, Text), (done, bool))
+Vec(Todo)
+declare_view(Todos, VecTodo);
+
+GET("/")          { return page(Todos, db_all(Todo)); }
+GET("/api/todos") { return json(200, db_all(Todo)); }
+
+POST("/api/todos") {
+  Todo t = body(Todo);      // form or JSON, validated
+  db_save(Todo, &amp;t);
+  return json(201, Todo, &amp;t);
+}</code></pre></div>
+      <p>Handlers are typed, the router is a table the compiler checks, and a bad request is a
+         response — not an exception somewhere else.</p>
+    </div>
+
+    <div>
+      <h3>The browser half is a file</h3>
+      <div class="code" data-lang="c"><div class="code__bar"><span class="code__name">src/client.c</span></div>
+<pre><code class="lang-c">// src/client.c — the browser half is a file
+#include &lt;webc/web.h&gt;
+#include &lt;webc/shared.h&gt;
+
+WEBC_MODEL(Todo, (id, i64, .pk = true), (title, Text), (done, bool))
+Vec(Todo)
+declare_view(Todos, VecTodo);
+
+static VecTodo g_todos = {.desc = &amp;WC_VECDESC_VecTodo};
+
+// a render follows every action
+action(toggle, Todo *t) { t-&gt;done = !t-&gt;done; }
+
+client_main {
+  mount(Todos, &amp;g_todos, "#root");   // adopt the markup
+  bind("toggle", "click", toggle);
+  return 0;
+}</code></pre></div>
+      <p>Same view, same types. <code>action_live</code> is the escape hatch for a pointer move: it
+         writes one node and skips the render.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section__head">
+    <p class="eyebrow">the floor</p>
+    <h2>What the framework decided, so you do not have to</h2>
+    <p>Six rules that shape every API in the box. They are why an app has no <code>malloc</code>,
+       no error-string plumbing, and no second way to do the same thing.</p>
+  </div>
+  $features
+</section>
+
+<section class="section">
+  <div class="section__head">
+    <p class="eyebrow">the shelf</p>
+    <h2>$stat_modules modules you take by including one header</h2>
+    <p>Nothing is forced. <code>#include &lt;webc/table.h&gt;</code> is the whole install, and
+       <code>webc size --modules</code> builds a probe per module to prove an unused one costs
+       nothing.</p>
+  </div>
+  $modules
+  <p class="section__more"><a class="btn btn--ghost" href="guides/stdlib.html">The standard library, guide by guide</a></p>
+</section>
+
+<section class="section">
+  <div class="section__head">
+    <p class="eyebrow">proof</p>
+    <h2>Eight apps in the repository</h2>
+    <p>Each one builds, each one passes its own tests, and each one is small enough to read in a
+       sitting. The board is the reference for live rooms; the accounts app is the reference for
+       sessions.</p>
+  </div>
+  <div class="showcase">
+    <a href="examples/todo.html"><h3>Todo</h3><p>A list that works with JavaScript switched off, then enhances itself.</p><span>examples/todo</span></a>
+    <a href="examples/board.html"><h3>Board</h3><p>Kanban with live rooms, drag and drop, and a real database.</p><span>examples/board</span></a>
+    <a href="examples/accounts.html"><h3>Accounts</h3><p>Password auth, sessions, and a middleware that knows who you are.</p><span>examples/accounts</span></a>
+    <a href="examples/js.html"><h3>JS interop</h3><p><code>js()</code>, promises, and a call back the other way.</p><span>examples/js</span></a>
+    <a href="examples/web.html"><h3>Web</h3><p>A client-only page: the same views, compiled to wasm.</p><span>examples/web</span></a>
+    <a href="examples/stdlib.html"><h3>Stdlib</h3><p>The markup shelf on one working page.</p><span>examples/stdlib</span></a>
+    <a href="examples/hello.html"><h3>Hello</h3><p>A finished first page: a greeting form, a JSON endpoint, and one shared model.</p><span>examples/hello</span></a>
+    <a href="examples/minimal.html"><h3>Minimal</h3><p>The bundle floor — what a page costs when it asks for nothing.</p><span>examples/minimal</span></a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="split">
+    <div>
+      <p class="eyebrow">the reference</p>
+      <h2>One page for every module</h2>
+      <p>When something in WebC looks surprising, the reason is written down — and so is what it
+         costs. <em>“C23, not C11. Cost: no MSVC path yet.”</em> That is the pattern behind every
+         non-obvious choice in the framework, and the reference spells out both halves: the
+         language, the modules, and the price of each.</p>
+      <p class="section__more"><a class="btn btn--ghost" href="reference/index.html">Read the reference</a></p>
+    </div>
+    <div>
+      <p class="eyebrow">the gate</p>
+      <h2>Every surface is counted</h2>
+      <p><code>webc api</code> counts the public names and fails when the list grows without
+         saying so. <code>webc lint</code> fails when a name from the developer surface leaks into
+         an app, an example, a scaffold or the docs. <code>make budget</code> fails when the wasm
+         or the binary grows past its number. The framework's own repository is the first thing
+         they run against.</p>
+      <p class="section__more"><a class="btn btn--ghost" href="reference/the-cli.html">The CLI</a></p>
+    </div>
+  </div>
+</section>
+
+<div class="cta">
+  <div class="cta__in">
+    <div>
+      <h2>Five minutes to a running app.</h2>
+      <p>Scaffold one of three templates, run it, change a view, and watch it reload.</p>
+    </div>
+    <div class="hero__cta">
+      <a class="btn btn--primary" href="docs/quickstart.html">Start the quickstart</a>
+      <a class="btn btn--ghost" href="docs/install.html">Install first</a>
+    </div>
+  </div>
+</div>

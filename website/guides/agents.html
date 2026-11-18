@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Guides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic coding · WebC</title>
+<meta name="description" content="The skill, the MCP server, the AGENTS.md every scaffold writes, and what an agent gets wrong here — with the gate that stops it.">
+<meta property="og:title" content="Agentic coding · WebC">
+<meta property="og:description" content="The skill, the MCP server, the AGENTS.md every scaffold writes, and what an agent gets wrong here — with the gate that stops it.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/guides/agents.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Agentic coding · WebC">
+<meta name="twitter:description" content="The skill, the MCP server, the AGENTS.md every scaffold writes, and what an agent gets wrong here — with the gate that stops it.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html" aria-current="true">Guides</a>
+<a href="../reference/index.html">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html" class="is-active" aria-current="page">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../guides/http.html">Guides</a><span class="crumbs__sep">/</span><span class="crumbs__here">Agentic coding</span></div>
+    <article class="article">
+      <h1 id="top">Agentic coding</h1>
+<p>WebC is unusually good for a coding agent to work in, and most of that is not on purpose — it falls out of decisions taken for other reasons. A model is one declaration, so a change has one place to start and four places it lands. The halves are a file list, not a preprocessor test. <code>webc check</code> is one command with one exit code. And the framework has already retired 44 spellings because they were the second way to do something, which means the wrong shape is <em>refused</em> rather than merely not recommended.</p>
+<p>What was missing was the part between the agent and the compiler: a vocabulary, a gate it can call, and a way to ask the project a question without grepping. Three things now supply that, and this page is about giving them to an agent and what it gets.</p>
+<h2 id="three-things-cheapest-first">Three things, cheapest first<a class="h-anchor" href="#three-things-cheapest-first" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Give it</th><th>What it carries</th><th>Who reads it</th><th>Cost</th></tr></thead><tbody><tr><td><code>AGENTS.md</code> + <code>.webc/docs/</code></td><td><code>webc check</code> as the gate, the half rules, <code>fmt()</code>/<code>persist()</code>, migrations, &quot;believe the lint&quot; — and the documentation itself, in the app</td><td>any tool that reads <code>AGENTS.md</code> — which is most of them, with no setup</td><td>a file <code>webc new</code> already wrote</td></tr><tr><td><code>skills/webc/</code></td><td>the five ideas, the loop, recipes, the traps, and fourteen reference leaves generated from this documentation</td><td>harnesses that read a skills folder — Claude Code, pi, and the ones that follow the same layout</td><td>one symlink</td></tr><tr><td><code>webc mcp</code></td><td>the project index, the surface, the gate, the tests, and a dev server it can read</td><td>clients that speak the Model Context Protocol</td><td>one block of JSON in a config file</td></tr></tbody></table></div>
+<p>They are layers, not alternatives. The <code>AGENTS.md</code> is what an agent reads before it writes anything; the skill is what it thinks in; the MCP server is what it asks when the first two are not enough. An agent with a shell and only the skill can do the whole job — the MCP server removes the greps, not the need to think.</p>
+<h2 id="1-agents-md-which-the-scaffold-writes">1. <code>AGENTS.md</code>, which the scaffold writes<a class="h-anchor" href="#1-agents-md-which-the-scaffold-writes" aria-label="Link to this section">#</a></h2>
+<p>Every <code>webc new</code> writes one into the app, next to <code>webc.json</code>. Eight lines, and each one is a mistake an agent makes by default:</p>
+<div class="code" data-lang="markdown"><div class="code__bar"><span class="code__lang">markdown</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-markdown"># Working in a WebC app
+
+C23, one model declaration for the server and the browser. Verify with
+`webc check` (build + tests + schema + lint); it exits non-zero. Run it after
+every change — a failed build comes back in WebC's words, not the compiler's.
+
+- A `shared` source (see webc.json) reaches neither the database nor the
+  request: `db_*`, `req`, `path*`, `query`, `body` are server-half names. Put
+  them in a `server` source and pass the values in through the view's context.
+- One `WEBC_MODEL(...)` gives the struct, the validation, the JSON and the SQL.
+  Never write a JSON body, a form parser or a SQL statement by hand.
+- No arena, no allocator in app code: `fmt()` builds into the current scope,
+  `persist()` is the one escape hatch for a value that outlives it.
+- Add a column as a file in `migrations/`; the server applies it at boot.
+- Authored HTML that is not interpolated is a file under `partials/`, included by
+  `partial(&quot;name&quot;)` — head chrome is a file edit, not a C string of escaped quotes, and
+  `webc check` verifies every name has its file.
+- Structured data is `head_ld(ld_blog_posting(...))` from `&lt;webc/ld.h&gt;`; `webc lint` refuses
+  the hand-built version, and a field you leave out is omitted, never written empty.
+- `webc lint` names each retired spelling and what to write instead. Believe
+  it: the framework refuses the C you are about to write on purpose.
+- Code you own, generated from the app's own models: `webc scaffold Post` writes the
+  admin CRUD, `webc scaffold live Post` the SSE room and its broadcasting mutations,
+  with tests. Edit what they wrote; they never rewrite the model.
+- The API boundary is generated too: `webc openapi` writes OpenAPI 3.1 and
+  `webc client --ts` a typed fetch client, from the routes and models. If the app
+  ships `openapi.json` or `webc.client.ts`, keep them current — `--check` (and
+  `webc ci`) fails when they drift.
+- Deploying: `webc deploy --pack docker,fly,systemd,caddy,nginx` writes the ops files
+  (SSE-aware) beside the binary; `webc ci` writes the workflow that runs this file's
+  gate.
+- The full surface is `webc api`; the rules are `docs/reference.md` in the
+  framework checkout; `webc explain` translates a build failure.</code></pre></div>
+<p>This is the highest value per line of anything on this page. A skill has to be installed and a server has to be configured; <code>AGENTS.md</code> is read because it is there, in the one place every harness looks, and it answers the questions an agent would otherwise answer by guessing.</p>
+<h3 id="the-documentation-goes-into-the-app">The documentation goes into the app<a class="h-anchor" href="#the-documentation-goes-into-the-app" aria-label="Link to this section">#</a></h3>
+<p><code>webc new</code> also writes the framework's documentation into <code>.webc/docs/</code> — <code>SKILL.md</code> plus one reference per topic — and the last lines of <code>AGENTS.md</code> say so. That is deliberate: an agent working in an app should not have to find the framework's sources to answer &quot;what does this name do&quot;, and the one session that taught us this was spent grepping a checkout for <code>auth_hash_password</code> after deciding the auth API was undocumented.</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">webc docs              # (re)write .webc/docs/ from this toolchain
+webc docs --list       # the topics: models, http, auth, concurrency, stdlib, traps, …
+webc docs auth         # print one, without opening a pager</code></pre></div>
+<p><code>.webc/</code> is build output, so the docs are gitignored: the toolchain owns them, <code>webc docs</code> rewrites them, and a fresh clone gets them back with the one command <code>AGENTS.md</code> names. Nothing is vendored and nothing goes stale — the leaves are generated from the same reference the toolchain was built from.</p>
+<p>When a name is still not in a leaf, the answer is one command, not a search:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">webc api auth_verify     # the declaration, its header, and the line above it</code></pre></div>
+<p>The repository has its own <code>AGENTS.md</code> at the root, for a different reader: the gates (<code>make</code>, <code>make test</code>, <code>make lsp</code>, <code>make mcp</code>, <code>make dx</code>, <code>make skill-check</code>), the house rules (one scanner, one index, one set of diagnostics; the api ratchet; a budget is a gate; machine output is a contract), and the layout. If you are having an agent change the framework rather than an app, that is the file that matters.</p>
+<h2 id="2-the-skill">2. The skill<a class="h-anchor" href="#2-the-skill" aria-label="Link to this section">#</a></h2>
+<p><code>skills/webc/</code> is a skill in the shape harnesses expect: <code>SKILL.md</code> (a router, written by hand) and <code>references/</code> (fourteen leaves, generated; one per reference section).</p>
+<p><code>SKILL.md</code> carries the part that cannot be generated — what to do. The five ideas that make the rest of the framework a consequence rather than a list of rules:</p>
+<ol><li>a string belongs to a scope — the framework installs the arena, an app writes <code>fmt()</code> or<p><code>persist()</code>;</p></li><li>a response is a value — a handler returns one, which is why tests need no socket;</li><li>a render follows an action — one view, both targets, one context type;</li><li>the halves are enforced by the compiler — <code>server</code> / <code>shared</code> / <code>client</code> are file sets, and a<p>name that is not declared in your half is not available;</p></li><li>a model is the schema — struct, descriptor, validation, JSON, form and SQL column types from one<p>tuple.</p></li></ol>
+<p>Then the loop, the shape of a project, five recipes (add a field, add a page, add an endpoint, read a request, make a button act), the rules that bite, and a routing table: which leaf to read for which task.</p>
+<h3 id="why-the-leaves-are-generated">Why the leaves are generated<a class="h-anchor" href="#why-the-leaves-are-generated" aria-label="Link to this section">#</a></h3>
+<p>A hand-written skill teaches whatever was true the day it was written. This framework retires spellings — <code>webc lint --rules</code> is the table — and a skill still teaching a retired call is a language nobody can compile, delivered with confidence.</p>
+<p>So <code>tools/gen_skill.py</code> builds the fourteen leaves from pages that are already maintained: <code>website/src/content/guides/*.md</code>, anchored sections of <code>docs/reference.md</code>, and <code>webc lint --rules</code> for the traps table. Each leaf opens with a line-number index, so a reader loads a span rather than a file. <code>make skill</code> regenerates; <code>make skill-check</code> is the gate, and it fails on three things:</p>
+<ul><li>a leaf that would change — the documentation moved and the skill did not;</li><li>a retired spelling anywhere in the skill's own prose — the gate the framework applies to apps,<p>applied to the thing that teaches them;</p></li><li>a C block in <code>SKILL.md</code> that does not compile, or that has an ellipsis in it pretending to be a<p>file.</p></li></ul>
+<p>That third gate is <code>website/tools/snippets.py</code>, the same one that checks the site:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">make skill        # write skills/webc/references/ from the docs
+make skill-check  # stale leaf, retired spelling, uncompilable snippet</code></pre></div>
+<p>It is worth saying that the gate works, because it is not a formality: it failed twice while this page was being written — once on a documentation edit that had not been propagated into the leaves, and once because <code>SKILL.md</code> named a retired target macro in prose in order to say <em>don't</em>. Both are exactly the failure the gate exists to make impossible to ship.</p>
+<h3 id="installing-it">Installing it<a class="h-anchor" href="#installing-it" aria-label="Link to this section">#</a></h3>
+<p>The repository is the source of truth; install it by pointing at it.</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">git clone https://github.com/bumasoft/WebC &amp;&amp; cd WebC &amp;&amp; make
+ln -s &quot;$PWD/skills/webc&quot; ~/.agents/skills/webc</code></pre></div>
+<p>A symlink, not a copy, so <code>make skill</code> updates the installed skill in the same breath. Harnesses that keep skills elsewhere want the same directory — <code>skills/webc/</code> is plain Markdown with YAML front matter (<code>name</code>, <code>description</code>) and needs no build step to be read.</p>
+<p>If your tool does not read a skills folder at all, it probably reads <code>AGENTS.md</code>. Add one line to the app you are working in — the scaffold's file already ends with the pointer:</p>
+<div class="code" data-lang="markdown"><div class="code__bar"><span class="code__lang">markdown</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-markdown">For the framework's vocabulary and traps, read `skills/webc/SKILL.md` in the WebC checkout.</code></pre></div>
+<h3 id="what-is-in-the-leaves">What is in the leaves<a class="h-anchor" href="#what-is-in-the-leaves" aria-label="Link to this section">#</a></h3>
+<div class="table-wrap"><table><thead><tr><th>Leaf</th><th>Read it when the task is</th></tr></thead><tbody><tr><td><code>core-and-strings.md</code></td><td>a string, <code>fmt()</code>, a scope, an error, a <code>Vec</code> or <code>Map</code></td></tr><tr><td><code>models-and-orm.md</code></td><td>a field, a table, a filter, a relation, a page of rows</td></tr><tr><td><code>http-and-routes.md</code></td><td>a route, a response, a cookie, SSE, middleware, a file</td></tr><tr><td><code>views-and-signals.md</code></td><td>markup, a signal, an effect, a part, a component</td></tr><tr><td><code>client-and-wasm.md</code></td><td>a button that acts, a live value, calling JavaScript</td></tr><tr><td><code>data-and-sql.md</code></td><td>Postgres, MySQL, a migration per dialect, Redis, the query cache</td></tr><tr><td><code>forms.md</code></td><td>a form, validation, the error under a field</td></tr><tr><td><code>auth.md</code></td><td>a password, a login, a session cookie, a guarded page</td></tr><tr><td><code>concurrency.md</code></td><td>a background task, a channel, <code>select</code>, a timer, a mutex</td></tr><tr><td><code>stdlib.md</code></td><td>choosing a module, and what it costs in bytes</td></tr><tr><td><code>testing.md</code></td><td>a test, an assertion, a fixture</td></tr><tr><td><code>ops-and-deploy.md</code></td><td>logs, metrics, limits, a deploy</td></tr><tr><td><code>cli.md</code></td><td>a <code>webc</code> command, the language server, the MCP server</td></tr><tr><td><code>traps.md</code></td><td>&quot;why does the compiler say that&quot; — the retired spellings, as a generated table</td></tr></tbody></table></div>
+<p>Fourteen leaves for seventeen sections, and that is checked rather than intended: every top-level section of <code>docs/reference.md</code> must be quoted by some leaf, and <code>make skill-check</code> fails naming the section when one is not. The gate exists because auth was missing from the eleven-leaf version — the coverage was an opinion until it became a build error.</p>
+<h2 id="3-the-mcp-server">3. The MCP server<a class="h-anchor" href="#3-the-mcp-server" aria-label="Link to this section">#</a></h2>
+<p><code>webc mcp</code> speaks the Model Context Protocol over stdio from the same binary as everything else: no Node, no second download, no version skew between the server that answers and the compiler it answers about. The design of it — and the seven tools in detail — is <a href="../reference/the-cli.html">reference §14f</a>; what matters here is when it earns its place.</p>
+<p>A shell already gives an agent <code>webc check</code> and <code>grep</code>. Four things it does not:</p>
+<div class="table-wrap"><table><thead><tr><th>What the agent needs</th><th>What the shell costs</th><th>What the tool returns</th></tr></thead><tbody><tr><td>the gate, as data</td><td>prose to parse, per run</td><td><code>{ok, steps:[{name, ok, output}]}</code></td></tr><tr><td>the project's own index</td><td>a grep that cannot tell a half from a comment</td><td>models, fields, views, actions, routes, and each file's half, with positions</td></tr><tr><td>the whole public surface</td><td><code>grep api.txt</code>, guessing at spellings</td><td>a match's declaration, header and doc line</td></tr><tr><td>the page it just built</td><td>two processes, <code>curl</code>, a port to remember</td><td>a dev server held across calls, and a fetch from it</td></tr></tbody></table></div>
+<p>Point a client at it:</p>
+<div class="code" data-lang="json"><div class="code__bar"><span class="code__lang">json</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-json">{
+  &quot;mcpServers&quot;: {
+    &quot;webc&quot;: {
+      &quot;command&quot;: &quot;/absolute/path/to/WebC/build/webc&quot;,
+      &quot;args&quot;: [&quot;mcp&quot;, &quot;--root&quot;, &quot;/absolute/path/to/the/app&quot;]
+    }
+  }
+}</code></pre></div>
+<p><code>--root</code> defaults to the working directory, so a client that starts in the project can leave it out. <code>webc mcp --selftest</code> runs a scripted session against <code>examples/todo</code> and asserts what the tools answer, which is how you tell a protocol problem from a configuration problem before you blame the editor. <code>make mcp</code> runs the same thing in CI.</p>
+<p>Two behaviours worth knowing: the dev server's own output goes to <code>.webc/mcp-dev.log</code> (stdout is the protocol channel, and one stray banner corrupts every message after it), and <code>webc_dev</code> refuses to start over a build that does not compile — a server that quietly serves the last good binary is the most confusing possible way to learn that your change is broken.</p>
+<h2 id="the-loop-end-to-end">The loop, end to end<a class="h-anchor" href="#the-loop-end-to-end" aria-label="Link to this section">#</a></h2>
+<p>The task: add a <code>due_on</code> field, with the migration, the filter and the test that go with it. This is the shape every change takes, and none of it is specific to the task.</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">webc check                     # green first: what green looks like is a fact, not a guess</code></pre></div>
+<p>Edit <code>WEBC_MODEL</code> in <code>src/app.h</code> — the struct, the validation, the JSON and the form move together:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/app.h — one field: the page, the API, the form and the SQL all follow
+#include &lt;webc/shared.h&gt;
+
+WEBC_MODEL(Note, (id, i64, .pk = true),
+                 (title, Text, .required = true, .max = 200),
+                 (due_on, Text))
+Vec(Note)</code></pre></div>
+<p>Then a migration file, then the view, then the route, then the test — and after each one:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">webc check</code></pre></div>
+<div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">  build          ok (./.webc/notes, .webc/app.wasm)
+  tests          ok
+  doctor         ok
+  boot           ok
+  schema         ok
+  routes         5 declared
+  lint           ok
+  consistency    ok
+
+  all clear — next: webc dev</code></pre></div>
+<p>The <code>schema</code> step is the interesting one: it boots the app with a schema check, so a migration file that does not match the model fails there, before the page is ever drawn.</p>
+<p>When it is not green, the failure is a sentence about the mistake and not a transcript of the macro expansion. Two real ones:</p>
+<div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">  ./src/view.c:5:27
+    `db_all()` is a server-half macro: this file is in the shared set, which compiles for
+    the browser too. Move the call into a `server` source and pass the data in through the
+    view's context</code></pre></div>
+<div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">  ./src/server.c:16:10
+    a JSON body written by hand — `json(200, s)` takes a `str`: pass the model
+    (`json(200, Note, &amp;t)`), the collection (`json_list(200, notes)`), or the bytes as
+    `str_lit(&quot;...&quot;)`. A JSON string literal is never what this framework asks an app to
+    write</code></pre></div>
+<p>Note what the second one does: it names <em>this project's</em> model, and it gives the three answers that are actually valid. That is the whole difference between a gate an agent can act on and a gate it has to interpret.</p>
+<p>For a machine, the same run:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">webc check --json      # {&quot;ok&quot;:true, &quot;name&quot;:&quot;notes&quot;, &quot;steps&quot;:[{&quot;name&quot;:&quot;build&quot;,&quot;ok&quot;:true}, …]}
+webc test --json       # {&quot;ok&quot;:true, &quot;suites&quot;:1, &quot;failing&quot;:0, &quot;tests&quot;:[{&quot;suite&quot;:&quot;…&quot;,&quot;passed&quot;:9,…}]}</code></pre></div>
+<h2 id="make-the-gate-automatic">Make the gate automatic<a class="h-anchor" href="#make-the-gate-automatic" aria-label="Link to this section">#</a></h2>
+<p>An agent that runs the gate after every change is an agent that never carries two mistakes forward. Two ways to make that not depend on the agent remembering:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">#!/bin/sh
+# .git/hooks/pre-commit — the gate CI runs, before the commit exists.
+# The quiet run answers the question; the loud one explains a no.
+webc check --json &gt; /dev/null || webc check</code></pre></div>
+<div class="code" data-lang="json"><div class="code__bar"><span class="code__lang">json</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-json">{
+  &quot;hooks&quot;: {
+    &quot;PostToolUse&quot;: [
+      { &quot;matcher&quot;: &quot;Edit|Write&quot;,
+        &quot;hooks&quot;: [{ &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;webc check --json&quot; }] }
+    ]
+  }
+}</code></pre></div>
+<p>The second is a Claude Code hook, and most harnesses that do not call it that have the equivalent; what they all need is a command whose exit code is the answer and whose output is short. That is why <code>--json</code> exists: a passing run is one line, and a failing one is the failing step's own output and nothing else — the whole thing is a few hundred bytes, which is the difference between a gate the agent can afford to run every turn and one it learns to skip.</p>
+<p>Two rules of hygiene for the agent, both already in the scaffold: <code>.webc/</code> is build output (it is gitignored, and reading it is how an agent confuses a stale artifact for a fact), and <code>compile_commands.json</code> exists for clangd — <code>webc check</code> is the answer to &quot;does it compile&quot;, not an inference from either of them.</p>
+<h2 id="what-agents-get-wrong-here-and-what-stops-it">What agents get wrong here, and what stops it<a class="h-anchor" href="#what-agents-get-wrong-here-and-what-stops-it" aria-label="Link to this section">#</a></h2>
+<p>Every row is a real mistake, and the middle column is the gate that catches it — not a style rule, a refusal.</p>
+<div class="table-wrap"><table><thead><tr><th>The mistake</th><th>Caught by</th><th>What it says</th></tr></thead><tbody><tr><td>a JSON body as a string literal</td><td><code>webc explain</code>, <code>webc lint</code></td><td>pass the model, the collection, or <code>str_lit(&quot;…&quot;)</code></td></tr><tr><td>a <code>db_*</code> call in a <code>shared</code> file</td><td>the compiler, then <code>webc explain</code></td><td>a server-half macro; move it and pass the data through the context</td></tr><tr><td>a route in a <code>shared</code> file</td><td>the same</td><td>routes belong in a <code>server</code> source</td></tr><tr><td>an arena, or an allocator, in app code</td><td><code>webc lint</code></td><td><code>fmt()</code>, and <code>persist()</code> for what outlives the scope</td></tr><tr><td>a target test in a source file</td><td><code>webc lint</code></td><td>the file set is the target test: list the file under <code>&quot;client&quot;</code></td></tr><tr><td>a <code>main()</code></td><td>the framework</td><td><code>client_main { … }</code> starts the browser half</td></tr><tr><td>an ignored parameter <code>(void)(ctx)</code></td><td><code>webc lint</code></td><td>write the signature the view needs</td></tr><tr><td>a hand-indexed vector</td><td><code>webc lint</code></td><td><code>for_each(item, vec)</code></td></tr><tr><td><code>%.*s</code> on a <code>Text</code> field</td><td><code>webc lint</code></td><td>a <code>Text</code> is already a C string</td></tr><tr><td>an unclosed <code>el()</code> or macro block</td><td>the language server, <code>webc explain</code></td><td>one error, not thirty, and the fix to close it</td></tr><tr><td>a <code>page(Nope)</code> naming a view nothing draws</td><td><code>webc explain</code></td><td><code>view(Nope, …)</code>, or <code>declare_view(Nope)</code> in the header</td></tr></tbody></table></div>
+<p>The pattern is the point: the framework decided long ago that a second way to do something is a cost paid by every reader forever, and an agent is a reader with no memory of the first way.</p>
+<h2 id="machine-output-is-a-contract">Machine output is a contract<a class="h-anchor" href="#machine-output-is-a-contract" aria-label="Link to this section">#</a></h2>
+<p>Anything a tool may depend on has a <code>--json</code> face, and the face is a rendering of what the command did — not a second implementation.</p>
+<div class="table-wrap"><table><thead><tr><th>Command</th><th>Object</th></tr></thead><tbody><tr><td><code>webc check</code></td><td><code>{ok, name, steps:[{name, ok, skipped, artifact?, routes?, output}]}</code></td></tr><tr><td><code>webc test</code></td><td><code>{ok, suites, failing, tests:[{suite, passed, failed, skipped, tests:[…], output}]}</code></td></tr><tr><td><code>webc routes</code></td><td>every route with method, path, file, line and the view it returns</td></tr><tr><td><code>webc doctor</code></td><td><code>{ok, checks:[{name, ok, detail, fix}]}</code></td></tr><tr><td><code>webc api</code></td><td>the public surface, counted</td></tr><tr><td><code>webc stdlib</code></td><td>the twenty modules (<code>--used</code> to filter)</td></tr><tr><td><code>webc lint</code></td><td><code>{hits:[{file, line, token, what, instead}], total, wrong_half, fail}</code></td></tr><tr><td><code>webc size</code></td><td><code>{built, wasm{raw, gz}, bridge{raw, gz}, wire_gz, budget, sections[…]}</code></td></tr><tr><td><code>webc explain</code></td><td>the diagnosis, as data</td></tr></tbody></table></div>
+<p>The terminal side is a contract too. Colour is off when stdout is not a terminal, when <code>NO_COLOR</code> is set, and when <code>TERM=dumb</code> — <code>WEBC_COLOR</code> overrides it either way. A failed build is printed once, after one cache-cleared retry, without the compiler's command line (that is <code>WEBC_VERBOSE</code>). And a build failure calls the translator automatically, so <code>webc build</code> and <code>webc check</code> say the same sentence about the same mistake. <code>WEBC_NO_EXPLAIN</code> turns that off for a script that wants clang's words.</p>
+<h2 id="if-you-are-writing-a-tool-on-top-of-this">If you are writing a tool on top of this<a class="h-anchor" href="#if-you-are-writing-a-tool-on-top-of-this" aria-label="Link to this section">#</a></h2>
+<p>One rule, and it is the one the MCP server is held to: <strong>no tool parses human output.</strong> If a tool needs data, the command that owns the data learns <code>--json</code> first — otherwise you have built a second front end that will disagree with the first within a release.</p>
+<p>Two more, if you are inside the repository:</p>
+<ul><li><strong>Use the project index, not a regex.</strong> <code>tools/webc/facts.c</code> is the one place that knows what a<p>project declares, and <code>dsl.c</code> is the one place that knows what a macro call looks like. <code>webc routes</code>, the language server and the MCP server all read them; a fourth scanner would be a fourth answer.</p></li><li><strong>Write the sentence where the framework already writes them.</strong> <code>lspx.c</code> is the diagnostics table:<p>the editor underline, the <code>webc explain</code> line and the MCP tool result are the same sentence by construction, which is why they never contradict each other.</p></li></ul>
+<h2 id="what-this-is-not">What this is not<a class="h-anchor" href="#what-this-is-not" aria-label="Link to this section">#</a></h2>
+<ul><li><strong>Not a code generator.</strong> There is no &quot;build my app&quot; tool. <code>webc new</code> writes a working app —<p>model, view, routes, migrations and a test, under 300 lines — that already builds and passes its own tests; everything after that is the model and the view, which is what the recipes are for.</p></li><li><strong>Not a documentation index.</strong> No embeddings, no RAG: the skill is a router and the reference is<p>addressable by section, which cannot hallucinate a section that does not exist.</p></li><li><strong>Not measured yet.</strong> The honest form of the claim on this page is &quot;this removes the ways an agent<p>gets WebC wrong on the first try&quot;. The measurement — one fixed task, three arms, turns to green, lint hits, tokens spent reading build output, invented APIs — has not been run, and until it is, the numbers here are counts of what was built, not improvements.</p></li></ul>
+<h2 id="related">Related<a class="h-anchor" href="#related" aria-label="Link to this section">#</a></h2>
+<ul><li><strong><a href="../guides/editor.html">The editor</a></strong> — the same translator, pointed at your cursor instead of a<p>build.</p></li><li><strong><a href="../guides/testing.html">Testing</a></strong> — what <code>webc check</code> runs, and how to assert a document.</li><li><strong><a href="../reference/the-cli.html">The CLI</a></strong> — every command, <code>--json</code> shapes, §14f for the MCP server<p>and §14g for the contract above.</p></li><li><strong><a href="../reference/index.html">The reference</a></strong> — the whole language and every module, one page each,<p>with the cost of each choice written next to it.</p></li></ul>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/website/src/content/guides/agents.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../guides/editor.html"><span class="pager__dir">Previous</span><span class="pager__title">The editor: LSP and VS Code</span></a>
+<a class="pager__link pager__link--next" href="../guides/api.html"><span class="pager__dir">Next</span><span class="pager__title">The API boundary</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#three-things-cheapest-first">Three things, cheapest first</a></li>
+<li class="toc__l2"><a href="#1-agents-md-which-the-scaffold-writes">1. AGENTS.md, which the scaffold writes</a></li>
+<li class="toc__l3"><a href="#the-documentation-goes-into-the-app">The documentation goes into the app</a></li>
+<li class="toc__l2"><a href="#2-the-skill">2. The skill</a></li>
+<li class="toc__l3"><a href="#why-the-leaves-are-generated">Why the leaves are generated</a></li>
+<li class="toc__l3"><a href="#installing-it">Installing it</a></li>
+<li class="toc__l3"><a href="#what-is-in-the-leaves">What is in the leaves</a></li>
+<li class="toc__l2"><a href="#3-the-mcp-server">3. The MCP server</a></li>
+<li class="toc__l2"><a href="#the-loop-end-to-end">The loop, end to end</a></li>
+<li class="toc__l2"><a href="#make-the-gate-automatic">Make the gate automatic</a></li>
+<li class="toc__l2"><a href="#what-agents-get-wrong-here-and-what-stops-it">What agents get wrong here, and what stops it</a></li>
+<li class="toc__l2"><a href="#machine-output-is-a-contract">Machine output is a contract</a></li>
+<li class="toc__l2"><a href="#if-you-are-writing-a-tool-on-top-of-this">If you are writing a tool on top of this</a></li>
+<li class="toc__l2"><a href="#what-this-is-not">What this is not</a></li>
+<li class="toc__l2"><a href="#related">Related</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

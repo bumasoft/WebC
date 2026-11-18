@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Reference">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8. Middleware · WebC</title>
+<meta name="description" content="Reference §8.">
+<meta property="og:title" content="8. Middleware · WebC">
+<meta property="og:description" content="Reference §8.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/reference/middleware.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="8. Middleware · WebC">
+<meta name="twitter:description" content="Reference §8.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html" aria-current="true">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html" class="is-active" aria-current="page">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../reference/index.html">Reference</a><span class="crumbs__sep">/</span><span class="crumbs__here">8. Middleware</span></div>
+    <article class="article">
+      <h1 id="top">8. Middleware</h1>
+<p class="page-kicker" id="middleware">Reference · <code>docs/reference.md</code></p><div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">typedef bool (*mw_fn)(Request *req, void *ctx, WNext *next);   // false = stop the chain</code></pre></div>
+<p>Built in: <code>mw_logging</code>, <code>mw_request_id</code>, <code>mw_headers(HeadersCfg)</code> (the CSP, nosniff, …; <code>mw_headers_default()</code> is <code>mw_headers((HeadersCfg){0})</code> and its policy is <code>default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'nonce-&lt;per request&gt;' 'wasm-unsafe-eval'</code> — the nonce is put on every <code>&lt;script&gt;</code>/<code>&lt;style&gt;</code> of an HTML response as it is written, and <code>wasm-unsafe-eval</code> is there because without it the browser refuses to instantiate the module <code>mw_web_assets</code> serves), <code>mw_cors(&amp;(CorsCfg){...})</code>, <code>mw_body_limit(bytes)</code>, <code>mw_timeout_ms(ms)</code>, <code>mw_auth_bearer(token)</code>, <code>mw_recover</code>, <code>mw_static(prefix, dir)</code>, <code>mw_static_spa(prefix, dir)</code>, <code>mw_metrics</code>, <code>mw_dev(port)</code>, <code>mw_compress()</code>, <code>mw_document()</code> and <code>mw_not_found(file)</code> (both below).</p>
+<h2 id="8a-the-policy-is-a-value-mw-headers">8a. The policy is a value: <code>mw_headers()</code><a class="h-anchor" href="#8a-the-policy-is-a-value-mw-headers" aria-label="Link to this section">#</a></h2>
+<p>The default CSP is one string with three parts, and a project that needs a CDN in <code>img-src</code> would otherwise splice the header by hand. It is a struct, and <code>webc.json</code> reaches the same struct:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">webc_use(mw_headers((HeadersCfg){
+    .img_src = (const char *[]){&quot;'self'&quot;, &quot;data:&quot;, &quot;https://cdn.example.com&quot;},
+    .img_src_n = 3,
+    .extra = &quot;frame-ancestors 'self'; form-action 'self'&quot;,
+}));</code></pre></div>
+<div class="code" data-lang="json"><div class="code__bar"><span class="code__lang">json</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-json">&quot;csp&quot;: {&quot;img_src&quot;: [&quot;'self'&quot;, &quot;data:&quot;, &quot;https://cdn.example.com&quot;],
+        &quot;script_src&quot;: [&quot;'self'&quot;, &quot;'wasm-unsafe-eval'&quot;],
+        &quot;no_default&quot;: false}</code></pre></div>
+<p><strong>One policy, not two.</strong> <code>webc_main()</code> installs <code>mw_headers()</code> from the <code>csp</code> block <em>after</em> <code>webc_boot()</code>, so the framework's copy is inside the app's chain and — on the way out — writes first. A project that registers its own <code>mw_headers()</code> therefore replaces the framework's default rather than stacking beside it: <code>webc_install_default_middleware()</code> skips any default whose <code>.name</code> the app already registered (§8b). Without that rule the <code>HeadersCfg</code> above would be built, applied, and then overwritten by the policy from <code>webc.json</code> — a CDN list in C that never reached a browser.</p>
+<p><code>img_src</code> and <code>script_src</code> replace the default lists (<code>script_src</code> without a nonce entry means the nonce is <em>not</em> offered, which is what an app with no inline script wants), <code>extra</code> is appended verbatim, and <code>no_default</code> says the app writes the header itself — the framework then emits none. A handler may still choose the policy for its own response with <code>res_header()</code>; <code>mw_headers()</code> defers to a policy that is already there.</p>
+<p><strong>The devtools panel.</strong> <code>WebC.devtools()</code> (or <code>?__webc_devtools</code> on the URL) opens a small panel in the corner of the page: the bridge's own numbers — ops, bad ops, hydrated, anchors, created elements — refreshed live, plus <code>WebC.why()</code> as a mode you arm and click. It is dev.js, not a bridge verb: nothing an app ships knows it exists.</p>
+<p><code>webc dev</code> <strong>widens the policy that is in force</strong> rather than building one of its own, so whatever the app declared — in C or in <code>webc.json</code> — is what a browser sees in development too, with the reload additions (<code>'unsafe-inline'</code>, <code>ws://localhost:&lt;port&gt;</code>, <code>dev.connect</code>). That distinction is worth a sentence, because a dev server that builds its own policy from scratch makes an <code>img-src</code> with a CDN in it hold in production and silently stopped holding under <code>webc dev</code>. The dev server widens whatever policy is in force with what live reload needs (<code>'unsafe-inline'</code>, <code>ws://localhost:&lt;port&gt;</code>, the origins in <code>dev.connect</code>), so a strict policy costs nothing in development. <code>res_header_get(res, &quot;Content-Security-Policy&quot;)</code> reads one back, which is what an app that rewrites its own needs; <code>wc_csp_build()</code> is the builder on its own, for a project that emits the header outside a response.</p>
+<h2 id="8b-order-the-document-is-finished-before-anything-compresses-it">8b. Order: the document is finished before anything compresses it<a class="h-anchor" href="#8b-order-the-document-is-finished-before-anything-compresses-it" aria-label="Link to this section">#</a></h2>
+<p><code>mw_document()</code> is the framework's own last-installed (innermost) middleware, and it exists because of a bug worth understanding before changing the chain. A page's <code>&lt;head&gt;</code> — the title, the description, the OG tags — is collected in the <em>request</em> while the view runs and spliced into the body on the way out. When that splice ran at the socket, <code>mw_compress()</code> had already turned the body into gzip bytes; searching compressed bytes for <code>&lt;/head&gt;</code> finds nothing, so the splice silently did nothing for every client that sends <code>Accept-Encoding: gzip</code> — which is every browser — while <code>curl</code> without that header got the head and every smoke test passed.</p>
+<p>So the splice happens while the body is still HTML: <code>mw_document()</code> runs <em>inside</em> the router's response, before <code>mw_dev</code> appends the reload script and before gzip. Two rules follow:</p>
+<ul><li><strong>Register it last</strong>, so it wraps the route: `webc_use(mw_compress()); webc_use(mw_document());<p>...routes...`.</p></li><li><strong>Anything that appends to an HTML body goes outside it.</strong> <code>mw_dev</code> does: the reload script<p>is added after the head is applied, and it carries the page's nonce itself because the policy names the nonce and the dev script is the framework's own inline script.</p></li></ul>
+<p>A project rarely writes the chain at all: <code>webc_main()</code> calls <code>webc_install_default_middleware()</code> after <code>webc_boot()</code> (compress, dev, request id, headers, logging, recover, body limit, web assets, static, document, 404), so <code>webc_boot()</code> registers only what it adds. <strong>A default is skipped when the app registered one with the same <code>.name</code></strong> — the singleton rule of §8a — so &quot;my own logging&quot; or &quot;my own policy&quot; is one <code>webc_use()</code> in <code>webc_boot()</code> and never a second log line or a second header. <code>static</code> and the rest are additive: <code>/public</code> and <code>/uploads</code> are different files, so both are installed.</p>
+<h2 id="8c-a-404-that-is-a-page">8c. A 404 that is a page<a class="h-anchor" href="#8c-a-404-that-is-a-page" aria-label="Link to this section">#</a></h2>
+<p>The default answer to a URL nobody routed is a JSON error. A project that wants a real page for a browser names the file once:</p>
+<div class="code" data-lang="json"><div class="code__bar"><span class="code__lang">json</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-json">&quot;not_found&quot;: &quot;public/404.html&quot;</code></pre></div>
+<p><code>mw_not_found()</code> then answers a <code>404</code> that accepts HTML with the file's markup inside the app's own shell — title, theme and nonce included — and leaves everything else alone: a route that answered <code>404</code> with HTML keeps its own page, and a client that sent <code>Accept: application/json</code> still gets the JSON error. A file that is a whole document (<code>&lt;html …&gt;</code>) is served as it is.</p>
+<h2 id="gzip">gzip<a class="h-anchor" href="#gzip" aria-label="Link to this section">#</a></h2>
+<p><strong>On by default.</strong> <code>mw_compress()</code> is the first middleware the framework installs (<code>install_default_middleware</code>), so every response the client said it accepts goes out as <code>Content-Encoding: gzip</code> — static files <em>and</em> rendered bodies: a JSON API shrinks by 70%, a server-rendered page by 60-80%, a wasm module by 58%. <code>WEBC_NO_GZIP=1</code> turns it off, for an app that ships its own compressed bytes or sits behind something that compresses.</p>
+<p>It is a normal middleware, so an app may take it out of the default chain and put it where it wants — in front of the middlewares that answer, so it wraps their response:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">webc_use(mw_compress());
+webc_use(mw_static(&quot;/public&quot;, &quot;public/&quot;));</code></pre></div>
+<p>What it will not do, and why:</p>
+<ul><li><strong>Compress what gzip does not help.</strong> Only <code>text/*</code>, JSON, JavaScript, XML, wasm and<p>SVG are eligible — not <code>text/event-stream</code>, not PNG, not woff2. A file under <code>WC_GZIP_MIN</code> (1 KB) is left alone: the 18-byte wrapper costs more than it saves.</p></li><li><strong>Compress a 206.</strong> A byte range is answered from the disk as the identity bytes (§7e):<p><code>Content-Range</code> counts bytes of the representation the client asked about, so compressing it would both lose the offsets and read a whole file into memory to serve its first kilobyte. <code>206</code> and <code>416</code> are skipped exactly like <code>204</code>/<code>304</code>.</p></li><li><strong>Decide by itself whether the client wants it.</strong> No <code>Accept-Encoding</code>, <code>gzip;q=0</code> or<p><code>identity</code> gets the bytes as they are. <code>Vary: Accept-Encoding</code> goes on every response that <em>could</em> have been compressed, so a shared cache never crosses the two.</p></li><li><strong>Reuse a validator across the two encodings.</strong> The gzipped representation carries<p><code>&lt;etag&gt;-gz</code>, so <code>If-None-Match</code> from a gzip response is answered with a 304, and one from an identity response is not answered with a gzip 304.</p></li><li><strong>Compress a file twice.</strong> Files are cached by <code>(path, size, mtime)</code> — 32 of them by<p>default — so a 155 KB module is compressed once and served from memory after that. <code>mw_compress_opts((CompressOpts){.level = 6, .slots = 8})</code> tunes it; level 9 (default) is the smallest bytes, and it is zlib doing it, so it matches <code>gzip -9</code>.</p></li></ul>
+<p>Because it is first, it is the <strong>last</strong> word on every body: whatever a middleware or a route wrote is what gets compressed. That is also why the page's <code>&lt;head&gt;</code> is spliced <em>inside</em> it (§8b) — a splice after this one searches gzip bytes and finds nothing.</p>
+<p><code>webc serve</code> and <code>webc dev</code> both serve through it (§13b), so the bytes you measure in a browser are the bytes that ship.</p>
+<p>The <code>-lz</code> on every link line is this feature and only this feature: <code>webc build</code> adds it to the app's link, because the framework's own default chain references the middleware. zlib is on macOS and on every Linux worth deploying to; a platform without it is a platform where <code>WEBC_NO_GZIP=1</code> does not help, and the fix is a <code>-lz</code>-shaped one.</p>
+<p>Global middleware runs for unmatched paths too — that is how static files and the dev reload script exist without being routes.</p>
+<p>A chain carries up to <code>WC_MW_MAX</code> (32) middlewares, globally, per group and per route, and the dispatcher runs every one of them — the same number in both places, because a <em>registered</em> middleware that never runs is the worst kind of silent failure. Going over the limit prints one line naming <code>WC_MW_MAX</code> instead of dropping the extra one. The framework's own defaults use ten of the thirty-two (<code>compress</code>, <code>dev</code>, <code>request_id</code>, <code>headers</code>, <code>logging</code>, <code>recover</code>, <code>web-assets</code>, <code>static</code> twice, <code>document</code>, and <code>not_found</code> when <code>webc.json</code> names a file), so an app registers into an empty argument, not a race.</p>
+<hr>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/docs/reference.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../reference/http.html"><span class="pager__dir">Previous</span><span class="pager__title">7. HTTP</span></a>
+<a class="pager__link pager__link--next" href="../reference/database.html"><span class="pager__dir">Next</span><span class="pager__title">9. Database</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#8a-the-policy-is-a-value-mw-headers">8a. The policy is a value: mw_headers()</a></li>
+<li class="toc__l2"><a href="#8b-order-the-document-is-finished-before-anything-compresses-it">8b. Order: the document is finished before anything compresses it</a></li>
+<li class="toc__l2"><a href="#8c-a-404-that-is-a-page">8c. A 404 that is a page</a></li>
+<li class="toc__l2"><a href="#gzip">gzip</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

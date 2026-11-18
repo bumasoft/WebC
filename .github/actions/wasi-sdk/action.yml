@@ -1,0 +1,37 @@
+# wasi-sdk is an *optional* toolchain (README, "Requirements") — but two things in the gate
+# need it: `examples/web` and `examples/js` have browser halves, and a fresh `web` scaffold
+# cannot be `webc check`ed without it. `make` skips those examples when it is missing and the
+# suite skips the scaffold check, so a contributor without it still gets green; CI should not
+# take the skip, so it installs the toolchain instead.
+name: wasi-sdk
+description: Install wasi-sdk for the runner's OS and architecture, and export WASI_SDK_PATH
+inputs:
+  version:
+    description: wasi-sdk release version
+    required: false
+    default: "34.0"
+runs:
+  using: composite
+  steps:
+    - name: install wasi-sdk ${{ inputs.version }}
+      shell: bash
+      run: |
+        set -eu
+        case "$(uname -s)-$(uname -m)" in
+          Darwin-arm64)  ARCH=arm64-macos ;;
+          Darwin-x86_64) ARCH=x86_64-macos ;;
+          Linux-x86_64)  ARCH=x86_64-linux ;;
+          Linux-aarch64) ARCH=arm64-linux ;;
+          *) echo "::error::no wasi-sdk for $(uname -s)-$(uname -m)"; exit 1 ;;
+        esac
+        # the release tag drops the patch number: wasi-sdk-34.0 -> wasi-sdk-34
+        TAG="wasi-sdk-${WASI_VERSION%%.*}"
+        URL="https://github.com/WebAssembly/wasi-sdk/releases/download/${TAG}/wasi-sdk-${WASI_VERSION}-${ARCH}.tar.gz"
+        echo "wasi-sdk: $URL"
+        curl -fsSL -o "$RUNNER_TEMP/wasi.tar.gz" "$URL"
+        mkdir -p "$RUNNER_TEMP/wasi"
+        tar xzf "$RUNNER_TEMP/wasi.tar.gz" -C "$RUNNER_TEMP/wasi" --strip-components=1
+        test -x "$RUNNER_TEMP/wasi/bin/clang" || { echo "::error::wasi-sdk unpacked without bin/clang"; exit 1; }
+        echo "WASI_SDK_PATH=$RUNNER_TEMP/wasi" >> "$GITHUB_ENV"
+      env:
+        WASI_VERSION: ${{ inputs.version }}

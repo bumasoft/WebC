@@ -1,0 +1,1 @@
+{ "message": "this line came from fetch, through a promise, into a signal" }

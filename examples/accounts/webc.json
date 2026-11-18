@@ -1,0 +1,6 @@
+{
+  "name": "accounts",
+  "port": 8080,
+  "server": ["src/server.c"],
+  "shared": ["src/view.c"]
+}

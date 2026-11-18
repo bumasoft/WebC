@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Reference">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>14b. Testing · WebC</title>
+<meta name="description" content="Reference §14b.">
+<meta property="og:title" content="14b. Testing · WebC">
+<meta property="og:description" content="Reference §14b.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/reference/testing.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="14b. Testing · WebC">
+<meta name="twitter:description" content="Reference §14b.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html" aria-current="true">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html" class="is-active" aria-current="page">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../reference/index.html">Reference</a><span class="crumbs__sep">/</span><span class="crumbs__here">14b. Testing</span></div>
+    <article class="article">
+      <h1 id="top">14b. Testing</h1>
+<p class="page-kicker" id="testing">Reference · <code>docs/reference.md</code></p><p><code>webc test</code> compiles each <code>tests/*_test.c</code> into its own binary (with the app's own sources linked in, its <code>main</code> renamed), runs it, and prints go-test-shaped output. The surface is <code>&lt;webc/test.h&gt;</code>:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">#include &lt;webc/test.h&gt;
+
+TEST(creates_an_account) {
+  Response r = webc_test_request(&quot;POST&quot;, &quot;/accounts&quot;);
+  ASSERT_EQ(r.status, 201);
+  Account a = { .email = str_lit(&quot;ada@example.com&quot;) };
+  ASSERT_OK(model_validate(Account_modelof(), &amp;a, nullptr));
+}</code></pre></div>
+<ul><li><strong><code>TEST(name) { }</code></strong> — a test. It registers itself with a constructor, so a file<p>is a list of blocks and nothing is enumerated by hand. No <code>main</code>, no list to forget.</p></li><li><strong><code>TEST_MAIN()</code></strong> — the binary's entry point. <strong><code>TEST_SETUP(fn)</code></strong> /<p><strong><code>TEST_TEARDOWN(fn)</code></strong> run once around the file (a database, a scheduler).</p></li><li><strong><code>SUBTEST(&quot;label&quot;) { }</code></strong> and <strong><code>SUBTESTS(rows) { ... }</code></strong> — a subtest is one<p>block; <code>SUBTESTS</code> runs the block once per row of a static array, binding the row to <code>r</code> and using its <code>name</code> member for the label. A failing row does not stop the next one.</p></li><li><strong>Assertions</strong>: <code>ASSERT</code>, <code>ASSERT_TRUE/FALSE</code>, <code>ASSERT_EQ/NE/LT/LE/GT/GE</code>,<p><code>ASSERT_FEQ</code>, <code>ASSERT_STR_EQ</code> (a <code>str</code>/<code>Buf</code>/<code>Response</code>/C string against a literal), <code>ASSERT_STR</code> (two of them), <code>ASSERT_STR_CONTAINS</code>, <code>ASSERT_MEM_EQ</code>, <code>ASSERT_NULL/NOT_NULL</code>, <code>ASSERT_OK/ERR/ERR_KIND</code> (anything with <code>.ok</code>). An assertion records a failure and <strong>continues</strong>, like go's <code>t.Error</code>.</p></li><li><strong>Responses</strong>: pass one straight to <code>ASSERT_STR_CONTAINS(r, &quot;…&quot;)</code>, and read a header<p>by name: <code>ASSERT_STATUS(r, 303)</code>, <code>ASSERT_HEADER(r, &quot;Location&quot;, &quot;/&quot;)</code>, <code>ASSERT_HEADER_CONTAINS(r, &quot;Set-Cookie&quot;, &quot;HttpOnly&quot;)</code>, <code>ASSERT_HEADER_COUNT(r, &quot;Content-Security-Policy&quot;, 1)</code>, <code>ASSERT_BODY_LEN(r, 12)</code>. A duplicate header is legal HTTP and a real bug; counting is the only way a test can see it. <strong>Header names are matched case-insensitively</strong> (RFC 9110 §5.1): a handler stores <code>Set-Cookie</code> as it spelled it, and a test may ask for <code>set-cookie</code> — a <code>memcmp</code> comparison misses it, which is why every app that asserts on a session cookie writes its own helper.</p></li><li><strong><code>FAIL(fmt, ...)</code></strong> records a failure with a message; <strong><code>SKIP(why)</code></strong> stops the<p>test and reports it skipped.</p></li><li><strong><code>try(expr)</code></strong> inside a test panics with the error (a <code>TEST</code> body returns<p>void, so it cannot return the <code>Result</code>); the runner turns that into a failed test with the message. Every test runs inside a panic frame, so a panic in application code — not just in an assertion — fails that one test and the rest of the file still runs.</p></li></ul>
+<p><strong>The client half of a test.</strong> A request with no memory is not a browser, and a test of a <em>mutating</em> route written without one rebuilds a browser: a cookie jar by hand, a form body by hand, and a helper for the header lookup. <code>TestClient</code> is that browser (§14b1 below):</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">TEST(the_save_route_writes_the_row) {
+  TestClient c = test_client();                       // a jar, per test
+  Response r = tc_post_form_at(c, &quot;/admin/posts/save&quot;, Post, &amp;draft);
+  ASSERT_REDIRECT(r, &quot;/admin/posts&quot;);                 // 302/303/307 *and* the Location
+  ASSERT_DB_ONE(Post, slug, str_lit(&quot;the-last-ferry&quot;));  // the row it should have written
+  ASSERT_DB_COUNT(Post, 1);
+}</code></pre></div>
+<p>What is actually asserted, spelled out: <code>webc_test_request(method, path)</code> builds a request, runs the router and the middleware chain, and returns the <code>Response</code> — no sockets. <code>webc_test_request_ex(method, path, headers, body, body_len)</code> is the same with a header block (<code>&quot;Cookie: session=…\r\n&quot;</code>) and a body, which is what a test of an authenticated route needs. Both convert a handler panic into a 500, exactly like the server.</p>
+<p>An app's tests link the app. <code>webc test</code> compiles the app's sources (found the same way <code>webc build</code> finds them) with <code>main</code> renamed, so the routes are the real ones; the state is built by calling the app's own <code>webc_boot()</code> from <code>TEST_SETUP()</code> (<code>&lt;webc/app.h&gt;</code>). <code>examples/todo</code> and <code>examples/accounts</code> are the worked examples: 8 and 7 tests, real database, real sessions, no socket.</p>
+<h2 id="14b1-the-test-client-a-jar-a-form-encoder-and-the-row">14b1. The test client: a jar, a form encoder, and the row<a class="h-anchor" href="#14b1-the-test-client-a-jar-a-form-encoder-and-the-row" aria-label="Link to this section">#</a></h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">TestClient c = test_client();                      // the current test's arena; nothing to free
+Response r = tc_get(c, &quot;/admin&quot;);                  // GET, with the jar's cookies attached
+Response p = tc_send(c, &quot;PATCH&quot;, &quot;/admin/posts/1&quot;);// any method
+r = tc_post_body(c, &quot;/theme&quot;, str_lit(&quot;to=dark&quot;)); // a body of your own
+r = tc_post_json(c, &quot;/api/posts&quot;, Post, &amp;p);       // the model, as JSON
+r = tc_post_form_at(c, &quot;/admin/posts/save&quot;, Post, &amp;p);  // the model, as the form it would draw</code></pre></div>
+<ul><li><strong>The jar.</strong> Every <code>Set-Cookie</code> the response carries is kept (name and value, not the<p>attributes) and sent back on the next request; <code>Max-Age=0</code> deletes one. A second <code>test_client()</code> in the same test is a second browser — the two-users case, which was untestable when a test could only send headers it had spelled itself.</p></li><li><strong>The form encoder.</strong> <code>tc_post_form*</code> serialises the model the way <code>model_from_form</code> reads<p>it: one input per field in declaration order, the pk left out (a create does not post the id back), a <code>bool</code> as <code>on</code>/<code>off</code>, an enum as its value's name, a <code>VecStr</code> as one comma-separated value, and everything percent-encoded as a browser encodes it.</p></li><li><strong>The assertions a mutation test needs.</strong> <code>ASSERT_REDIRECT(r, &quot;/where&quot;)</code>,<p><code>ASSERT_DB_ONE(T, field, str)</code> / <code>ASSERT_DB_ONE_I64(T, field, n)</code> (&quot;the row it should have written&quot;), <code>ASSERT_DB_COUNT(T, want)</code>.</p></li></ul>
+<p>It does not run JavaScript — that is <code>webc test --client</code>, which replays the client half's batches through the real bridge — and it does not follow redirects: a test that follows one hides the 303 it came for.</p>
+<p><strong><code>webc test --watch</code> reruns the suite</strong> whenever <code>src/</code>, <code>tests/</code>, <code>shared/</code>, <code>content/</code> or <code>webc.json</code> changes, clearing the screen each pass, so what is on it is the last run and not the history of them. <code>--filter</code> picks suites (and runs them whole); <code>--test</code> narrows by test name across every suite, which is the slower one because every suite builds.</p>
+<hr>
+<h2 id="14c-assertions-about-structure">14c. Assertions about structure<a class="h-anchor" href="#14c-assertions-about-structure" aria-label="Link to this section">#</a></h2>
+<p>A substring test passes when the markup moved somewhere the CSS no longer reaches — which is exactly the regression a redesign causes. Two assertions speak the languages a response is actually written in:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">ASSERT_JSON(res, &quot;data.0.views&quot;, &quot;42&quot;);                       // by path
+ASSERT_JSON_STR(res, &quot;data[0].slug&quot;, &quot;the-last-ferry&quot;);
+ASSERT_HTML(res, &quot;article.lead &gt; h2 a&quot;);                      // the structure survived
+ASSERT_HTML_TEXT(res, &quot;article.lead &gt; h2 a&quot;, &quot;The chair nobody notices&quot;);
+ASSERT_HTML_COUNT(res, &quot;article.card&quot;, 6);
+ASSERT_HTML_ABSENT(res, &quot;article.lead&quot;);</code></pre></div>
+<p>The selector is a subset of CSS: tag, <code>.class</code>, <code>#id</code>, <code>[attr]</code>, <code>[attr=&quot;value&quot;]</code>, descendant (space) and child (<code>&gt;</code>). <code>wc_json_path(JVal*, &quot;a.b.0&quot;, &amp;out)</code> and <code>wc_html_count(html, sel)</code> are the functions underneath, for a test that wants the value rather than the assertion.</p>
+<p>Structured data is neither JSON nor HTML, and it is the thing that breaks silently — a page whose <code>author</code> gained an empty <code>name</code> still renders, still passes <code>ASSERT_HTML</code>, and has quietly lost its rich result. <code>ASSERT_LD</code> reads the first <code>application/ld+json</code> block out of a page and asks it the same by-path question:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">ASSERT_LD(res, &quot;headline&quot;, &quot;The last ferry&quot;);
+ASSERT_LD(res, &quot;author.name&quot;, &quot;Ada Okafor&quot;);
+ASSERT_LD_ABSENT(res, &quot;datePublished&quot;);     // a draft has none, and the key is not &quot;&quot;
+ASSERT_JSON_DOC(doc, &quot;publisher.logo.url&quot;, &quot;https://example.com/logo.png&quot;);  // a document you built</code></pre></div>
+<p><code>ASSERT_JSON_DOC</code> / <code>ASSERT_JSON_DOC_ABSENT</code> are the same question about a JSON <em>document</em> rather than a response — what a serializer, a writer, or a <code>ld_*</code> call is tested at, before a route exists. <code>wc_ld_block(html)</code> returns the payload if a test wants it directly.</p>
+<p>An HTML assertion matches the server-rendered markup with its <code>data-wc</code> anchors in it, so it tests the page a browser receives, not a string this test happened to expect.</p>
+<p><strong>Every one of them takes any HTML-ish thing</strong>, not just a <code>Response</code>: a <code>str</code> from <code>wcomp_html_ctx</code> (the browser half's own render), a <code>Buf</code>, a <code>const char *</code>. That is the whole of what a client-side test needs to read a card:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">str html = wcomp_html_ctx(&amp;comp, view_Stats, nullptr);
+ASSERT_HTML(html, &quot;.card.ruin b&quot;);
+ASSERT_HTML_TEXT(html, &quot;.card.ruin span&quot;, &quot;ruined&quot;);
+ASSERT_HTML_NUMBER(html, &quot;.card.ruin b&quot;, 96.3);   // &quot;$10,038&quot; reads as 10038, &quot;4.2%&quot; as 4.2</code></pre></div>
+<p><code>ASSERT_HTML_NUMBER</code> is the one that replaces a hand-written scanner per app: it takes the text at a selector, keeps the first number in it (any currency symbol, separators, a trailing <code>%</code> or a unit around it are dropped) and compares it to within <code>1e-6</code>. A text with no number at all fails, so an empty selector cannot pass by accident.</p>
+<p><strong>A client test does not hand-write its declarations.</strong> <code>webc wires &gt; src/wires.h</code> emits the view prototypes, the action prototypes (both the ones <code>bind()</code> names and the ones a view wires with <code>on_click()</code>), and a <code>WIRES_&lt;field&gt;</code> constant per named field — so a test file starts with <code>#include &quot;wires.h&quot;</code> instead of one <code>ACTION(x)</code> line per button, and a new button needs no test-file edit at all. It is generated from the sources, so it cannot drift.</p>
+<p><strong>A pointer can be dispatched</strong> with a position, which is what makes hover code testable:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">client_dispatch_at(&quot;plot&quot;, &quot;pointermove&quot;, 150, 10, 600, 200);  // x, y, w, h
+EXPECT_SIGNAL(tip_on, 1);</code></pre></div>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/docs/reference.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../reference/the-cli.html"><span class="pager__dir">Previous</span><span class="pager__title">14. The CLI</span></a>
+<a class="pager__link pager__link--next" href="../reference/ops.html"><span class="pager__dir">Next</span><span class="pager__title">15. Ops</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#14b1-the-test-client-a-jar-a-form-encoder-and-the-row">14b1. The test client: a jar, a form encoder, and the row</a></li>
+<li class="toc__l2"><a href="#14c-assertions-about-structure">14c. Assertions about structure</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

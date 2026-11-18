@@ -1,0 +1,247 @@
+/* js: the look of a page that is one table of calls.
+   The view emits class names; every colour, size and radius is decided here. Two tokens,
+   one theme: the dark half answers the reader's OS. The page's own two buttons live outside
+   the component (that is the point of the example), so `main` and `.page` share one column
+   and the calls sit centered under a hairline — one page, not a component with a stray
+   paragraph under it. */
+
+:root {
+  color-scheme: light;
+  --bg: #f7f8fb;
+  --surface: #ffffff;
+  --surface-2: #f3f5fa;
+  --fg: #14161c;
+  --muted: #4b5563;
+  --faint: #667085;
+  --line: #e4e7ef;
+  --line-strong: #d2d7e3;
+  --accent: #4b56e8;
+  --accent-hover: #3a45d4;
+  --accent-soft: rgba(75, 86, 232, 0.09);
+  --on-accent: #ffffff;
+  --radius: 11px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0e1017;
+    --surface: #161923;
+    --surface-2: #1b1f2b;
+    --fg: #eef1f8;
+    --muted: #a8b0c4;
+    --faint: #98a1b6;
+    --line: #262b39;
+    --line-strong: #333a4c;
+    --accent: #8b95ff;
+    --accent-hover: #a3abff;
+    --accent-soft: rgba(139, 149, 255, 0.14);
+    --on-accent: #10131c;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.55 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* One column for both halves of the page: the component renders into #root, the two calls
+   in the page's own markup sit below it, and they line up because the measure is shared. */
+main,
+.page {
+  width: min(48rem, 100% - 2.5rem);
+  margin-inline: auto;
+}
+
+main { padding: 3.5rem 0 0; }
+
+h1 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.55rem, 1.15rem + 1.5vw, 2.05rem);
+  line-height: 1.15;
+  letter-spacing: -0.022em;
+  font-weight: 700;
+}
+
+.lede {
+  margin: 0 0 1.6rem;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+/* The first paint, before the module has drawn anything. */
+#root:empty::after {
+  content: "loading the module…";
+  display: block;
+  padding: 3.5rem 0 0;
+  color: var(--faint);
+  font: 500 0.85rem/1 var(--mono);
+}
+
+/* ---- controls: one shape, on both sides of the seam ------------------------------- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 1.9rem;
+}
+
+main button,
+.page button {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--fg);
+  font: 600 0.92rem/1 var(--font);
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+main button:hover,
+.page button:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+main button:active,
+.page button:active { transform: translateY(1px); }
+
+main button:focus-visible,
+.page button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* the demo itself is the primary action */
+main .go:first-child {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+main .go:first-child:hover { background: var(--accent-hover); }
+
+/* and the counter is a reading, not a second primary: mono, quiet, still a button */
+main .go + .go {
+  background: var(--surface-2);
+  color: var(--muted);
+  font: 500 0.82rem/1 var(--mono);
+}
+
+/* ---- the five answers ------------------------------------------------------------- */
+
+table {
+  width: 100%;
+  margin: 0 0 1.5rem;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th,
+td {
+  padding: 0.7rem 0.1rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  /* 1% and nowrap: the label column is as wide as its longest label, so a value starts
+     beside its label instead of drifting to the right edge of the table */
+  width: 1%;
+  padding-right: 1.75rem;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+td {
+  color: var(--fg);
+  font: 400 0.86rem/1.5 var(--mono);
+  overflow-wrap: anywhere;
+}
+
+tr:first-child th,
+tr:first-child td { padding-top: 0.9rem; }
+
+.hint {
+  max-width: 46ch;
+  margin: 0 0 2.25rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ---- the page's own two calls ------------------------------------------------------
+   Centered in the same measure as the component above, under one hairline: they belong to
+   the page rather than to the view, and the layout says so without a caption. */
+
+.page {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.5rem 0 3rem;
+  border-top: 1px solid var(--line);
+}
+
+.page button {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+@media (max-width: 40rem) {
+  main { padding-top: 2.25rem; }
+
+  /* a label above its value: four columns of "A page called The JavaSc..." is not a table */
+  table,
+  tbody,
+  tr,
+  th,
+  td { display: block; }
+
+  tr {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  th,
+  td { padding: 0; border: 0; }
+
+  th {
+    width: auto; /* the base rule's 1% is a table trick; stacked, it would wrap at 3px */
+    color: var(--faint);
+    font: 600 0.72rem/1.4 var(--mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: normal;
+  }
+
+  td { margin-top: 0.3rem; }
+
+  tr:first-child th,
+  tr:first-child td { padding-top: 0; }
+
+  .page { padding-bottom: 2.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main button,
+  .page button { transition: none; }
+  main button:active,
+  .page button:active { transform: none; }
+}

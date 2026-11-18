@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Project">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decisions · WebC</title>
+<meta name="description" content="Why the licence, the name, the compiler floor and the version file are what they are.">
+<meta property="og:title" content="Decisions · WebC">
+<meta property="og:description" content="Why the licence, the name, the compiler floor and the version file are what they are.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/project/decisions.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Decisions · WebC">
+<meta name="twitter:description" content="Why the licence, the name, the compiler floor and the version file are what they are.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html" aria-current="true">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html" class="is-active" aria-current="page">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../project/contributing.html">Project</a><span class="crumbs__sep">/</span><span class="crumbs__here">Decisions</span></div>
+    <article class="article">
+      <h1 id="top">Decisions</h1>
+<p>One entry per decision that changed the shape of the project, in the order they were taken. The site's <code>decisions</code> page is generated from this file, one card per <code>## D&lt;n&gt;</code> heading.</p>
+<h2 id="d1-licence-apache-2-0">D1 — Licence: Apache-2.0<a class="h-anchor" href="#d1-licence-apache-2-0" aria-label="Link to this section">#</a></h2>
+<p>Taken before the repository was published, and before the first outside patch arrived.</p>
+<p>Apache-2.0 over MIT for the explicit patent grant and the NOTICE obligation: a framework that ships an HTTP server, an auth layer, a template engine and a database driver is the kind of thing a company's legal review reads before adopting, and the patent clause is what makes that review short. The cost is a slightly longer licence; the benefit is that the answer to &quot;can we ship this?&quot; is one word.</p>
+<p>The licence text in <code>LICENSE</code> is the canonical Apache License 2.0 from <code>https://www.apache.org/licenses/LICENSE-2.0.txt</code>, with only the copyright line in the appendix filled in. <code>NOTICE</code> carries the attribution and the list of libraries that are linked but never vendored. Every C source file carries <code>// SPDX-License-Identifier: Apache-2.0</code> on line 1, so the licence survives a file being copied out of the tree; <code>sh scripts/spdx.sh --check</code> fails when a file is missing it.</p>
+<h2 id="d2-the-name-stays-webc-and-there-is-no-npm-package">D2 — The name stays WebC, and there is no npm package<a class="h-anchor" href="#d2-the-name-stays-webc-and-there-is-no-npm-package" aria-label="Link to this section">#</a></h2>
+<p>&quot;WebC&quot; is also the name of 11ty's deprecated single-file web-component format and of Motion Canvas's compiler. The name is kept anyway: this is a C framework, not a web-component format, and one sentence of README answers the collision better than a rename would.</p>
+<p>npm and Node packaging are explicitly <strong>out of scope</strong>. WebC ships one static binary and a framework tree; there is no package to install into <code>node_modules</code> and no intention to make one. <code>node</code> appears in the requirements only as an optional local dependency of the JS-bridge and <code>check</code> test suites.</p>
+<h2 id="d3-linux-is-a-supported-platform-and-the-epoll-backend-is-the-default-there">D3 — Linux is a supported platform, and the epoll backend is the default there<a class="h-anchor" href="#d3-linux-is-a-supported-platform-and-the-epoll-backend-is-the-default-there" aria-label="Link to this section">#</a></h2>
+<p>The scheduler had two backends from the beginning — kqueue and epoll — but only kqueue was ever built, so the epoll one was dead code that had never met a compiler. Shipping a framework whose README says &quot;Linux is experimental&quot; is a promise to fix it later at a worse price, and the price turned out to be small: the split was three <code>#include</code>s, the <code>WC_UCTX_*</code> register fields for <code>aarch64</code> and <code>x86_64</code>, and the link flags.</p>
+<p><code>WC_EPOLL_NETPOLL</code> is now defined automatically on <code>__linux__</code> (<code>WC_NO_EPOLL_NETPOLL</code> opts out), so an app built with the documented house-rule command — <code>cc -std=c23 -I include app.c build/libwebc.a</code> — links on Linux without knowing that the flag exists. <code>-lsqlite3</code>, <code>-lz</code> and <code>-lpthread</code> are link flags on every platform, and TLS is found through <code>pkg-config</code> instead of the Homebrew prefix. The suite runs green on <code>ubuntu:24.04</code> (aarch64 and x86_64, clang 21) and the CI matrix leg is required, not <code>continue-on-error</code>: a red row that nobody reads is worse than no row.</p>
+<p>What Linux does <em>not</em> get yet is proof that the artefact works: <code>release.yml</code> has built linux <code>x86_64</code> and <code>aarch64</code> rows since before the port, but nothing ever unpacked the tarball and ran it. That smoke test is the next piece of release work; until it exists, a Linux user's supported path is the checkout.</p>
+<h2 id="d4-the-compiler-floor-is-clang-21-because-the-suite-uses-embed">D4 — The compiler floor is clang 21, because the suite uses <code>#embed</code><a class="h-anchor" href="#d4-the-compiler-floor-is-clang-21-because-the-suite-uses-embed" aria-label="Link to this section">#</a></h2>
+<p><code>#embed</code> is C23 and it is the only sane way to put the JS bridge and the wasi module into the CLI binary without a code generator step. Clang has had it since 19, GCC 15 shipped it, but the test suite is the binding constraint: <code>tests/dx3_test.c</code> embeds a file, so a compiler without <code>#embed</code> cannot run <code>make test</code> at all. The floor is therefore stated as <strong>clang 21</strong>, which is what the tree is developed and measured on and what CI pins. Saying &quot;18&quot; and then failing on the first test would be worse than asking for a newer compiler.</p>
+<h2 id="d5-leaksanitizer-is-off-by-default-on-linux-and-the-leaks-became-a-debt-gate">D5 — LeakSanitizer is off by default on Linux, and the leaks became a debt gate<a class="h-anchor" href="#d5-leaksanitizer-is-off-by-default-on-linux-and-the-leaks-became-a-debt-gate" aria-label="Link to this section">#</a></h2>
+<p>The suite builds with <code>-fsanitize=address,undefined</code>. On Linux that includes LeakSanitizer, which macOS's ASan does not have, so two lesson suites that had always passed on Darwin reported leaks the moment they ran on glibc — 25 KB in 9 allocations, all of them in <code>db_exec</code> and the migration path. They are real leaks, they are pre-existing, and they are not a port regression.</p>
+<p>Turning them into a red gate on day one would have blocked the entire Linux leg on work that has nothing to do with Linux. <code>cmd_test()</code> therefore sets <code>ASAN_OPTIONS=detect_leaks=0</code> on Linux unless the caller set it, and <code>make test-leaks</code> runs the same suite with <code>WEBC_TEST_LEAKS=1</code> to reproduce the report on demand. The debt is written down here rather than hidden: the goal is <code>make test-leaks</code> green and <code>make test</code> without the override.</p>
+<h2 id="d6-one-number-in-version-and-webc-new-writes-a-different-one">D6 — One number, in <code>VERSION</code>, and <code>webc new</code> writes a different one<a class="h-anchor" href="#d6-one-number-in-version-and-webc-new-writes-a-different-one" aria-label="Link to this section">#</a></h2>
+<p>The tree said <code>0.1.0</code> in eleven places: the CLI's <code>--version</code>, the LSP and MCP <code>serverInfo</code> handshakes, the site's header and footer, the editor extension's <code>package.json</code>, the scaffold templates, and a Homebrew formula. Any release would have updated eight of them.</p>
+<p>The number now lives in <code>VERSION</code> at the repository root and reaches the CLI as <code>-DWEBC_VERSION</code> (with a <code>0.0.0-dev</code> fallback in <code>&lt;webc/core.h&gt;</code> so a hand-written <code>cc</code> line still compiles), the site through <code>website/build.py</code>, and the extension through <code>tools/check-version.py</code>, which is a gate rather than a convention: it fails when the file, the built binary, the committed pages, <code>editors/vscode/package.json</code> or an exact tag disagree, and it also refuses a <em>literal</em> equal to the current version inside any C source, because that is a number that looks right today and wrong on release day.</p>
+<p><code>APP_VERSION_DEFAULT</code> stays a literal and stays <code>0.1.0</code>: it is the version <code>webc new</code> writes into a fresh app's <code>webc.json</code>, which is a different question from the framework's own number. Collapsing the two would have every generated project claim to be the toolchain.</p>
+<p><code>Formula/webc.rb</code> is gone. It pointed at <code>webc-darwin-arm64.tar.gz</code> (the artefacts are <code>darwin-aarch64</code>), at a <code>FILL_ME_IN</code> tag and at sixty-four zeroes, and a half-filled formula in a public repository is worse than no formula: <code>brew</code> users get the same <code>curl | sh</code> line. A tap is worth doing on the day there is a tap, generated from the published digest.</p>
+<h2 id="d7-the-installer-refuses-a-tarball-nobody-vouched-for">D7 — The installer refuses a tarball nobody vouched for<a class="h-anchor" href="#d7-the-installer-refuses-a-tarball-nobody-vouched-for" aria-label="Link to this section">#</a></h2>
+<p><code>install.sh</code> fetched a tarball and unpacked it into <code>~/.local</code> without ever looking at the <code>.sha256</code> the release publishes beside it. The digest names the <em>platform</em> file (<code>webc-darwin-aarch64.tar.gz</code>) while the download lands as <code>webc.tar.gz</code>, so <code>shasum -c</code> cannot be used directly — the digests are compared instead (<code>sha256sum</code> where it exists, <code>shasum -a 256</code> on the macOS boxes that only have that), and a missing <code>.sha256</code> is a refusal rather than a warning: <code>set -eu</code> turns a digest it failed to compute into an abort, not an empty string that matches.</p>
+<p>That check is now tested, because a comparison nobody has seen fail is a comparison that does not work: <code>scripts/test-install.sh</code> builds a fake release in a temp directory, serves it over <code>file://</code> (through <code>WEBC_BASE_URL</code>, which also makes mirrors and air-gapped installs possible) and drives three cases — matching digest installs and the installed CLI reports the version, one changed byte is refused with exit 1 and nothing unpacked, and an unpublished digest is refused too. <code>make install-test</code>, in CI.</p>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/docs/decisions.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../project/security.html"><span class="pager__dir">Previous</span><span class="pager__title">Security</span></a>
+<a class="pager__link pager__link--next" href="../project/roadmap.html"><span class="pager__dir">Next</span><span class="pager__title">Roadmap</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#d1-licence-apache-2-0">D1 — Licence: Apache-2.0</a></li>
+<li class="toc__l2"><a href="#d2-the-name-stays-webc-and-there-is-no-npm-package">D2 — The name stays WebC, and there is no npm package</a></li>
+<li class="toc__l2"><a href="#d3-linux-is-a-supported-platform-and-the-epoll-backend-is-the-default-there">D3 — Linux is a supported platform, and the epoll backend is the default there</a></li>
+<li class="toc__l2"><a href="#d4-the-compiler-floor-is-clang-21-because-the-suite-uses-embed">D4 — The compiler floor is clang 21, because the suite uses #embed</a></li>
+<li class="toc__l2"><a href="#d5-leaksanitizer-is-off-by-default-on-linux-and-the-leaks-became-a-debt-gate">D5 — LeakSanitizer is off by default on Linux, and the leaks became a debt gate</a></li>
+<li class="toc__l2"><a href="#d6-one-number-in-version-and-webc-new-writes-a-different-one">D6 — One number, in VERSION, and webc new writes a different one</a></li>
+<li class="toc__l2"><a href="#d7-the-installer-refuses-a-tarball-nobody-vouched-for">D7 — The installer refuses a tarball nobody vouched for</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

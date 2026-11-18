@@ -1,0 +1,32 @@
+{
+  "name": "board",
+  "version": "0.1.0",
+  "database": "sqlite:data/board.db",
+  "port": 8080,
+  "dev": {
+    "port": 9999
+  },
+  "server": [
+    "src/server.c"
+  ],
+  "shared": [
+    "src/view.c"
+  ],
+  "client": [
+    "src/client.c"
+  ],
+  "boot": {
+    "title": "Board",
+    "lang": "en",
+    "css": [
+      "/public/style.css",
+      "/public/stdlib/overlay.css"
+    ],
+    "el": "#root",
+    "data": "/api/board",
+    "hydrate": true
+  },
+  "budget": {
+    "wasm": 53248
+  }
+}

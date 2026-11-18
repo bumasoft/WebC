@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Start">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install · WebC</title>
+<meta name="description" content="A compiler, the repository, and the one command that builds an app.">
+<meta property="og:title" content="Install · WebC">
+<meta property="og:description" content="A compiler, the repository, and the one command that builds an app.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/docs/install.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Install · WebC">
+<meta name="twitter:description" content="A compiler, the repository, and the one command that builds an app.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html" aria-current="true">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html" class="is-active" aria-current="page">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><span class="crumbs__here">Install</span></div>
+    <article class="article">
+      <h1 id="top">Install</h1>
+<p>Two doors, both one command. The first is the one a curious developer meets — a prebuilt CLI and framework tree, no compiler needed until the first <code>webc dev</code>:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">curl -fsSL https://raw.githubusercontent.com/bumasoft/WebC/main/scripts/install.sh | sh
+# add --wasi for the browser half, --ref vX.Y.Z to pin a release</code></pre></div>
+<p>That lays out <code>~/.local/share/webc/&lt;version&gt;/</code> (the CLI, <code>libwebc.a</code>, the headers, the bridge, the skills, the docs) and symlinks <code>~/.local/bin/webc</code> into it — and the CLI finds its own tree through the symlink, so nothing is baked in and the tree can move. <code>WEBC_HOME</code> points it at a checkout instead, any time.</p>
+<p>There is no Homebrew tap yet, and no half-filled formula pretending there is one: <code>brew</code> users get the same <code>curl | sh</code> line, and the tarball it unpacks is the one a formula would pour.</p>
+<p>The second door is the checkout — for developing on the framework itself, or when you prefer the build. WebC is a C23 project with one external library (sqlite3) and one optional toolchain (wasi-sdk, for the browser half). Nothing else is installed, vendored or fetched at build time.</p>
+<h2 id="what-you-need">What you need<a class="h-anchor" href="#what-you-need" aria-label="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Piece</th><th>Why</th><th>Test</th></tr></thead><tbody><tr><td>A C23 compiler</td><td><code>nullptr</code>, <code>__VA_OPT__</code>, <code>[[maybe_unused]]</code>, <code>#embed</code></td><td><code>clang --version</code> — 21 or newer, which is where <code>#embed</code> lands and what the suite needs. <code>gcc --version</code> — 15 or newer takes <code>-std=c23</code>, but the suite is not run against it</td></tr><tr><td><code>make</code></td><td>builds the library, the CLI and the examples</td><td><code>make --version</code></td></tr><tr><td>sqlite3</td><td>the default database</td><td><code>pkg-config --exists sqlite3</code></td></tr><tr><td>wasi-sdk</td><td>only for an app with a browser half</td><td><code>ls ~/.local/share/wasi-sdk-*</code></td></tr><tr><td>node</td><td>only for the bridge and check test suites</td><td><code>node --version</code></td></tr></tbody></table></div>
+<p>macOS (Apple Silicon and Intel) and Linux (x86_64 and aarch64) both build and pass <code>make test</code> in CI; the prebuilt artefacts are macOS today and Linux builds from the checkout. The scheduler uses kqueue on macOS and epoll on Linux, and the Linux leg is what exercises the epoll backend. Windows is not supported.</p>
+<h2 id="build-the-framework">Build the framework<a class="h-anchor" href="#build-the-framework" aria-label="Link to this section">#</a></h2>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">git clone https://github.com/bumasoft/WebC.git
+cd WebC
+make                 # libwebc.a, build/webc, the examples, the tests
+make test            # the whole suite
+make install         # the same tree install.sh lays out, into ~/.local</code></pre></div>
+<p><code>make install</code> needs no sudo: it writes <code>~/.local/share/webc/&lt;version&gt;/</code> (binary, library, headers, assets, skills, docs, the lessons) and symlinks <code>~/.local/bin/webc</code> into it — the shape the CLI resolves itself through. <code>make install PREFIX=/usr/local</code> for a system install, <code>make uninstall</code> to take it back out.</p>
+<p><code>make</code> produces three things worth knowing about:</p>
+<ul><li><code>build/libwebc.a</code> — the framework, one static library;</li><li><code>build/webc</code> — the CLI, which is also how you build an app;</li><li><code>build/include/</code> — the generated headers (<code>webc.json</code> schemas, wasm glue).</li></ul>
+<p>Put the CLI on your path:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">export PATH=&quot;$PWD/build:$PATH&quot;      # or add it to ~/.zshrc</code></pre></div>
+<h2 id="check-the-install">Check the install<a class="h-anchor" href="#check-the-install" aria-label="Link to this section">#</a></h2>
+<div class="code" data-lang="console"><div class="code__bar"><span class="code__lang">console</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-console">$ webc doctor
+webc 0.1.0 (framework at /Users/you/WebC)
+  compiler   Apple clang version 21.0.0
+  libc23     ok
+  sqlite3    ok
+  wasi-sdk   ok (/Users/you/.local/share/wasi-sdk-34.0-arm64-macos)
+  node       ok
+  library    ok (/Users/you/WebC/build/libwebc.a)
+  project    no webc.json here (framework checkout, not an app)</code></pre></div>
+<p><code>doctor</code> checks the compiler actually accepts the dialect, that the library is built, and where the optional pieces are. If <code>wasi-sdk</code> says <em>not found</em>, a server-only app still builds and runs — only <code>--template=web</code> and <code>--template=fullstack</code> need it.</p>
+<h2 id="optional-services">Optional services<a class="h-anchor" href="#optional-services" aria-label="Link to this section">#</a></h2>
+<p>The defaults are deliberately boring: a file database in <code>data/</code>, no cache, no queue.</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">DATABASE_URL=postgres://user:pass@localhost/app    # postgres, no libpq
+DATABASE_URL=mysql://user:pass@localhost/app       # MySQL or MariaDB, no libmysqlclient
+REDIS_URL=redis://localhost:6379                   # the query cache and pub/sub
+WEBC_QUERY_CACHE=1                                 # cache result sets in Redis
+WEBC_SECRET=$(openssl rand -hex 32)                # sign sessions</code></pre></div>
+<p>There is no separate server to install for sqlite — it is linked in. Postgres, MySQL and Redis speak their wire protocols directly, so <code>libpq</code>, <code>libmysqlclient</code> and <code>hiredis</code> are not dependencies either.</p>
+<h2 id="the-editor">The editor<a class="h-anchor" href="#the-editor" aria-label="Link to this section">#</a></h2>
+<p><code>webc lsp</code> is the language server, and it is the binary you just built — no Node, no second download. In VS Code (or Cursor, or Antigravity) run it out of the tree once:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">code --extensionDevelopmentPath=&quot;$PWD/editors/vscode&quot; --new-window ~/my-app</code></pre></div>
+<p><a href="../guides/editor.html">A whole guide</a> covers installing it for good, Neovim and Emacs, the three settings, and living beside clangd.</p>
+<h2 id="next">Next<a class="h-anchor" href="#next" aria-label="Link to this section">#</a></h2>
+<ul><li><strong><a href="quickstart.html">Quickstart</a></strong> — scaffold, run, change, test.</li><li><strong><a href="../guides/api.html">The API boundary</a></strong> — the OpenAPI document and the typed client, generated.</li><li><strong><a href="../guides/orm.html">The ORM</a></strong> — the query API a model gives you.</li><li><strong><a href="layout.html">Project layout</a></strong> — what <code>webc new</code> wrote and why.</li><li><strong><code>webc learn</code></strong> — five lessons, one idea each; a lesson's own gate fails until the edit lands.</li><li><strong><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></strong> — the dictionary, if those are the names you know.</li><li><strong><a href="../guides/agents.html">Agentic coding</a></strong> — if an agent will be doing the writing, start here.</li></ul>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/website/src/content/install.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../docs/index.html"><span class="pager__dir">Previous</span><span class="pager__title">What is WebC?</span></a>
+<a class="pager__link pager__link--next" href="../docs/quickstart.html"><span class="pager__dir">Next</span><span class="pager__title">Quickstart</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#what-you-need">What you need</a></li>
+<li class="toc__l2"><a href="#build-the-framework">Build the framework</a></li>
+<li class="toc__l2"><a href="#check-the-install">Check the install</a></li>
+<li class="toc__l2"><a href="#optional-services">Optional services</a></li>
+<li class="toc__l2"><a href="#the-editor">The editor</a></li>
+<li class="toc__l2"><a href="#next">Next</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

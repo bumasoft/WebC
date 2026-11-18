@@ -1,0 +1,65 @@
+name: Feature request
+description: A thing WebC should do, and does not.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        WebC is deliberately small: what is here is here because something in a real app needed it,
+        and what is not here is usually not here on purpose. `docs/reference.md` §12i (the standard
+        library) and `docs/decisions.md` are the two places where "no" is already written down.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem, in the app you are actually writing
+      description: >
+        Not the API you want — the thing you were trying to do when the framework got in the way.
+        The API comes next, and is usually not what the first draft of this box says.
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: What you do today
+      description: The workaround says how much the gap costs. "I wrote 40 lines of SQL by hand" is a stronger argument than "it would be nice if".
+    validations:
+      required: false
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where it would live
+      options:
+        - core (strings, arenas, collections, tasks)
+        - models and the ORM
+        - the server and routing
+        - the views, signals and the DOM
+        - the browser half (wasm, hydration, the JS seam)
+        - a driver (sqlite, postgres, mysql, redis)
+        - the CLI, the LSP or the MCP server
+        - the docs
+        - I do not know
+    validations:
+      required: true
+
+  - type: textarea
+    id: cost
+    attributes:
+      label: What it would cost
+      description: >
+        Every name here is in `api.txt`, and every kilobyte is in `make budget`. If your idea adds a
+        public name, say why it earns one; if it adds bytes to the browser half, note that the
+        bundle floor is a feature.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contrib
+    attributes:
+      label: Would you write it?
+      options:
+        - label: I would like to send a pull request for this.
+        - label: I would test it if someone else wrote it.
+        - label: I am only reporting the problem.

@@ -1,0 +1,21 @@
+/* table: header buttons that look like headers, and a pager that stays out of the way. */
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line, #eee); }
+th[data-align="right"], td[data-align="right"] { text-align: right; }
+th[data-align="center"], td[data-align="center"] { text-align: center; }
+.th-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0; border: 0; background: none; color: inherit; font: inherit; font-weight: 600;
+  cursor: pointer;
+}
+.th-btn::after { content: "↕"; opacity: 0.25; font-size: 11px; }
+.th-btn.on::after { opacity: 1; }
+th[aria-sort="ascending"] .th-btn::after { content: "↑"; }
+th[aria-sort="descending"] .th-btn::after { content: "↓"; }
+tbody tr:hover { background: color-mix(in srgb, currentColor 4%, transparent); }
+
+.pager { display: flex; align-items: center; gap: 10px; padding: 10px 0; font-size: 13px; }
+.pager-count { margin-right: auto; color: color-mix(in srgb, currentColor 60%, transparent); }
+.pager-btn { padding: 4px 10px; border: 1px solid var(--line, #ddd); border-radius: 7px; background: none; color: inherit; font: inherit; cursor: pointer; }
+.pager-btn.off { opacity: 0.4; pointer-events: none; }
+.pager-page { font-variant-numeric: tabular-nums; }

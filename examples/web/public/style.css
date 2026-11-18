@@ -1,0 +1,15 @@
+:root { color-scheme: light dark; }
+body { font: 16px/1.5 system-ui, sans-serif; margin: 2rem auto; max-width: 34rem; padding: 0 1rem; }
+h1 { font-size: 1.4rem; letter-spacing: -0.01em; }
+.count { color: #666; font-size: 0.85rem; margin: 0 0 1rem; }
+form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+input[type=text], input:not([type]) { flex: 1; padding: 0.5rem 0.6rem; font: inherit; }
+button { padding: 0.5rem 0.8rem; font: inherit; cursor: pointer; }
+ul { list-style: none; padding: 0; }
+li { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0; border-bottom: 1px solid #ddd4; }
+li span { flex: 1; }
+li.done span { text-decoration: line-through; opacity: 0.55; }
+li .tick { border: 0; background: none; padding: 0.2rem 0.4rem; }
+li .x { border: 0; background: none; opacity: 0.4; }
+li .x:hover { opacity: 1; color: #c33; }
+.hint { margin-top: 2rem; color: #777; font-size: 0.8rem; }

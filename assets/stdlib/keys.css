@@ -1,0 +1,11 @@
+/* keys: a shortcut sheet is a description list, and it reads as one only as a grid. */
+.keys {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 9px 14px;
+  align-items: baseline;
+  margin: 0;
+}
+.keys dt { display: flex; gap: 4px; }
+.keys dd { margin: 0; }
+.keys-title { margin: 0 0 14px; font-size: 17px; }

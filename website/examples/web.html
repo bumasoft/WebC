@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Examples">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Web · WebC</title>
+<meta name="description" content="A client-only page: the same views compiled to wasm.">
+<meta property="og:title" content="Web · WebC">
+<meta property="og:description" content="A client-only page: the same views compiled to wasm.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/examples/web.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Web · WebC">
+<meta name="twitter:description" content="A client-only page: the same views compiled to wasm.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html">Reference</a>
+<a href="../examples/index.html" aria-current="true">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html" class="is-active" aria-current="page">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../examples/index.html">Examples</a><span class="crumbs__sep">/</span><span class="crumbs__here">Web</span></div>
+    <article class="article">
+      <h1 id="top">Web</h1>
+<p class="lede">A client-only page: the same views compiled to wasm.</p>
+<div class="runbar"><code>webc dev</code><span>run it from <code>examples/web</code></span><a class="runbar__link" href="https://github.com/bumasoft/WebC/tree/main/examples/web">open on GitHub</a></div>
+<figure class="figure"><img src="../assets/media/examples-web.png" alt="The Web example running in a browser" loading="lazy" decoding="async"><figcaption>The real app, from <code>examples/web</code> — screenshot taken from <code>webc dev</code>.</figcaption></figure>
+<h2 id="file-webc-json">webc.json</h2>
+<div class="code" data-lang="json"><div class="code__bar"><span class="code__name">examples/web/webc.json</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-json">{
+  &quot;name&quot;: &quot;web&quot;,
+  &quot;mode&quot;: &quot;web&quot;,
+  &quot;target&quot;: &quot;wasm&quot;,
+  &quot;client&quot;: [&quot;src/app.c&quot;],
+  &quot;dev&quot;: { &quot;port&quot;: 9999 }
+}</code></pre></div>
+<h2 id="file-src-app-c">src/app.c</h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__name">examples/web/src/app.c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// WebC — a todo list that lives entirely in the browser.
+//
+// This is the &quot;no server half&quot; shape: there is no routes file and no database,
+// because nothing here needs one. `client_main` is the whole entry point, and the
+// wasm module is the app. The server-rendered counterpart is examples/todo.
+#include &lt;webc/web.h&gt;
+#include &lt;webc/host.h&gt;
+#include &quot;notes.h&quot;
+
+static VecNote g_notes;
+static i64 g_next_id = 1;
+
+// The typed field, bound straight to a context field: no action, no signal —
+// bind_ctx persists the text into `ui.draft` as the reader types, quietly. The view
+// never draws the value back (a value attribute is only the default, and the browser
+// owns the live one), so `add` clears the box through the same host the rest of the
+// app uses for the document: field_value(), see &lt;webc/host.h&gt;.
+typedef struct {
+  Text draft;
+} Ui;
+static Ui ui;
+
+// ---------------------------------------------------------------- what a click does
+
+action(add) {
+  if (!ui.draft || !*ui.draft) return;
+  push(g_notes, ((Note){.id = g_next_id++, .title = ui.draft}));
+  ui.draft = &quot;&quot;;
+  field_value(&quot;draft&quot;, str_lit(&quot;&quot;)); // the box the reader typed into: theirs, not a render's
+  focus_hook(&quot;draft&quot;);               // ready for the next one, without a click
+}
+
+action(toggle, Note *n) {
+  n-&gt;done = !n-&gt;done;
+}
+
+action(remove, Note *n) {
+  for (i32 i = 0; i &lt; vlen(&amp;g_notes); i++)
+    if (vat(&amp;g_notes, i).id == n-&gt;id) {
+      remove_at(g_notes, i);
+      break;
+    }
+}
+
+// ---------------------------------------------------------------- the view
+
+static i64 left(void) {
+  i64 n = 0;
+  for_each(x, g_notes) if (!x-&gt;done) n++;
+  return n;
+}
+
+view(App) {
+  el(&quot;main&quot;) {
+    el(&quot;h1&quot;) { text(&quot;Todos, in wasm&quot;); }
+    el(&quot;p&quot;) { class_(&quot;count&quot;); text(&quot;%lld left&quot;, left()); }
+
+    el(&quot;form&quot;) { named(&quot;new&quot;);
+      el(&quot;input&quot;) { named_field(&quot;draft&quot;); placeholder(&quot;what needs doing?&quot;); }
+      el(&quot;button&quot;) { type_(&quot;button&quot;); on_click(add); text(&quot;Add&quot;); }
+    }
+
+    el(&quot;ul&quot;) {
+      for_each(n, g_notes) {
+        el(&quot;li&quot;) { class_(n-&gt;done ? &quot;done&quot; : &quot;&quot;);
+          el(&quot;button&quot;) { class_(&quot;tick&quot;); on_click(toggle); text(n-&gt;done ? &quot;✓&quot; : &quot;○&quot;); }
+          el(&quot;span&quot;) { text(n-&gt;title); }
+          el(&quot;button&quot;) { class_(&quot;x&quot;); on_click(remove); text(&quot;×&quot;); }
+        }
+      }
+    }
+
+    el(&quot;p&quot;) { class_(&quot;hint&quot;); text(&quot;every click crossed the bridge into wasm&quot;); }
+  }
+}
+
+// ---------------------------------------------------------------- the client half
+//
+// `webc dev` keeps the page and swaps the module on every save. Signals cross that swap
+// by themselves; this example's `g_notes` is a plain vector, so a save starts the list
+// over — an app that wants it kept defines `webc_dev_state_save()` and
+// `webc_dev_state_load()` (see &lt;webc/webc_dev.h&gt;). They are dev-only and optional.
+
+client_main {
+  mount(App, &quot;#root&quot;);
+  bind_ctx(&quot;draft&quot;, ui, draft); // the input named_field(&quot;draft&quot;) in the view
+  bind(&quot;new&quot;, &quot;submit&quot;, add);   // Enter submits the form; the bridge owns the default
+  return 0;                     // the buttons wire themselves, in the view
+}</code></pre></div>
+<h2 id="file-src-notes-h">src/notes.h</h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__name">examples/web/src/notes.h</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// The client-only example's data: one model, one vector, nothing about a server.
+#pragma once
+#include &lt;webc/web.h&gt;
+
+WEBC_MODEL(Note, (id, i64, .pk = true),
+                 (title, Text, .required = true, .max = 200),
+                 (done, bool))
+
+Vec(Note)</code></pre></div>
+<h2 id="file-public-index-html">public/index.html</h2>
+<p class="muted">Not the app's code: this is the document <code>webc new</code> writes for a browser-only project. You edit the title and the stylesheet link; the mount point and <code>WebC.start()</code> are the scaffold's and stay as they are.</p>
+<div class="code" data-lang="html"><div class="code__bar"><span class="code__name">examples/web/public/index.html</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;WebC · todos, in wasm&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;/style.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- the component renders here, from wasm; nothing on this page is server-rendered --&gt;
+  &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+  &lt;script src=&quot;/webc.js&quot;&gt;&lt;/script&gt;
+  &lt;script&gt;
+    (async () =&gt; {
+      await WebC.start({ el: '#root', wasm: '/app.wasm' });
+    })().catch((e) =&gt; {
+      document.querySelector('#root').textContent = 'wasm failed: ' + e.message;
+      console.error(e);
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+<h2 id="file-public-style-css">public/style.css</h2>
+<div class="code" data-lang="css"><div class="code__bar"><span class="code__name">examples/web/public/style.css</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-css">:root { color-scheme: light dark; }
+body { font: 16px/1.5 system-ui, sans-serif; margin: 2rem auto; max-width: 34rem; padding: 0 1rem; }
+h1 { font-size: 1.4rem; letter-spacing: -0.01em; }
+.count { color: #666; font-size: 0.85rem; margin: 0 0 1rem; }
+form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+input[type=text], input:not([type]) { flex: 1; padding: 0.5rem 0.6rem; font: inherit; }
+button { padding: 0.5rem 0.8rem; font: inherit; cursor: pointer; }
+ul { list-style: none; padding: 0; }
+li { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0; border-bottom: 1px solid #ddd4; }
+li span { flex: 1; }
+li.done span { text-decoration: line-through; opacity: 0.55; }
+li .tick { border: 0; background: none; padding: 0.2rem 0.4rem; }
+li .x { border: 0; background: none; opacity: 0.4; }
+li .x:hover { opacity: 1; color: #c33; }
+.hint { margin-top: 2rem; color: #777; font-size: 0.8rem; }</code></pre></div>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/tree/main/examples/web" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../examples/accounts.html"><span class="pager__dir">Previous</span><span class="pager__title">Accounts</span></a>
+<a class="pager__link pager__link--next" href="../examples/js.html"><span class="pager__dir">Next</span><span class="pager__title">JS interop</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#file-webc-json">webc.json</a></li>
+<li class="toc__l2"><a href="#file-src-app-c">src/app.c</a></li>
+<li class="toc__l2"><a href="#file-src-notes-h">src/notes.h</a></li>
+<li class="toc__l2"><a href="#file-public-index-html">public/index.html</a></li>
+<li class="toc__l2"><a href="#file-public-style-css">public/style.css</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

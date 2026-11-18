@@ -1,0 +1,20 @@
+/* form: a field is label, control, error — in that order, and the error is where the
+   reader is looking. The kit emits the structure; this is only its shape. */
+.field { display: grid; gap: 5px; margin: 0 0 14px; }
+.field > label { font-size: 13px; font-weight: 600; }
+.field input, .field select, .field textarea {
+  padding: 8px 10px; border: 1px solid var(--line, #ddd); border-radius: 8px;
+  background: var(--bg, #fff); color: inherit; font: inherit;
+}
+.field input[type="checkbox"] { justify-self: start; width: 18px; height: 18px; }
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible {
+  outline: 2px solid var(--acc, #3d4ee0); outline-offset: 1px; border-color: transparent;
+}
+.field.err input, .field.err select, .field.err textarea { border-color: #cc3b3b; }
+.field-err { margin: 0; font-size: 12.5px; color: #cc3b3b; }
+.form-errors {
+  margin: 0 0 16px; padding: 10px 14px 10px 28px;
+  border-radius: 9px; background: color-mix(in srgb, #cc3b3b 10%, transparent);
+  color: inherit; font-size: 13.5px;
+}
+.form-errors a { color: inherit; font-weight: 600; }

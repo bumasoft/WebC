@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Reference">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>9. Database · WebC</title>
+<meta name="description" content="Reference §9.">
+<meta property="og:title" content="9. Database · WebC">
+<meta property="og:description" content="Reference §9.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/reference/database.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="9. Database · WebC">
+<meta name="twitter:description" content="Reference §9.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html" aria-current="true">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html" class="is-active" aria-current="page">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../reference/index.html">Reference</a><span class="crumbs__sep">/</span><span class="crumbs__here">9. Database</span></div>
+    <article class="article">
+      <h1 id="top">9. Database</h1>
+<p class="page-kicker" id="database">Reference · <code>docs/reference.md</code></p><p>Three drivers open from one URL — sqlite (a path), postgres, and MySQL/MariaDB (§9a5). Handles below are <code>WDB *</code>; the statements are the raw layer. <strong>The ORM is §9a to §9a4</strong> and it is what an app should be written in: a typed filter, one row, a relation, a page, a tree of rows. Raw SQL is for the statement that is a report, not for the tenth <code>select * where id = ?</code>.</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WDB *db = db_open(&quot;sqlite:data/app.db&quot;);      // or postgres://…, mysql://…
+db_insert(db, Todo, &amp;t);                       // INSERT with named params underneath
+                                             // (returns bool; db_insert_into(db, T_modelof(), &amp;t, &amp;id)
+                                             //  also reports the new key)
+WRes r = db_exec(db, q(&quot;select * from todos where done = :d&quot;, .d = false));
+i64 n = row_i64(&amp;r.rows[0], &quot;id&quot;);
+str s = row_str(&amp;r.rows[0], &quot;title&quot;);</code></pre></div>
+<p>Lists come back in the order you ask for — <code>db_all()</code> has no opinion of its own, which made a front page look right on sqlite and wrong somewhere else:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">VecStory *latest = db_all_ordered(db, Story, &quot;published desc&quot;);
+VecStory *top    = db_all_where(db, Story, &quot;where views &gt; ? order by views desc&quot;, qy);</code></pre></div>
+<ul><li><code>:name</code> placeholders are rewritten to <code>?</code> (sqlite) or <code>$n</code> (postgres and MySQL); the same<p>code runs on all three. The rewrite lexes: a colon inside a string literal, a quoted identifier or a comment is left alone, so <code>to_char(now(), 'HH24:MI:SS')</code> survives.</p></li><li><code>db_insert(db, T, &amp;t, &amp;id)</code> reports the new key from every driver: sqlite from its rowid,<p>postgres because the statement asks with <code>returning</code>, MySQL from the OK packet — which is the <code>returning</code> capability in §9a5, not three code paths in the app.</p></li><li><code>db_all(db, Model)</code> returns <code>Vec&lt;Model&gt; *</code>.</li><li><strong>A transaction belongs to a session, and a session to a request.</strong> The first statement a<p>request makes pins one connection for that task; every later statement — and any transaction — runs on it, and the connection goes back to the pool when the request ends, even if the handler panicked. Two requests can therefore never sit inside each other's <code>BEGIN</code>/<code>COMMIT</code>: when they can, a <code>rollback</code> undoes another request's committed insert.</p></li></ul>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">tx_scope(db) {                       // BEGIN on this request's own connection
+  db_save(Order, &amp;o);
+  if (!charge(o.id)) tx_commit_here();   // …or let the scope roll back
+}                                    // no commit → ROLLBACK
+
+tx_scope(db) { ... tx_commit_here(); }</code></pre></div>
+<p><code>tx_scope(...) { … }</code> takes a block. A nested scope is a <code>SAVEPOINT</code>, so an inner failure can roll back alone (<code>tx_rollback_here()</code>), and committing a scope that is not open is a failure with a message in <code>WTx::err</code>, not a silent <code>false</code>: a commit that quietly does not commit is how a write vanishes. <code>tx_begin(db)</code> / <code>db_begin</code>-style handles remain for code that must end a transaction in a different function than it started.</p>
+<ul><li>A task that ends inside a transaction has it rolled back and its connection returned (a<p>warning names the task): <code>fail()</code> and a panic both unwind past the scope's cleanup.</p></li><li>Migrations: <code>migrations_apply(&amp;(WMigrate){ .db = db, .dir = &quot;migrations&quot; })</code>, files<p>applied in filename order, recorded in <code>schema_migrations</code>. A migration is SQL, so it carries the dialect of one database: postgres needs <code>bigserial</code> where sqlite wants <code>integer primary key autoincrement</code>. Put the other spelling next to it as <code>0001_todos.postgres.sql</code> (or <code>.sqlite.sql</code>); it is used instead of <code>0001_todos.sql</code> when present, and the same name is recorded, so one sequence of migrations serves every dialect — <code>.sqlite.sql</code>, <code>.postgres.sql</code>, <code>.mysql.sql</code>. <code>examples/todo</code> and <code>examples/accounts</code> carry all three spellings. A file may carry several statements: a query with no parameters goes out on the server's simple protocol, which is the one that takes them, so nothing about the file depends on the driver.</p></li><li><strong>A migration's column type follows how the field is <em>stored</em>, not how it reads.</strong> An enum<p>field (<code>RPlan</code>, <code>RKind</code>) is stored as its <strong>name</strong> — <code>&quot;balanced&quot;</code>, <code>&quot;stake&quot;</code> — so its column is <code>text</code>, never <code>integer</code>; a <code>bool</code> is <code>boolean</code> (or <code>tinyint(1)</code> on MySQL). SQLite accepts a name in an <code>integer</code> column and will not tell you, which is how an app can have a postgres migration that has never once run: <code>invalid input syntax for type integer: &quot;balanced&quot;</code>. Money stays integer cents, and an indexed text column is <code>varchar(190)</code> where MySQL needs a length.</p></li><li>The pool opens connections on demand, up to <code>WC_DB_POOL</code> (default: the number of<p>processors, at most 256), and a task waiting for one parks rather than spinning the CPU. Waiting is FIFO and bounded: after <code>db_pool_config(max, acquire_ms)</code> milliseconds (<code>WC_DB_ACQUIRE_MS</code>, default 5000) the request is refused with a message that names the pool size instead of hanging until the client gives up. <code>db_pool_size(db)</code> reports what is open.</p></li><li><strong>The postgres driver does not block a thread.</strong> Its socket I/O parks like every other<p>fd in the runtime, so a slow query holds a connection, not a processor: 64 concurrent <code>select pg_sleep(0.3)</code> finish in one wave rather than in batches of <code>nproc</code>. A statement also <em>stops</em> when its request is cancelled — the session carries <code>req-&gt;ctx</code>, and the driver sends a protocol <code>CancelRequest</code> for the backend, so <code>mw_timeout_ms()</code> can answer 504 without waiting for a query it already gave up on. That connection is then closed and its slot recycled; a lost connection no longer poisons the pool.</p></li><li>TLS to postgres follows libpq: <code>?sslmode=disable|prefer|require|verify-ca|verify-full</code><p>(default <code>prefer</code>, or <code>WEBC_PG_SSLMODE</code>), with <code>sslrootcert=</code> for the verify modes. A build without TLS refuses <code>require</code> at startup instead of sending a password in the clear; managed postgres, which rejects plaintext clients, is the reason this exists.</p></li><li>A null handle is a refusal, not a crash: <code>db_insert_into(nullptr, …)</code> and the model<p>helpers return an error naming <code>DATABASE_URL</code> instead of dereferencing it.</p></li></ul>
+<h2 id="9a-a-filter-you-can-read-and-one-row-by-one-field">9a. A filter you can read, and one row by one field<a class="h-anchor" href="#9a-a-filter-you-can-read-and-one-row-by-one-field" aria-label="Link to this section">#</a></h2>
+<p>Asking for one row by a field the long way round is a query built only to carry the value:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WQuery *qy = q(&quot;select 1&quot;);             // a statement with no meaning
+q_str(qy, &quot;s&quot;, slug);                   // whose only job is to hold `slug`
+const Section *sec = db_find(Section, &quot;slug = :s&quot;, qy);</code></pre></div>
+<p>Nothing checks the field name, nothing checks the operator, and you have to know who owns the query's arena. Three spellings replace it, one per shape of question.</p>
+<p><strong>One field, one value.</strong> The field is checked against the model — a typo panics and lists the fields that exist instead of returning no rows — and the value is always a bound parameter:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">const Section *sec = db_by(Section, &quot;slug&quot;, slug);
+VecStory *mine     = db_all_by(Story, &quot;section&quot;, str_lit(&quot;science&quot;));
+i64        n       = db_count_by(Story, &quot;section&quot;, str_lit(&quot;science&quot;));</code></pre></div>
+<p>The value may be a <code>str</code>, a <code>const char *</code> or an integer; a string literal goes through <code>str_lit()</code> (<code>_Generic</code> does not decay an array). Each takes a <code>WDB *</code> first when you are not using the default handle: <code>db_by(db, Todo, &quot;id&quot;, 3)</code>.</p>
+<p><strong>More than one condition.</strong> <code>WWhere</code> names the field in the macro, so the compiler checks it, and the primary key column comes from the model, not from a string:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WWhere w;
+ww_init(&amp;w, nullptr);
+ww_eq_str(&amp;w, Story, section, value);
+ww_order(&amp;w, Story, published_at, true);
+ww_limit(&amp;w, 2, 0);                     // the query cuts; the caller stops truncating
+
+VecStory *list = db_all_w(db_default(), Story, &amp;w);   // rows, ordered and limited
+Story    *one  = db_one(db_default(), Story, &amp;w);     // the first row, or null
+i64       n    = db_count_w(db_default(), Story, &amp;w); // how many, without reading them
+ww_free(&amp;w);</code></pre></div>
+<p><code>ww_or_begin()</code> / <code>ww_contains()</code> / <code>ww_or_end()</code> make one question out of several columns instead of filtering the whole table in memory:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">ww_or_begin(&amp;w);
+ww_contains(&amp;w, Story, title, qtext);   // lower(col) like lower(:p) escape '!'
+ww_contains(&amp;w, Story, dek,   qtext);
+ww_or_end(&amp;w);</code></pre></div>
+<p><code>db_increment(Story, st, views)</code> adds one to one column in one statement — the alternative, <code>st-&gt;views += 1; db_save(Story, st);</code>, rewrites the whole row (body and all) to change a counter.</p>
+<p>Set <code>WEBC_TRACE_DB=1</code> to log every statement with its row count and duration.</p>
+<h2 id="9a2-relations-one-declaration-one-query-no-query-in-the-view">9a2. Relations: one declaration, one query, no query in the view<a class="h-anchor" href="#9a2-relations-one-declaration-one-query-no-query-in-the-view" aria-label="Link to this section">#</a></h2>
+<p>A story has a section, and the section is a row. Declare it next to the models:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WEBC_MODEL_REF(Story, section, Section, slug)   // &quot;Story.section holds a Section.slug&quot;</code></pre></div>
+<p>Fetch the whole list once and link it:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">VecStory *all = db_all_ordered(db_default(), Story, &quot;published_at desc&quot;);
+prefetch(all, Story, section);          // one extra query, for every row at once</code></pre></div>
+<p>Read it in the view, server or browser half, with no query at all:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">const Section *sec = ref(Story, st, section);   // the row, or null if nobody prefetched</code></pre></div>
+<p>The links belong to the request (they live as long as its arena does), and <code>prefetch</code> is one <code>select … where slug in (?, ?, ?)</code> however long the page is. A relation nobody prefetched reads as <code>null</code> rather than issuing a query per row — the N+1 that is invisible until the page is slow. <code>WEBC_MODEL_REF</code> is pure data, so it belongs in the shared header with the models; only <code>prefetch</code> needs a database. <code>prefetch_on(db, vec, T, field)</code> is the same on a handle you own (a test).</p>
+<p>Postgres speaks protocol v3 with SCRAM-SHA-256 authentication; there is no libpq. It is tested against a real server: <code>make pg-test</code> starts a throwaway postgres in docker, runs <code>tests/db_parity_test.c</code> (the same story through every driver it can reach, compared field by field) and both example suites against it, then removes the container. <code>make mysql-test</code> is the same for MySQL 8 (§9a5). Without docker but with a server, set <code>WEBC_PG_URL</code>. An app's own tests run on postgres with <code>WEBC_TEST_DB=postgres://… webc test</code>.</p>
+<h2 id="9a3-the-other-direction-a-section-s-stories-still-one-query">9a3. The other direction: a section's stories, still one query<a class="h-anchor" href="#9a3-the-other-direction-a-section-s-stories-still-one-query" aria-label="Link to this section">#</a></h2>
+<p><code>WEBC_MODEL_REF</code> answers &quot;what is this row's section&quot; with one row. The reverse question has its own declaration, because it is a different question with a different result:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WEBC_MODEL_REF(Story, section, Section, slug)     // story  -&gt; its section
+WEBC_MODEL_MANY(Section, stories, Story, section) // section -&gt; its stories</code></pre></div>
+<p>The second line names the same relation, read backwards, and generates a typed accessor — <code>refs(Section, sec, stories)</code> returns a <code>VecStory *</code>. Prefetch it for the page the way you prefetch the single direction:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">VecSection *all = db_all_ordered(db_default(), Section, &quot;name&quot;);
+prefetch(all, Section, stories);            // ONE query, however many sections
+for_each(sec, *all) {
+  for_each_ptr(st, *refs(Section, sec, stories)) el(&quot;li&quot;) { text(st-&gt;title); }
+}</code></pre></div>
+<p>That is one statement for the sections and one for all their stories — not one per section. A page of 2 000 sections chunks the owner keys in groups of 512, so the parameter count never runs into a server's ceiling. A collection nobody prefetched reads as <em>empty</em>, and logs <code>relation read without a prefetch</code> once, naming the model and the field: an empty list that was never fetched is the failure that looks like an empty section, and silence about it is how a page loses its rows.</p>
+<p>Hops chain left to right — each one is a query on the rows the previous hop found:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">prefetch(all, Section, stories, author);    // 2 statements: stories, then their authors</code></pre></div>
+<p>Three hops is the limit; deeper is a loop in the app, because a path string is a second query language nobody asked for.</p>
+<h2 id="9a4-questions-about-a-relation-a-page-and-a-whole-tree">9a4. Questions about a relation, a page, and a whole tree<a class="h-anchor" href="#9a4-questions-about-a-relation-a-page-and-a-whole-tree" aria-label="Link to this section">#</a></h2>
+<p>Filters reach through a relation without changing the shape of the result (so the rows still read back into models), sort by a related column, and aggregate:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WWhere w; ww_init(&amp;w, nullptr);
+ww_in_ref(&amp;w, Story, section, (WWhere *)section_filter);   // section in (select …)
+ww_order_ref(&amp;w, Story, section, Section, name, false);    // order by the section's name
+db_sum(db_default(), Story, views, &amp;w);                    // also min, max, avg, count</code></pre></div>
+<p>An aggregate answers over the <em>conditions</em>: an <code>order by</code> and a <code>limit</code> in the same filter are dropped, because a sum of the first page is a different question and the wrong answer looks plausible.</p>
+<p>A list that is not the whole table is three fields and two statements:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WPager pg = {.page = 2, .limit = 20};
+VecStory *page = db_page(db_default(), Story, &amp;w, &amp;pg);
+// pg.total, pg.pages, pg.has_prev, pg.has_next — a page past the end clamps to the last one</code></pre></div>
+<p>And a row that owns rows is written as one thing:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">i64 n = db_save_all(db_default(), Order, &amp;order, items, &amp;n);  // FK filled from order.id
+db_delete_tree(db_default(), Order, &amp;order, items);            // children first</code></pre></div>
+<p><code>db_save_all</code> takes the collection, not a field name: the <code>WEBC_MODEL_MANY</code> declaration is what says which column holds the parent's key, so there is exactly one place the relation is described. It joins an open transaction or opens its own, so a failure takes the whole tree with it.</p>
+<h2 id="9a5-the-third-dialect-mysql-and-mariadb">9a5. The third dialect: MySQL and MariaDB<a class="h-anchor" href="#9a5-the-third-dialect-mysql-and-mariadb" aria-label="Link to this section">#</a></h2>
+<p><code>mysql://user:pass@host:3306/db</code> and <code>mariadb://…</code> open the same driver, which speaks the wire protocol directly — no libmysqlclient, no <code>.so</code> to install:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// DATABASE_URL=mysql://app:secret@127.0.0.1:3306/app
+// ?ssl-mode=prefer|require|verify-ca|verify-full, ?ssl-ca=/etc/ca.pem</code></pre></div>
+<p>Authentication is <code>mysql_native_password</code> (SHA-1 scramble) and <code>caching_sha2_password</code> (the SHA-256 fast path, with full authentication only over TLS). <code>sha256_password</code> requires TLS; <code>ed25519</code> and GSSAPI are refused <em>by name</em> with the two alternatives spelled out, rather than failing as a bad password. There is no RSA public-key exchange on purpose: a client that would hand its password to whatever key the server offers is a client that gives the password away to a man in the middle.</p>
+<p>A statement with no parameters goes out as <code>COM_QUERY</code> and may carry a whole migration file; a statement with parameters is prepared (<code>COM_STMT_PREPARE</code>) and executed as binary rows, cached per connection. Sessions are set to <code>STRICT_TRANS_TABLES</code>, <code>utf8mb4</code> and <code>time_zone='+00:00'</code>, so a too-long value is an error (422) instead of a silent truncation, and a <code>datetime</code> means the same thing everywhere.</p>
+<p>What differs is <strong>declared, not branched on</strong>: each driver is a table of four flags, and every statement above reads them instead of asking which server it is talking to.</p>
+<div class="table-wrap"><table><thead><tr><th>flag</th><th>sqlite</th><th>postgres</th><th>mysql</th><th>what an app sees</th></tr></thead><tbody><tr><td><code>returning</code></td><td>no</td><td>yes</td><td>no</td><td><code>db_insert</code> reports the new key everywhere: <code>last_insert_rowid()</code> here, <code>insert … returning</code> there, the OK packet's <code>last_insert_id</code> on MySQL</td></tr><tr><td><code>offset_needs_limit</code></td><td>no</td><td>yes</td><td>no</td><td><code>ww_limit(&amp;w, 0, 40)</code> becomes <code>limit 9223372036854775807 offset 40</code>; the largest <em>signed</em> value, because MySQL documents the unsigned one and sqlite answers <em>datatype mismatch</em></td></tr><tr><td><code>ident_quote</code></td><td><code>&quot;</code></td><td><code>&quot;</code></td><td><code>`</code></td><td>a model with a <code>rank</code>, <code>groups</code> or <code>order</code> field is quoted, so a reserved word is a column name and not a syntax error; a name that is not a plain identifier (<code>public.users</code>, a <code>.sql()</code> override) is passed through</td></tr><tr><td><code>multi_statement</code></td><td>yes</td><td>yes</td><td>yes</td><td>one call may carry a whole migration file</td></tr></tbody></table></div>
+<p><code>WC_DB_DRIVERS[]</code> is that set as data (<code>{&quot;sqlite&quot;, &quot;postgres&quot;, &quot;mysql&quot;}</code>), which is what the migration runner reads when it looks for a <code>&lt;name&gt;.mysql.sql</code> twin. <code>driver_for()</code> refuses an unknown <code>scheme://</code> <strong>at open</strong>, naming the URLs this build speaks. Opened as a sqlite file named after the URL, the first sign of the mistake is &quot;my tables are empty&quot; three screens later.</p>
+<p>Driver errors carry a <em>class</em> (<code>WDBE_CONFLICT</code>, <code>WDBE_BAD_REFERENCE</code>, <code>WDBE_NOT_NULL</code>, <code>WDBE_TOO_LONG</code>, <code>WDBE_CHECK</code>, <code>WDBE_DEADLOCK</code>, <code>WDBE_TIMEOUT</code>, <code>WDBE_AUTH</code>, <code>WDBE_LOST</code>) mapped from the server's own codes, so a duplicate is 409 on every driver without searching an error message for the word &quot;unique&quot;. On MySQL the codes are errno: <code>1062/1586/1451</code> conflict, <code>1452/1216/1217</code> bad reference, <code>1048/1364</code> not-null, <code>1406/1264/1292</code> too long, <code>3819/4025</code> check, <code>1213</code> deadlock, <code>1205/3024</code> timeout, <code>1045/1698</code> auth, <code>2006/2013/1053</code> lost. The class picks the status: 409 / 400 / 422 / 422 / 422 / 503 / 503 / 500 / 500. An error a driver cannot classify stays <code>WDBE_NONE</code> and answers 500 with the server's own sentence, deliberately — a guess at 409 is worse than a 500 that says what happened.</p>
+<p>Two things are worth knowing because they are the same value in a different shape:</p>
+<ul><li>An aggregate is <code>DECIMAL</code> on MySQL, not the integer postgres returns. <code>sum(int)</code> arrives as<p><code>DECIMAL(32,0)</code> and is read back as an integer, <code>avg(int)</code> as a real — the digits decide, so <code>db_sum</code>/<code>db_avg</code> answer the same numbers on all three servers.</p></li><li>A <code>like</code> pattern is escaped with <code>!</code>, not with a backslash: a backslash is an escape<p>character <em>inside a string literal</em> on MySQL, where <code>escape '\'</code> is a syntax error. The query builder writes <code>escape '!'</code>, so a search box works on every dialect.</p></li></ul>
+<p><code>make mysql-test</code> starts a throwaway MySQL 8 in docker, runs <code>tests/db_parity_test.c</code> across all three dialects, <code>tests/db_mysql_test.c</code> against the server, the ORM suites (they read <code>WEBC_TEST_DB</code>) and both example apps, then removes the container. It has run green on MySQL 8.4 and MariaDB 11.8. Without docker but with a server, set <code>WEBC_MYSQL_URL</code>; without either, every MySQL test skips with the reason in its name. An app's own suite runs against it with <code>WEBC_TEST_DB=mysql://… webc test</code>, and migrations may carry a <code>&lt;name&gt;.mysql.sql</code> twin next to <code>&lt;name&gt;.postgres.sql</code> — <code>examples/todo</code> and <code>examples/accounts</code> each have one, which is why their suites run on the third dialect too.</p>
+<p>A request with a deadline gets its cap pushed down to the server too: the driver sets <code>max_execution_time</code> (MySQL) or <code>max_statement_time</code> (MariaDB) from the request's remaining time, and a statement still running when the handler gives up is killed with <code>KILL QUERY &lt;id&gt;</code> on a second connection — two halves of one promise, because the cap is per statement and the kill is now. A connection the server dropped (<code>2006</code>, <code>2013</code>, <code>1053</code>) is classed <code>WDBE_LOST</code> and retired instead of being handed to the next request.</p>
+<p>The URL may also name a unix socket, for a container whose socket is not in a URL's authority section: <code>mysql://user:pass@localhost/app?socket=/run/mysqld/mysqld.sock</code>.</p>
+<p>The container the target starts passes <code>--mysql-native-password=ON</code>, because that is the one auth plugin a non-TLS build can speak: MySQL 8.4 only loads it on request, and root otherwise authenticates with <code>caching_sha2_password</code>, whose full path wants TLS. The TLS half of the driver is checked from a TLS build, which keeps its binaries in <code>build/tests/</code>:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">make WEBC_TLS=openssl test
+WEBC_MYSQL_URL=&quot;mysql://root:webc@127.0.0.1:3306/app?ssl-mode=require&quot; \
+  ./build/tests/db_mysql_test</code></pre></div>
+<hr>
+<h2 id="9b-fixtures-and-schema-drift">9b. Fixtures and schema drift<a class="h-anchor" href="#9b-fixtures-and-schema-drift" aria-label="Link to this section">#</a></h2>
+<p>Two things every model-first project needs and neither of which needs a generator: put some rows in a table, and find out when the models and the tables have drifted apart. Both run inside the application binary, because that is the only process that has the models.</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// src/boot.c — a demo or a test loads content/&lt;table&gt;.json (an array of objects)
+void webc_boot(void) { seed_all(&quot;content&quot;, false); }   // false: only when the table is empty</code></pre></div>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">webc seed            # run the app's boot, then load content/&lt;table&gt;.json for every model
+webc seed --reset    # ... deleting the rows first
+webc check           # build, test, doctor, boot, schema, routes, consistency
+webc check --verbose # ... and every finding, with the one-line fix</code></pre></div>
+<p>The last line of <code>webc check</code> is the <strong>consistency</strong> pass: the mechanical questions a reviewer asks, each one a grep with a rule narrow enough not to lie.</p>
+<div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">  consistent    2 notes (0 errors) — webc check --verbose lists them
+  note ./src/server.c:63
+    a query built only to carry a bound value
+    fix: db_by(Model, &quot;field&quot;, value) — one field, one value, no carrier</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>what it looks for</th><th>severity</th></tr></thead><tbody><tr><td><code>q(&quot;select 1&quot;)</code> — a carrier query (§9a)</td><td>note</td></tr><tr><td><code>fmt(&quot;/a/%s&quot;, …)</code> where a model already names <code>/a/:slug</code></td><td>note</td></tr><tr><td>a month or weekday table, <code>/ 220</code> for a reading time (§4b)</td><td>note</td></tr><tr><td><code>bind(&quot;x&quot;)</code> with no <code>named(&quot;x&quot;)</code> — a click that can never fire</td><td><strong>error</strong></td></tr><tr><td>a file that renders pages and sets no title</td><td>note</td></tr></tbody></table></div>
+<p>Comments are skipped: prose that mentions an idiom is documentation, not a use of it. Notes do not fail the check; only an error does.</p>
+<p><code>seed_from_json(Model, &quot;content/stories.json&quot;)</code> is the single-table form and returns the rows inserted; a second call on a non-empty table inserts nothing, so a seed in <code>webc_boot</code> does not double the site. Rows are parsed and validated by the model, so a fixture that would fail an HTTP request fails the seed and says which field.</p>
+<p><strong>Schema drift</strong> is the failure this prevents: a model with a column the table does not have surfaced as a 500 on the first read of that column. <code>webc_schema_report(db, out)</code> compares every registered model (every <code>WEBC_MODEL</code> registers itself) with <code>select * from &lt;table&gt; where 1 = 0</code> — the column names, every driver, no pragma — and prints what is missing <em>and the statement that fixes it</em>:</p>
+<div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">  schema         sqlite, 3 models
+  Story          .views            missing from &quot;stories&quot;   → alter table stories add column views INTEGER;
+  Story          table &quot;stories&quot; is missing      → run your migrations, or: create table …
+  schema         DRIFT: 1 table(s), 1 column(s) missing</code></pre></div>
+<p><code>webc check</code> runs it; a model marked <code>WEBC_MODEL_INTERNAL</code> (the framework's own <code>RowId</code>) owns no table and is skipped — and <code>WEBC_ROW</code> is that same macro with a name that says why (§4).</p>
+<h2 id="9b2-the-migration-the-models-imply-webc-migrate-diff">9b2. The migration the models imply: <code>webc migrate diff</code><a class="h-anchor" href="#9b2-the-migration-the-models-imply-webc-migrate-diff" aria-label="Link to this section">#</a></h2>
+<p>The report above ends with the fix, and the tool can write it. <code>webc migrate diff</code> runs the app (the only process that has the models, exactly like the schema check), turns the same comparison into statements, and prints them:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">webc migrate diff                 # what is missing, as SQL, on the terminal
+webc migrate diff --write         # migrations/0004_schema.sql — written, not applied
+webc migrate diff --write cover   # … named 0004_cover.sql</code></pre></div>
+<div class="code" data-lang="sql"><div class="code__bar"><span class="code__lang">sql</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-sql">alter table categories add column cover_id INTEGER references media_assets(id);
+alter table categories add column pinned INTEGER not null default 0;
+-- TODO categories.sort_key is not null and has no default: backfill the table and
+--   add the constraint by hand, or give the field `.def`
+-- note: site_settings.brand_mark is in the table and not in the model (leftover)</code></pre></div>
+<p>It is <strong>additive on purpose</strong>: a column, a table, an FK reference, a default. It never drops or narrows one — sqlite cannot drop a constraint without copying the table, and a tool that guesses at a data migration is a tool that loses rows. What it cannot infer it writes as a <code>-- TODO</code> line, which is a sentence a person has to answer before the file is applied. Columns in the table that the model does not have are notes, not statements.</p>
+<h2 id="9b3-the-crud-every-table-needs-webc-scaffold">9b3. The CRUD every table needs: <code>webc scaffold</code><a class="h-anchor" href="#9b3-the-crud-every-table-needs-webc-scaffold" aria-label="Link to this section">#</a></h2>
+<p><code>webc scaffold Post</code> writes the four routes a table always gets — list with a search box and a window, new, edit, save, delete — into a file the app owns:</p>
+<div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">src/admin_post.c        the views and the routes (webc/form.h draws the form)
+tests/admin_post_test.c one test per route, with the test client (§14b)
+webc.json               a line in the &quot;server&quot; set</code></pre></div>
+<p>What it reads is the model, from the app's own descriptor (<code>WEBC_MODEL_DUMP</code>), so the field list, the types, the required bounds and the searchable column are the ones the app actually declares. What it writes is app source: no hidden runtime, no generated file you cannot edit, and nothing that exists is overwritten unless <code>--force</code>. The model is <em>not</em> touched — a scaffold that rewrites your struct is a generator, and generators are the thing this framework does not have. If <code>src/</code> has a header declaring the model it is included; if the model lives in a <code>.c</code>, the declaration is copied into the generated file (the registry keys on the name, so two copies of one model are one model) with a comment saying a header is the tidier answer.</p>
+<p>Then <code>webc check</code> passes on what it wrote, which is the only claim worth making: it builds, its own tests run, and <code>webc lint</code> is clean.</p>
+<hr>
+<h2 id="9c-redis-queues-counters-pub-sub-a-lock">9c. Redis: queues, counters, pub/sub, a lock<a class="h-anchor" href="#9c-redis-queues-counters-pub-sub-a-lock" aria-label="Link to this section">#</a></h2>
+<p>Redis is built in, the way postgres is: <code>&lt;webc/server.h&gt;</code> declares it, <code>libwebc.a</code> implements it, and there is nothing to install and no library to link. The client speaks RESP3 over the same parked sockets every other wait in the framework uses, so a slow Redis parks a task instead of holding a thread — <code>src/redis.c</code>, no hiredis, the same shape as the postgres driver.</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">redis_set(&quot;visits:home&quot;, &quot;1&quot;);                       // a key
+i64 n = redis_incr(&quot;visits:home&quot;);                   // 2 — the counter, atomically
+redis_set_ex(&quot;session:abc&quot;, token, 1800 * 1000);     // … with a TTL in milliseconds
+str v = redis_get(&quot;session:abc&quot;);                    // .p == nullptr when the key is absent
+redis_hset(&quot;user:7&quot;, &quot;theme&quot;, &quot;dark&quot;);               // hashes
+redis_lpush(&quot;queue:mail&quot;, msg);                      // lists
+redis_sadd(&quot;online&quot;, &quot;user:7&quot;);                      // sets
+redis_zadd(&quot;board&quot;, score, &quot;ada&quot;);                    // sorted sets
+redis_publish(&quot;chat&quot;, payload);                      // pub/sub</code></pre></div>
+<p>One URL configures it, and it is read the first time the framework asks for a connection, so an app that never touches Redis never opens a socket:</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">REDIS_URL=redis://:password@127.0.0.1:6379/0
+REDIS_URL=rediss://cache.internal:6380/1?pool=8&amp;timeout_ms=200   # TLS</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>variable</th><th>default</th><th>what it decides</th></tr></thead><tbody><tr><td><code>REDIS_URL</code></td><td>—</td><td><code>redis://[user:pass@]host[:port][/db][?param=value]</code>, or <code>rediss://</code> for TLS</td></tr><tr><td><code>WEBC_REDIS_POOL</code></td><td>one per worker</td><td>connections open at once</td></tr><tr><td><code>WEBC_REDIS_ACQUIRE_MS</code></td><td>5000</td><td>how long a call waits for a free connection before it fails</td></tr><tr><td><code>WEBC_REDIS_TIMEOUT_MS</code></td><td>500</td><td>one command, start to finish</td></tr><tr><td><code>WEBC_REDIS_NAME</code></td><td><code>webc</code></td><td><code>CLIENT SETNAME</code>, and the namespace the query cache writes under</td></tr><tr><td><code>WEBC_REDIS_TLS</code>, <code>WEBC_REDIS_CA</code></td><td>—</td><td><code>verify</code>/<code>insecure</code>, and a CA file</td></tr></tbody></table></div>
+<p><code>redis_open(url)</code> gives a handle you own (<code>redis_close</code> frees it); <code>redis()</code> is the process default, opened from <code>REDIS_URL</code> on first use. <strong>A bad URL is <code>nullptr</code>; an unreachable server is a handle whose every call fails.</strong> That asymmetry is deliberate: a typo must be caught at boot with a sentence naming it, while a cache that is down must be something the app can survive.</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">if (!redis_ok(redis()))            // configured and the last call worked
+  log_warn(&quot;redis is down&quot;, { &quot;why&quot;, redis_error(redis()) });   // never the password</code></pre></div>
+<p>When a command is more than the verbs: the builder is binary-safe and typed, because <code>redis_set(k, v)</code> with <code>const char *</code> cannot carry a NUL and cannot tell an integer from text.</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WCmd *c = cmd(r, &quot;SET&quot;);          // arena-owned, recycled from a small ring
+cmd_cstr(c, key);
+cmd_raw(c, bytes, len);           // a value with a NUL in it
+cmd_i64(c, 42);                   // no snprintf at the call site
+WReply rep = cmd_run(c);          // spends the handle; reply_free() when done
+if (reply_is_err(&amp;rep)) log_warn(&quot;redis said no&quot;, { &quot;why&quot;, reply_err(&amp;rep) });</code></pre></div>
+<p>A reply is a value tree, not a string: <code>WR_STATUS</code>, <code>WR_STR</code>, <code>WR_INT</code>, <code>WR_DOUBLE</code>, <code>WR_BOOL</code>, <code>WR_ARRAY</code>, <code>WR_SET</code>, <code>WR_MAP</code>, <code>WR_NIL</code>, <code>WR_ERROR</code> — <code>reply_at</code>, <code>reply_val(map, key)</code>, <code>reply_double</code>, <code>reply_bool</code>. RESP3's attribute, push and verbatim frames are understood rather than skipped, so a <code>HELLO 3</code> connection does not desynchronise. <strong>A transport failure is a <code>WR_ERROR</code> reply</strong>, so a caller reading <code>reply_is_err</code> cannot mistake &quot;the server is gone&quot; for &quot;the key is absent&quot;.</p>
+<p><strong><code>WITHSCORES</code> is not flat.</strong> On a <code>HELLO 3</code> connection <code>ZRANGE</code>/<code>ZREVRANGE … WITHSCORES</code> answers an array of <code>[member, score]</code> <em>pairs</em>, not <code>member, score, member, score</code>. Reading <code>reply_at(rep, 0)</code> as the member gets the pair itself — which is neither a string nor an integer, so every number comes back <code>0</code> and nothing raises. Read <code>reply_at(pair, 0)</code> and <code>reply_at(pair, 1)</code>, and keep a branch for the flat form if the same code may meet a RESP2 server:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">for (i32 k = 0; k &lt; reply_len(&amp;rep); k++) {
+  const WReply *e = reply_at(&amp;rep, k);
+  i32 num = reply_int(reply_at(e, 0));    // pair: [member, score]
+  i64 hits = reply_int(reply_at(e, 1));
+}</code></pre></div>
+<p>N commands, one round trip — the reason a cache and a leaderboard are usable at all:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">WPipe *p = pipe_new(r);
+for (i32 i = 0; i &lt; n; i++) pipe_add(p, &quot;INCR&quot;, key);
+i32 got; WReply *reps = pipe_run(p, &amp;got);   // in order, arena-owned
+pipe_free(p);</code></pre></div>
+<p>Subscriptions own a dedicated connection and one green task, and reconnect with a doubling backoff (100 ms → 30 s), resubscribing on the way back:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">static void on_msg(str chan, str payload, void *arg) { /* runs on the sub's task */ }
+WSub *s = redis_subscribe(r, str_lit(&quot;chat&quot;), on_msg, nullptr);
+…
+redis_unsubscribe(s);   // waits for the task; a subscription that outlives its handler is a leak</code></pre></div>
+<p>Redis pub/sub is at-most-once: a message published while the subscription is reconnecting is lost, and anything that must not be lost belongs in a list (<code>redis_lpush</code> + <code>lpop</code>), not in a channel.</p>
+<p>What this client refuses, with a sentence rather than a silent redirect: <strong>Sentinel and Cluster</strong> (one server, one URL — a client that follows <code>MOVED</code> needs the whole topology story), <strong>EVAL/Lua</strong> (code in the cache is not something a WebC app should be able to do), <strong>Streams</strong> (a queue with consumer groups is a data model, and this framework has one), <strong>CLIENT TRACKING</strong>, and Modules. <code>rediss://</code> in a build without <code>-DWEBC_TLS=openssl</code> refuses at open, naming the flag: a plaintext connection to a port somebody believes is encrypted is worse than a refusal (§16.5).</p>
+<hr>
+<h2 id="9d-the-query-cache-results-in-redis-invalidated-by-generation">9d. The query cache: results in Redis, invalidated by generation<a class="h-anchor" href="#9d-the-query-cache-results-in-redis-invalidated-by-generation" aria-label="Link to this section">#</a></h2>
+<p>Every statement in the framework goes through one function, <code>WRes db_exec()</code>, so the cache is one function too. It stores the <em>result set</em> — the same <code>WRes</code> a driver returns — and replays it, which means <code>db_all</code>, <code>db_one</code>, <code>db_by</code>, a view and a test all get a cache without knowing it.</p>
+<div class="code" data-lang="bash"><div class="code__bar"><span class="code__lang">bash</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-bash">REDIS_URL=redis://127.0.0.1:6379/0
+WEBC_QUERY_CACHE=1          # off unless this is set: a cache nobody asked for is a surprise</code></pre></div>
+<p>Nothing to call. With those two variables a <code>select</code> is served from Redis, a write invalidates it, and the app keeps its shape:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">VecStory *top = db_all_ordered(db, Story, &quot;published desc&quot;);   // first: the database
+VecStory *again = db_all_ordered(db, Story, &quot;published desc&quot;); // second: Redis, same rows
+Story s = { .title = … }; db_insert(db, &amp;s);                    // bumps stories' generation
+VecStory *fresh = db_all_ordered(db, Story, &quot;published desc&quot;);  // a miss again: the write was seen</code></pre></div>
+<p><strong>What is never cached</strong>, because each of these is a wrong answer waiting to happen:</p>
+<div class="table-wrap"><table><thead><tr><th>skipped</th><th>why</th></tr></thead><tbody><tr><td>any write (<code>insert</code>, <code>update</code>, <code>delete</code>, <code>create</code>, <code>drop</code>, and any verb nobody classified)</td><td>they invalidate; caching a write is not a thing</td></tr><tr><td>a read inside a transaction</td><td>it must see its own writes, and it may be rolled back</td></tr><tr><td>a statement with a volatile function (<code>now()</code>, <code>random()</code>, <code>randomblob</code>, <code>last_insert_rowid</code>, …)</td><td>the answer is not a function of the inputs</td></tr><tr><td>a <code>for update</code> / <code>for share</code> read</td><td>it takes locks; replaying it takes none</td></tr><tr><td><code>/* no-cache */ select …</code></td><td>the author says no</td></tr><tr><td>anything inside <code>nocache { … }</code></td><td>the scope says no</td></tr><tr><td>a statement with no tables (<code>select 1</code>)</td><td>nothing to invalidate it with</td></tr></tbody></table></div>
+<p><code>/* cache */ select …</code> overrides the volatile rule for a statement you measured, and a number in the hint is that statement's TTL: <code>/* cache 250 */</code>.</p>
+<p>Invalidation is a <strong>generation counter per table</strong>, not a tag set and not <code>SCAN</code>: a write does <code>INCR webc:{&lt;app&gt;}:g:&lt;table&gt;</code> (one hop, O(1), atomic across processes), and a cached read's key carries the generations it was read under — <code>webc:{&lt;app&gt;}:q:&lt;digest&gt;:all=7,stories=12</code>. When the counter moves the key changes, so the old entry is simply never read again and dies by TTL. The app can say so itself, for the changes the database cannot see:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">cache_bust(Story);   // qcache_bust(Story_modelof()) — after a background job rewrote rows
+qcache_flush();      // every entry, everywhere: the big hammer, for a migration
+qcache_ttl(Story, 5000);   // this model's rows go stale on their own schedule</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>variable</th><th>default</th><th>what it decides</th></tr></thead><tbody><tr><td><code>WEBC_QUERY_CACHE</code></td><td>off</td><td>the whole feature</td></tr><tr><td><code>WEBC_CACHE_TTL_MS</code></td><td>30000</td><td>how long an entry lives (the backstop for what counters cannot see)</td></tr><tr><td><code>WEBC_CACHE_TTL_JITTER</code></td><td>10</td><td>percent, so a thousand entries do not expire on the same second</td></tr><tr><td><code>WEBC_CACHE_MAX_BYTES</code></td><td>262144</td><td>a result bigger than this is served but not cached</td></tr><tr><td><code>WEBC_CACHE_MS</code></td><td>5</td><td>the cache's own budget per statement; over it, the answer comes from the database</td></tr><tr><td><code>WEBC_CACHE_GEN_MS</code></td><td>0</td><td>0 is exact: every cached read checks the counters (two hops). A window reuses the counters it last read (one hop) — and stops seeing <em>other processes'</em> writes for that long</td></tr><tr><td><code>WEBC_CACHE_BREAKER</code></td><td>1</td><td>after three consecutive failures, stop asking for a few seconds</td></tr><tr><td><code>WEBC_TRACE_CACHE</code></td><td>off</td><td>one line per statement: <code>[cache] select … -&gt; hit</code></td></tr></tbody></table></div>
+<p><strong>Redis failing never fails a request.</strong> Every failure inside the cache is a miss: the statement runs, the page renders, and the cache tries again later. The ladder is a per-statement budget (<code>WEBC_CACHE_MS</code>), a per-command timeout (<code>WEBC_REDIS_TIMEOUT_MS</code>), a breaker, and one log line per transition — measured by <code>tests/qcache_test.c</code>, which kills the server mid-suite and asserts five reads still answer.</p>
+<p>The one thing this is not: <strong>an HTTP cache</strong>. It caches result sets, keyed by the statement and its bound values, not responses — a page that renders from two queries is two entries, and a page whose body depends on the session is nobody's business here.</p>
+<p>What it costs, measured on this tree (<code>make bench-cache</code>, <code>WEBC_QUERY_CACHE=1</code>, loopback Redis, sqlite in process):</p>
+<div class="table-wrap"><table><thead><tr><th>statement</th><th>database</th><th>cache hit</th><th></th></tr></thead><tbody><tr><td>a 20-row select on a 200-row table</td><td>8 µs</td><td>270 µs</td><td><em>slower</em>: a hit costs two round trips and a parse, so a query cheaper than that is cheaper un-cached</td></tr><tr><td>a three-way self-join over the same table</td><td>119 ms</td><td>0.27 ms</td><td>440×</td></tr></tbody></table></div>
+<p>That table is the honest summary: the cache is for the statements that hurt, and on sqlite in process almost nothing hurts — the win arrives with a real database over a network, a big join, an aggregate over a million rows. <code>WEBC_CACHE_GEN_MS</code> halves a hit (0.27 ms → 0.14 ms) by dropping the counter check. A hit is visible in <code>/debug</code> and in <code>qcache_stats()</code>:</p>
+<div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">  cache          on — redis 127.0.0.1:6379/0
+  entries        hits 1204  misses 37  stores 37  bumps 12  errors 0
+  skips          tx 8  write 61  volatile 4  hint 0  breaker 0  large 0  off 0</code></pre></div>
+<p>Metrics: <code>webc_cache_hits_total</code>, <code>webc_cache_misses_total</code>, <code>webc_cache_stores_total</code>, <code>webc_cache_bumps_total</code>, <code>webc_cache_errors_total</code>, <code>webc_cache_breaker_open</code>, <code>webc_redis_commands_total</code>, <code>webc_redis_errors_total</code>, <code>webc_redis_command_ms</code>, <code>webc_redis_conns</code>, <code>webc_redis_pool_waits_total</code>.</p>
+<hr>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/docs/reference.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../reference/middleware.html"><span class="pager__dir">Previous</span><span class="pager__title">8. Middleware</span></a>
+<a class="pager__link pager__link--next" href="../reference/auth.html"><span class="pager__dir">Next</span><span class="pager__title">10. Auth</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#9a-a-filter-you-can-read-and-one-row-by-one-field">9a. A filter you can read, and one row by one field</a></li>
+<li class="toc__l2"><a href="#9a2-relations-one-declaration-one-query-no-query-in-the-view">9a2. Relations: one declaration, one query, no query in the view</a></li>
+<li class="toc__l2"><a href="#9a3-the-other-direction-a-section-s-stories-still-one-query">9a3. The other direction: a section&#x27;s stories, still one query</a></li>
+<li class="toc__l2"><a href="#9a4-questions-about-a-relation-a-page-and-a-whole-tree">9a4. Questions about a relation, a page, and a whole tree</a></li>
+<li class="toc__l2"><a href="#9a5-the-third-dialect-mysql-and-mariadb">9a5. The third dialect: MySQL and MariaDB</a></li>
+<li class="toc__l2"><a href="#9b-fixtures-and-schema-drift">9b. Fixtures and schema drift</a></li>
+<li class="toc__l2"><a href="#9b2-the-migration-the-models-imply-webc-migrate-diff">9b2. The migration the models imply: webc migrate diff</a></li>
+<li class="toc__l2"><a href="#9b3-the-crud-every-table-needs-webc-scaffold">9b3. The CRUD every table needs: webc scaffold</a></li>
+<li class="toc__l2"><a href="#9c-redis-queues-counters-pub-sub-a-lock">9c. Redis: queues, counters, pub/sub, a lock</a></li>
+<li class="toc__l2"><a href="#9d-the-query-cache-results-in-redis-invalidated-by-generation">9d. The query cache: results in Redis, invalidated by generation</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "learn03",
+  "version": "0.1.0",
+  "database": "sqlite:data/dev.db",
+  "port": 18003
+}

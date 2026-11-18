@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Examples">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Board · WebC</title>
+<meta name="description" content="A kanban with live rooms, drag and drop, and a real database.">
+<meta property="og:title" content="Board · WebC">
+<meta property="og:description" content="A kanban with live rooms, drag and drop, and a real database.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/examples/board.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Board · WebC">
+<meta name="twitter:description" content="A kanban with live rooms, drag and drop, and a real database.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html">Reference</a>
+<a href="../examples/index.html" aria-current="true">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html" class="is-active" aria-current="page">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../examples/index.html">Examples</a><span class="crumbs__sep">/</span><span class="crumbs__here">Board</span></div>
+    <article class="article">
+      <h1 id="top">Board</h1>
+<p class="lede">A kanban with live rooms, drag and drop, and a real database.</p>
+<div class="runbar"><code>webc dev</code><span>run it from <code>examples/board</code></span><a class="runbar__link" href="https://github.com/bumasoft/WebC/tree/main/examples/board">open on GitHub</a></div>
+<figure class="figure"><img src="../assets/media/examples-board.png" alt="The Board example running in a browser" loading="lazy" decoding="async"><figcaption>The real app, from <code>examples/board</code> — screenshot taken from <code>webc dev</code>.</figcaption></figure>
+<h2 id="file-webc-json">webc.json</h2>
+<div class="code" data-lang="json"><div class="code__bar"><span class="code__name">examples/board/webc.json</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-json">{
+  &quot;name&quot;: &quot;board&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;database&quot;: &quot;sqlite:data/board.db&quot;,
+  &quot;port&quot;: 8080,
+  &quot;dev&quot;: {
+    &quot;port&quot;: 9999
+  },
+  &quot;server&quot;: [
+    &quot;src/server.c&quot;
+  ],
+  &quot;shared&quot;: [
+    &quot;src/view.c&quot;
+  ],
+  &quot;client&quot;: [
+    &quot;src/client.c&quot;
+  ],
+  &quot;boot&quot;: {
+    &quot;title&quot;: &quot;Board&quot;,
+    &quot;lang&quot;: &quot;en&quot;,
+    &quot;css&quot;: [
+      &quot;/public/style.css&quot;,
+      &quot;/public/stdlib/overlay.css&quot;
+    ],
+    &quot;el&quot;: &quot;#root&quot;,
+    &quot;data&quot;: &quot;/api/board&quot;,
+    &quot;hydrate&quot;: true
+  },
+  &quot;budget&quot;: {
+    &quot;wasm&quot;: 53248
+  }
+}</code></pre></div>
+<h2 id="file-src-app-h">src/app.h</h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__name">examples/board/src/app.h</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// The board's whole data model, and the one thing both halves need to agree on: what a lane is
+// called. Nothing in this file can reach a database or a request — that is what
+// &lt;webc/shared.h&gt; is for, and the compiler enforces it.
+#pragma once
+
+#include &lt;webc/dnd.h&gt; // WDrag: the index maths the rows and the drop share
+#include &lt;webc/shared.h&gt;
+
+WEBC_MODEL(Card, (id, i64, .pk = true),
+           (title, Text, .required = true, .max = 80),
+           (lane, i32, .not_null = true, .gte = 0, .lte = 2),
+           (position, i32, .not_null = true, .gte = 0))
+
+// A move, as the client computed it: the card that leaves `(from_lane, from)` and the index it
+// takes in `(to_lane, to)`. `to` is the position in the target lane *once the card has left* —
+// the off-by-one that makes a hand-written kanban shuffle the wrong card is dnd.h's, not the
+// app's. A move is a request body, validated by `body(Move)` and never stored, so
+// `WEBC_MODEL_INTERNAL` is the one line that says &quot;no table for this&quot; — without it the schema
+// check asks for a `moves` table nobody meant to create.
+WEBC_MODEL(Move, (from_lane, i32, .gte = 0, .lte = 2), (from, i32, .gte = 0),
+           (to_lane, i32, .gte = 0, .lte = 2), (to, i32, .gte = 0))
+WEBC_MODEL_INTERNAL(Move)
+
+// The same trick for the one other body the board takes: a card id to drop.
+WEBC_MODEL(Erase, (id, i64, .gte = 1))
+WEBC_MODEL_INTERNAL(Erase)
+
+Vec(Card)
+
+// The whole board as one document, which is what a room carries and what every route answers.
+// A bare array would do for the wire; a named document is what `WStore` decodes (`store_read`),
+// and a frame decoded into a store generation is a frame whose strings live exactly as long as
+// the board shows them — the alternative is a hand-rolled arena per frame.
+WEBC_DOCUMENT(BoardDoc, (cards, VecCard))
+
+#define LANES 3
+
+static inline const char *lane_name(i32 lane) {
+  switch (lane) {
+  case 0: return &quot;Todo&quot;;
+  case 1: return &quot;Doing&quot;;
+  case 2: return &quot;Done&quot;;
+  default: return &quot;—&quot;;
+  }
+}
+
+// The view's context: the rows the server read. One struct, so the same view renders from
+// either half and the client's mutations are the only difference between them.
+typedef struct BoardCtx {
+  VecCard *cards;
+} BoardCtx;
+
+declare_view(Board, BoardCtx);
+
+// The interaction states. They are declared here rather than in view.c because two files read
+// them: the view draws the drag and the toast, the client's actions write them. `state` makes
+// one weak slot per name, so the writer and the reader are the same variable whatever file
+// each is compiled into.
+state(bool, open_new, false);
+state(i32, new_lane, 0);     // the lane the New card dialog will add to
+state(Text, toast_msg, &quot;&quot;);
+
+state(i64, drag_id, -1);     // the card the press landed on, by id (0 = none)
+state(bool, carrying, false); // and whether the press has become a drag the board should draw
+state(Text, drag_title, &quot;&quot;); // its title, for the card that follows the pointer
+state(i32, drag_lane, -1);   // the lane it came from
+state(i32, drag_from, -1);   // and its index inside that lane
+state(i32, drop_lane, -1);   // the lane the pointer is over
+state(i32, drop_at, -1);     // where the card would land there, already adjusted
+state(f64, ghost_x, 0);      // the carried card's position on the page
+state(f64, ghost_y, 0);
+state(f64, press_x, 0);      // where the press started: a click is not a drag
+state(f64, press_y, 0);
+state(f64, drag_w, 0);       // the picked card's width: the ghost is the size of the card       // the picked card's width: the ghost is the same size as the card
+state(i32, here, 0);         // how many people are looking at this board
+
+// How many cards are in a lane, and the nth of them: two lines both halves share, so the
+// server and the client cannot disagree about what a lane contains.
+//
+// A plain `for`, not `for_each`: `for_each` is a *render* loop — each pass opens a keyed item
+// scope on the node currently open and sweeps the items the pass did not claim. Calling it to
+// count runs that sweep on whatever element the view happens to have open (`fe.h` says so in
+// as many words).
+static inline i32 cards_in(VecCard *cards, i32 lane) {
+  i32 n = 0;
+  for (i32 i = 0; cards &amp;&amp; i &lt; vlen(cards); i++) n += vat(cards, i).lane == lane ? 1 : 0;
+  return n;
+}
+
+static inline Card *card_at_lane(VecCard *cards, i32 lane, i32 i) {
+  i32 at = 0;
+  for (i32 k = 0; cards &amp;&amp; k &lt; vlen(cards); k++) {
+    Card *c = &amp;vat(cards, k);
+    if (c-&gt;lane != lane) continue;
+    if (at == i) return c;
+    at++;
+  }
+  return nullptr;
+}
+
+static inline Card *card_by_id(VecCard *cards, i64 id) {
+  for (i32 k = 0; cards &amp;&amp; k &lt; vlen(cards); k++)
+    if (vat(cards, k).id == id) return &amp;vat(cards, k);
+  return nullptr;
+}</code></pre></div>
+<h2 id="file-src-client-c">src/client.c</h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__name">examples/board/src/client.c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// The client half: the same view the server rendered, mounted over the page's markup, plus the
+// four things only a browser can do — pick a card up, put it down, take a live document, and
+// say how many people are here.
+//
+// A shared view *names* its controls (`named(&quot;card&quot;)`); this file says what the names do. That
+// split is what lets one view compile for both halves: the server has no actions to point at.
+// It is also why the shortcut table lives here and not in the view — a `WCmd` carries a
+// function pointer, and a function pointer does not exist on the server (the open part of P4).
+//
+// The drag is pointer events, not the HTML drag family: a planchette that follows the mouse is
+// the same code on a trackpad, a pen and a thumb, and `ev_point()` already hands an action the
+// pointer — page coordinates, the element's box, and where inside it the pointer is. That is
+// the whole of what a drag needs to know, and the index maths is `dnd.h`'s.
+#include &quot;app.h&quot;
+
+#include &lt;webc/host.h&gt;
+#include &lt;webc/keys.h&gt;
+#include &lt;webc/live.h&gt;
+#include &lt;webc/web.h&gt;
+
+// The board the views read, and the store the frames arrive in. A frame's strings belong to the
+// frame: they die when the callback returns and the next frame reuses the bytes, which is a board
+// drawing one request's titles out of another request's memory. `WStore` is the framework's answer
+// — two generations that take turns, so the rows a render is reading outlive it — and `g_cards` is
+// the live generation, copied row for row on every good frame.
+static VecCard g_cards = {.desc = &amp;WC_VECDESC_VecCard};
+static BoardCtx C = {.cards = &amp;g_cards};
+static WStore g_room;
+
+// Every frame is the whole board, so loading one is the same operation as loading the seed:
+// decode, replace, redraw. A decoder that is idempotent is what makes a reconnect free.
+static void board_load(str json) {
+  if (!g_room.doc &amp;&amp; !store_init(&amp;g_room, BoardDoc_docof(), sizeof(BoardDoc))) return;
+  BoardDoc *doc = store_read(&amp;g_room, json);
+  if (!doc) return; // a frame nobody can read leaves the board as it was
+  g_cards = doc-&gt;cards;
+}
+
+void wc_app_data(str json) { board_load(json); }
+
+ACTION(new_open)
+ACTION(new_close)
+ACTION(lane_add)
+ACTION(card_del)
+ACTION(card_pick)
+ACTION(card_hover)
+ACTION(lane_hover)
+ACTION(board_hover)
+ACTION(card_drop)
+ACTION(card_up)
+ACTION(card_down)
+ACTION(card_left)
+ACTION(card_right)
+ACTION(escape)
+
+static const WCmd CMDS[] = {
+    K(&quot;New card&quot;, &quot;n&quot;, new_open),
+    // one action for Escape: a dialog that is open closes, a card in the air goes back
+    K(&quot;Close or cancel&quot;, &quot;escape&quot;, escape),
+    // the keyboard half of drag: `dnd_keys()` announces these two on every row, and an
+    // announcement with no binding is a lie (`webc check` cannot see keys.h tables)
+    K(&quot;Move card up&quot;, &quot;alt+arrowup&quot;, card_up),
+    K(&quot;Move card down&quot;, &quot;alt+arrowdown&quot;, card_down),
+    K(&quot;Move card left&quot;, &quot;alt+arrowleft&quot;, card_left),
+    K(&quot;Move card right&quot;, &quot;alt+arrowright&quot;, card_right),
+};
+
+// ---------------------------------------------------------------- the two halves of a drag
+
+// `dnd.h`'s arithmetic, asked about a lane that may not be the card's own. For the source lane
+// the card that left is missing from the list the index counts, which is the off-by-one the
+// module exists for; for any other lane nothing left, so the raw index is already the answer.
+static i32 insert_index(i32 lane, i32 raw, bool after, i32 over) {
+  WDrag d = {.from = lane == (i32)get(drag_lane) ? (i32)get(drag_from) : -1,
+             .over = over,
+             .after = after,
+             .n = cards_in(&amp;g_cards, lane)};
+  if (d.from &lt; 0) return raw;
+  return dnd_drop(&amp;d); // -1 when the card would land where it already is
+}
+
+static void drag_clear(void) {
+  set(carrying, false);
+  set(drag_id, (i64)-1);
+  set(drag_title, fmt(&quot;&quot;));
+  set(drag_lane, -1);
+  set(drag_from, -1);
+  set(drop_lane, -1);
+  set(drop_at, -1);
+}
+
+// ---------------------------------------------------------------- the new-card dialog
+
+action(new_open) {
+  set(new_lane, 0);
+  set(open_new, true);
+}
+
+// Every lane has its own way in, and the dialog remembers which one asked: &quot;add a card&quot; is a
+// kanban gesture, and a card that always lands in Todo is a card you then have to drag.
+action(lane_add) {
+  set(new_lane, (i32)ev_attr_i64(&quot;data-lane&quot;));
+  set(open_new, true);
+}
+
+// … 220 more lines in the repository</code></pre></div>
+<h2 id="file-src-server-c">src/server.c</h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__name">examples/board/src/server.c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// The server half: the same view rendered with a context, the routes that change it, and the
+// live room that tells every open tab about the change.
+//
+// Every answer is the model — no JSON is written by hand, and no SQL either (the migration
+// below is the model's own).
+#include &lt;webc/live.h&gt;
+#include &lt;webc/server.h&gt;
+
+#include &quot;app.h&quot;
+
+#include &lt;webc/motion.h&gt;
+
+// The board's rows, in the order the board shows them: lane, then position. Every reader of
+// the board goes through this, so the page, the API and the broadcast cannot disagree.
+static VecCard *board_rows(void) { return db_all_ordered(db_default(), Card, &quot;lane, position&quot;); }
+
+// The document a room carries, and the one every route answers: the whole board, every time. A
+// frame that were a diff would leave a client that missed one frame wrong forever (live.h).
+static str board_doc(void) {
+  BoardDoc d = {.cards = *board_rows()};
+  return BoardDoc_write(wc_arena_get(), &amp;d);
+}
+
+// `json(200, str)` is bytes that are already JSON, which is the one shape a *document* has:
+// `json()` writes a model or a collection, and this answer is a document wrapped around one.
+static Response board_reply(i32 status) { return json(status, board_doc()); }
+
+static void board_publish(void) { live_broadcast(&quot;board&quot;, &quot;1&quot;, board_doc()); }
+
+// Cards of one lane, in position order. Insertion sort by hand: a lane is ten rows, and the
+// point of the loop is that it is shorter than the call to qsort.
+static VecCard lane_rows(VecCard *all, i32 lane) {
+  VecCard out = {.desc = &amp;WC_VECDESC_VecCard};
+  for_each(c, (*all)) {
+    if (c-&gt;lane != lane) continue;
+    i32 at = vlen(&amp;out);
+    while (at &gt; 0 &amp;&amp; vat(&amp;out, at - 1).position &gt; c-&gt;position) at--;
+    Card copy = *c;
+    push(out, copy);
+    for (i32 i = vlen(&amp;out) - 1; i &gt; at; i--) vat(&amp;out, i) = vat(&amp;out, i - 1);
+    vat(&amp;out, at) = copy;
+  }
+  return out;
+}
+
+// Number a lane 0..n-1 and write the rows that changed — position, or the lane itself for the
+// card that just crossed in. A kanban re-numbers both lanes it touched, and a board that leaves
+// gaps in `position` is one reorder away from sorting the wrong way.
+//
+// The lane is part of the comparison, not a loop of its own: the card that arrives at index 0
+// of a new lane already has position 0, so a check on position alone skipped it and saved
+// nothing — the card stayed in the lane it came from.
+static void lane_renumber(VecCard *lane, i32 lane_no) {
+  for (i32 i = 0; i &lt; vlen(lane); i++) {
+    Card *c = &amp;vat(lane, i);
+    if (c-&gt;lane == lane_no &amp;&amp; c-&gt;position == i) continue;
+    c-&gt;lane = lane_no;
+    c-&gt;position = i;
+    db_save(Card, c);
+  }
+}
+
+GET(&quot;/&quot;) {
+  // the shelf's animation stylesheet, in the page head: one keyframe set, one stagger scale,
+  // and the reduced-motion switch that hand-rolled animation always forgets
+  motion_head_html();
+  return page(Board, &amp;(BoardCtx){.cards = board_rows()});
+}
+
+GET(&quot;/api/board&quot;) { return board_reply(200); }
+
+POST(&quot;/api/cards&quot;) {
+  Card c = body(Card);
+  c.position = 1000000; // appends: the lane's sort puts it last
+  db_save(Card, &amp;c);
+  board_publish();
+  // A form post is a browser navigation and wants a page; a fetch wants the new board, the
+  // same document the room carries, so the tab that asked can draw it without waiting for
+  // its own frame to come back round the room.
+  if (wc_body_is_form()) return redirect(&quot;/&quot;);
+  return board_reply(201);
+}
+
+// … 49 more lines in the repository</code></pre></div>
+<h2 id="file-src-view-c">src/view.c</h2>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__name">examples/board/src/view.c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">// The board. Server-rendered for the first paint, hydrated in the browser, patched in place
+// afterwards — one view, both targets, one context type.
+//
+// What this file does *not* contain, and would in a hand-written kanban: the pointer maths that
+// turns a drag into a drop index (`dnd.h`), the dialog's focus trap and Escape (`overlay.h`), an
+// enter animation with a reduced-motion switch (`motion.h`), the icons (`icons.h`), the toast
+// (`overlay.h`), the keyboard hint (`keys.h`). What is left is the board.
+//
+// The one thing it *does* say, because no module can: a card may cross lanes. `dnd.h` refuses
+// cross-list drag on purpose — &quot;the app says what crossing means&quot; — and for a kanban it means
+// &quot;leave this lane, land at this index of that one&quot;. So the math below is per lane (which index
+// inside the lane the pointer is over) and the client decides what the pair means.
+#include &quot;app.h&quot;
+
+#include &lt;webc/icons.h&gt;
+#include &lt;webc/keys.h&gt;
+#include &lt;webc/motion.h&gt;
+#include &lt;webc/overlay.h&gt;
+#include &lt;webc/ui.h&gt;
+
+static const WOverlay NEW_CARD = {&quot;new_card&quot;, &quot;New card&quot;, &quot;new_close&quot;, &quot;new-title&quot;};
+
+
+// One card, in the board and in the air. The ghost is the same markup so the thing that follows
+// the pointer is the thing that was picked up: same size, same type, same words.
+static void card_face(const Card *card) {
+  el(&quot;span&quot;) { class_(&quot;title&quot;); text(card-&gt;title); }
+}
+
+view(Board, BoardCtx *c) {
+  bool carrying = get(carrying); // armed: the press has become a drag
+  i32 drop_lane = (i32)get(drop_lane);
+  i32 drop_at = (i32)get(drop_at);
+  i32 drag_lane = (i32)get(drag_lane);
+  i32 drag_from = (i32)get(drag_from);
+
+  el(&quot;div&quot;) {
+    class_(carrying ? &quot;app is-dragging&quot; : &quot;app&quot;);
+
+    el(&quot;header&quot;) {
+      class_(&quot;top&quot;);
+      el(&quot;div&quot;) {
+        class_(&quot;brand&quot;);
+        el(&quot;span&quot;) { class_(&quot;mark&quot;); text(&quot;W&quot;); }
+        el(&quot;div&quot;) {
+          el(&quot;h1&quot;) { text(&quot;Product board&quot;); }
+          el(&quot;p&quot;) {
+            class_(&quot;sub&quot;);
+            text(&quot;Drag a card between lanes — every move is a round trip into C.&quot;);
+          }
+        }
+      }
+      el(&quot;div&quot;) {
+        class_(&quot;top-actions&quot;);
+        el(&quot;span&quot;) {
+          class_(&quot;presence&quot;);
+          attr(&quot;aria-live&quot;, &quot;polite&quot;);
+          aria_label(&quot;people looking at this board&quot;);
+          icon(WC_ICON_USERS, 0);
+          // &quot;3 here&quot; is the app's copy; the module hands over the number and says nothing
+          text(&quot;%lld here · %d cards&quot;, (long long)get(here), vlen(c-&gt;cards));
+        }
+        el(&quot;button&quot;) {
+          class_(&quot;primary&quot;);
+          named(&quot;new_open&quot;);
+          icon(WC_ICON_PLUS, 0);
+          text(&quot;New card&quot;);
+          keycap(&quot;n&quot;);
+        }
+      }
+    }
+
+    el(&quot;main&quot;) {
+      class_(&quot;lanes&quot;);
+      named(&quot;board&quot;); // the fallback drop target: the gaps between lanes
+      for (i32 lane = 0; lane &lt; LANES; lane++) {
+        i32 n = cards_in(c-&gt;cards, lane);
+        bool hot = carrying &amp;&amp; drop_lane == lane;
+        el(&quot;section&quot;) {
+          // one `class_` call: it *replaces* the attribute, so a second one would drop the first
+          class_(classes(&quot;lane&quot;, lane == 0 ? &quot;lane-todo&quot; : lane == 1 ? &quot;lane-doing&quot; : &quot;lane-done&quot;,
+                         hot ? &quot;is-target&quot; : &quot;&quot;));
+          attr(&quot;data-lane&quot;, str_from_i64(wc_arena_get(), lane));
+          named(&quot;lane&quot;); // the pointer bindings: over a card it is the card, else this
+          el(&quot;div&quot;) {
+            class_(&quot;lane-head&quot;);
+            el(&quot;span&quot;) {
+              class_(&quot;lane-name&quot;);
+              el(&quot;span&quot;) { class_(&quot;dot&quot;); attr(&quot;aria-hidden&quot;, &quot;true&quot;); }
+              el(&quot;h2&quot;) { text(lane_name(lane)); }
+              el(&quot;span&quot;) { class_(&quot;count&quot;); text(&quot;%d&quot;, n); }
+            }
+            el(&quot;button&quot;) {
+              class_(&quot;icon-btn lane-add&quot;);
+              named(&quot;lane_add&quot;);
+              attr_i(&quot;data-lane&quot;, lane);
+              aria_label(fmt(&quot;Add a card to %s&quot;, lane_name(lane)));
+              icon(WC_ICON_PLUS, 0);
+            }
+          }
+
+          el(&quot;ul&quot;) {
+            class_(&quot;rows&quot;);
+            // One WDrag per lane: the module answers &quot;which index inside this lane&quot;, and the
+            // source lane's own drag is the only one that has a card missing from it
+            WDrag drag = {.from = get(drag_lane) == lane ? (i32)get(drag_from) : -1,
+                          .over = drop_lane == lane ? drop_at : -1,
+                          .n = n};
+            dnd_list(&amp;drag, n);
+            // Where the seam goes, in the *rendered* list. `dnd_drop()` answers an index into
+
+// … 135 more lines in the repository</code></pre></div>
+<h2 id="file-migrations-0001-init-sql">migrations/0001_init.sql</h2>
+<div class="code" data-lang="sql"><div class="code__bar"><span class="code__name">examples/board/migrations/0001_init.sql</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-sql">-- The board's one table. Written by hand once, because a project's first migration is the
+-- one thing `webc migrate` cannot generate: it is the app's own history.
+create table if not exists cards (
+  id integer primary key autoincrement,
+  title text not null,
+  lane integer not null default 0,
+  position integer not null default 0
+);
+create index if not exists cards_lane on cards (lane, position);
+
+-- A board that opens empty shows nothing about what a board is: three columns and a promise.
+-- These are the cards a first visit finds, so the first thing you can do here is drag one.
+-- (An example is a demo as much as it is source; the tests wipe this table per case.)
+insert into cards (id, title, lane, position) values
+  (1, 'Audit the empty states',      0, 0),
+  (2, 'Write the release notes',     0, 1),
+  (3, 'Spike: an offline queue',     0, 2),
+  (4, 'Keyboard moves on every card', 0, 3),
+  (5, 'Board drag and drop',         1, 0),
+  (6, 'Live rooms over SSE',         1, 1),
+  (7, 'Presence pill and toasts',    1, 2),
+  (8, 'Skeleton and tokens',         2, 0),
+  (9, 'Tokens into one file',        2, 1),
+  (10, 'Dark mode pass',             2, 2);</code></pre></div>
+<p class="muted">…and 3 more files in <a href="https://github.com/bumasoft/WebC/tree/main/examples/board">examples/board</a>.</p>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/tree/main/examples/board" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../examples/stdlib.html"><span class="pager__dir">Previous</span><span class="pager__title">Stdlib</span></a>
+<a class="pager__link pager__link--next" href="../examples/minimal.html"><span class="pager__dir">Next</span><span class="pager__title">Minimal</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#file-webc-json">webc.json</a></li>
+<li class="toc__l2"><a href="#file-src-app-h">src/app.h</a></li>
+<li class="toc__l2"><a href="#file-src-client-c">src/client.c</a></li>
+<li class="toc__l2"><a href="#file-src-server-c">src/server.c</a></li>
+<li class="toc__l2"><a href="#file-src-view-c">src/view.c</a></li>
+<li class="toc__l2"><a href="#file-migrations-0001-init-sql">migrations/0001_init.sql</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

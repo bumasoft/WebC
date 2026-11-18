@@ -1,0 +1,14 @@
+:root { color-scheme: light dark; }
+body { font: 16px/1.6 system-ui, sans-serif; margin: 3rem auto; max-width: 36rem; padding: 0 1rem; }
+ul.todos { list-style: none; padding: 0; }
+ul.todos li { display: flex; align-items: center; gap: .6rem; padding: .55rem 0; border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent); }
+ul.todos li form { margin: 0; }
+ul.todos .title { flex: 1; }
+ul.todos li.done .title { text-decoration: line-through; opacity: .55; }
+ul.todos .tick { border: 0; background: none; font-size: 1.1rem; padding: 0 .2rem; opacity: .75; }
+ul.todos .x { border: 0; background: none; opacity: .35; font-size: 1.1rem; }
+ul.todos .x:hover { opacity: 1; color: #c33; }
+.when { opacity: .5; font-size: .85em; }
+form { display: flex; gap: .5rem; margin: 1.5rem 0; }
+input[type=text], input[name=title] { flex: 1; padding: .5rem .7rem; }
+.empty { opacity: .6; font-style: italic; }

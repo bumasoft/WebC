@@ -1,0 +1,22 @@
+# What each standard-library module may cost in the browser half, gzipped, on the probe
+# `webc size --modules` builds. Checked by `make budget`; a module over its line fails the
+# build the way the wasm budget does.
+#
+# The number is a *ceiling with room*, not the measurement of the day: a module that grows a
+# little should not break the build (that is `webc api`'s job, and it is exact), but a module
+# that doubles should. `webc size --modules --check tools/module-budgets.txt` prints every
+# line, measured against this file.
+#
+# module    gzip bytes
+ui          1024
+icons        512
+table       2048
+overlay      768
+form         256
+theme        128
+keys         512
+motion       128
+dnd         1024
+csv          128
+i18n         640
+time        1280

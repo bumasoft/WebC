@@ -1,0 +1,16 @@
+{
+  "name": "hello",
+  "version": "0.1.0",
+  "server": ["src/server.c"],
+  "shared": ["src/view.c"],
+  "client": ["src/client.c"],
+  "port": 8080,
+  "boot": {
+    "title": "hello — WebC",
+    "css": ["/public/style.css"],
+    "el": "#root",
+    "data": "/api/greeting",
+    "inline": true,
+    "hydrate": true
+  }
+}

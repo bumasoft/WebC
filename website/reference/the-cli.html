@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Reference">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>14. The CLI · WebC</title>
+<meta name="description" content="Reference §14.">
+<meta property="og:title" content="14. The CLI · WebC">
+<meta property="og:description" content="Reference §14.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/reference/the-cli.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="14. The CLI · WebC">
+<meta name="twitter:description" content="Reference §14.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html" aria-current="true">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html" class="is-active" aria-current="page">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../reference/index.html">Reference</a><span class="crumbs__sep">/</span><span class="crumbs__here">14. The CLI</span></div>
+    <article class="article">
+      <h1 id="top">14. The CLI</h1>
+<p class="page-kicker" id="cli">Reference · <code>docs/reference.md</code></p><div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">webc new &lt;dir&gt; [--template=server|web|fullstack|board]
+                            scaffold src/, public/, migrations/, webc.json, tests/
+                            `board` copies examples/board: a kanban using nine shelf
+                            modules, with its own suite
+webc build [--release]      compile against libwebc.a into .webc/&lt;name&gt;
+                            (and .webc/app.wasm when webc.json names a `client` or `web` source)
+webc build --wasm           compile only the browser half (.webc/app.wasm)
+webc build --explain        say why each file was compiled — the object cache, out loud
+webc build --target wasm    compile for wasm32 (needs wasi-sdk, see §13b)
+webc dev                    build, run, rebuild on save. A css edit swaps one
+                            stylesheet, a client edit swaps the wasm module under the
+                            page (DOM, signals, scroll and caret survive), a server
+                            edit restarts the process, a build failure shows the
+                            translated error over the last good page
+webc serve [--port N] [--host H] [--no-build] [--quiet]
+                            the app as a deployment runs it: a release build, no
+                            watcher, gzip on. A browser-only project is served by the
+                            framework's own chain over public/ and .webc/app.wasm; a
+                            project with a server half is built and exec'd, and gzips
+                            through the framework's default chain
+webc test [--filter=suite] [--test=name] [--list] [--macros] [--json] [--watch]
+                            build and run every tests/*_test.c plus the JS bridge test;
+                            --filter picks suites (and runs them whole), --test narrows
+                            by test name, --list prints the suites, --macros type-checks
+                            every public DSL construct for both targets, --watch reruns
+                            whenever src/, tests/ or webc.json changes
+webc check [--json]        build + test + doctor + boot + schema + routes + lint, one line
+                            each (boot and schema are skipped for a browser-only app — a
+                            `client` set and no `server` set has no binary to run).
+                            `--json` is the same gate as `{ok, steps:[{name, ok, output}]}`
+webc explain [--json]       build, then say what each error means in WebC — the language
+                            server's answers, pointed at a build instead of a caret (§14f)
+webc explain --project      no build: run the engine over the sources on disk
+webc lint [--all] [-v]      the retired word in app code: arenas, target macros, hand-built
+                            JSON, a parser in a test, an ignored parameter. Names the line,
+                            the call and what to write instead. `--all` adds the examples,
+                            the docs and every scaffold it can generate; `--v` shows all
+webc lint --rules [--json]  the same table as a page (or as data): the rule, what it is,
+                            and what to write instead — generated, so it cannot drift
+webc lint --skill DIR       that table, doc scope, over a skill's own prose: a skill that
+                            teaches a retired spelling is worse than no skill
+webc lint --json            every hit as `{file, line, token, what, instead}`
+webc api [&lt;query&gt;] [--limit N] [--json]
+                            no query: the surface, counted against its budget. A query:
+                            the declaration, its header, and the doc line above it — the
+                            answer to &quot;does this name exist&quot;, without reading the headers [--json] the public surface against its budget: writes api.txt, or
+                            diffs the headers against it and fails when the count grows —
+                            and when any single module grows past its own line. It also
+                            splits the count: core names, and shelf names (§12i)
+webc stdlib [module]        the opt-in modules, and what one of them is for
+webc stdlib &lt;module&gt; --css  the stylesheet that module expects
+webc stdlib --used          which modules this app already includes
+webc add &lt;module&gt;           install one: copies its stylesheet into public/stdlib/ and
+                            prints the #include and the &lt;link&gt; (--force overwrites)
+webc seed [--reset]         run the app's boot, then load content/&lt;table&gt;.json (§9b)
+webc migrate up|status|dry|new NAME
+webc migrate diff [--write] [name]
+                            what the models say the tables should be, as additive SQL: the
+                            columns and tables that are missing, generated by the process
+                            that has the models. Without --write it prints, with it writes
+                            migrations/NNNN_&lt;name&gt;.sql and does not apply it (§9b2)
+webc scaffold &lt;Model&gt; [--force]
+                            list, form, save and delete for one model, as a file you own:
+webc scaffold live &lt;Model&gt;
+                            the live page in one command: the SSE route that seeds
+                            every tab with the whole table, the mutations that
+                            broadcast after they write, and the test that proves
+                            the room holds the newest document. The client
+                            half is three lines, printed where they belong:
+                            src/admin_&lt;model&gt;.c, a test, and a line in webc.json's server
+                            set. It reads the model from the app's descriptor, never edits
+                            the model, and writes nothing that exists unless --force (§9b3)
+webc doctor [--schema] [--json]
+                            toolchain and project checks; --schema is the drift report,
+                            --json is the same checks as `{ok, checks:[…]}`
+webc routes [--json]        the declared routes, from the project index: method, path, the
+                            file and line, and the view the route returns
+webc docs [--emit DIR] [--list] [topic]
+                            the framework documentation as files: SKILL.md plus one
+                            reference per topic, written into `.webc/docs/` by default
+                            and by `webc new` (§14g)
+webc size [--json]          what the page costs: module and bridge, raw and gzipped,
+                            the module's sections, and the statics that make them up;
+                            --json is `{built, wasm{raw,gz}, bridge{raw,gz}, wire_gz,
+                            budget{limit,over,ok}|null, sections[…]}`
+webc size --modules         what each standard-library module costs: twenty probe apps,
+                            built and gzipped, one line each (§12i)
+webc get [-X M] [-d B] URL  fetch with the framework's own client (dogfood)
+webc deploy [--target T] [--out DIR] [--tar] [--pack LIST]
+                            stripped release binary + manifest + run script.
+                            `--pack` adds the ops files that run it — docker,
+                            fly, systemd, caddy, nginx, all (comma-separated) —
+                            stamped from the manifest: the SSE-aware proxy
+                            lines, the hardened unit, a Dockerfile whose base is
+                            an ARG
+webc ci [--gitlab]          the gate as a workflow: webc check + webc test, a
+                            dist artifact on a tag, the framework pinned by one
+                            ref at the top. A file the app owns
+webc openapi [--out F] [--check]
+                            the API boundary as OpenAPI 3.1, generated from the
+                            routes and models the sources declare: bodies from the
+                            body family, responses from json/json_list and their
+                            status literals, `.max` as maxLength, `path_i64` as an
+                            integer parameter. `--check` fails when the file
+                            drifts — the same ratchet `webc ci` runs when the app
+                            ships one
+webc client --ts [--out F] [--check]
+                            a typed fetch client for the same facts — wire types
+                            plus Input twins, path params as arguments typed by
+                            path_i64, pages left out. For the frontend
+                            that is not moving today; `--check` is the ratchet
+
+webc model from-db [--database URL] [--table NAME] [--write] [--out F]
+                            the reverse of `webc migrate diff`: connect to a
+                            database that exists and write the `WEBC_MODEL`
+                            declarations its tables describe — table names become
+                            model names, `varchar(n) not null` becomes
+                            `Text, .max = n, .required = true`, a nullable
+                            integer opts into `.null`. `--write` lands the models
+                            (`src/models.h` + `models.c`, registered), and the
+                            baseline: sqlite's own DDL (with IF NOT EXISTS);
+                            postgres/MySQL print the `migrate diff --write` that
+                            finishes it, now that the models are linked
+webc learn [1..5]           five lessons, one idea each: real apps under
+                            .webc/learn/, each failing its own gate (webc test,
+                            or webc check for the wiring one) until the one edit
+                            the brief names
+
+webc fmt [--check]          clang-format over every .c/.h under src/, to the project's
+                            own .clang-format; with none it says so and formats nothing
+webc mcp [--root DIR]                     the MCP server, on stdio (§14f)
+webc lsp [--root DIR] [--trace FILE]      the language server, on stdio (§14d)
+webc lsp --selftest                       a scripted session, asserted
+webc lsp --replay FILE [--record]          a recorded session, diffed
+webc lsp --bench                          what one request costs</code></pre></div>
+<p>Three of those are about not lying to yourself:</p>
+<p><strong><code>webc build --explain</code></strong> prints the object cache's reasoning (<code>[stale] src/view.c: …deps sub.h mtime=…</code>, <code>[cc] src/view.c</code>) instead of compiling in silence. <code>WEBC_TRACE_WATCH</code> still elsewhere-documented what the dev server watches; this is the build's own account, as a flag, because the moment somebody needs it is the moment they are staring at a build that did the wrong thing.</p>
+<p><strong>A failed build clears the cache and tries once more.</strong> A cache that is stale in a way mtimes cannot see — a restored checkout, a header touched back in time, a killed build's half-written object — presents as a compile error in a file that compiles, and the cure is <code>rm -rf .webc</code>. A failing build now says so, clears the object directory and rebuilds; if the second attempt fails too, the errors are real. The wasm half falls back to the one-shot command <em>and</em> clears its own object directory, so the slow path repairs the fast one instead of masking it once.</p>
+<p><strong><code>webc size</code></strong> answers &quot;what does this page cost, and where did it go&quot; without devtools:</p>
+<div class="code" data-lang="text"><div class="code__bar"><span class="code__lang">text</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-text">  webc size  bankroll
+
+    module  .webc/app                   1.77 MB    69.0 KB gz
+    bridge  assets/webc.js              62.5 KB    19.3 KB gz
+    sent over the wire (both, gzipped):  88.3 KB
+
+    where the module goes:
+      code                               140.9 KB   7.8%
+      data                                1.62 MB  91.9%
+      custom (names, debug, producers)     5.0 KB   0.3%
+
+    the biggest statics (from the object files):
+      g_strats                            1.60 MB
+      …
+
+    A static declared without an initialiser is zero-fill and costs no bytes; one with an
+    initialiser ships its zeros. Compare the list with the data section above: the static
+    about that size is the one being paid for, and filling it in boot() moves it to zero-fill.</code></pre></div>
+<p>That output is not a demonstration: the command, run on a real app, finds 1.6 MB of <code>data</code> that turns out to be one <code>static Strat g_strats[] = {…}</code> — 21 partially-initialised structs holding 10 001 doubles each, whose zeros a wasm data segment ships byte for byte. Declaring it without the initialiser and filling it in <code>boot()</code> takes the module from 1.77 MB to 165 kB. Nothing else in the framework's tooling can tell you that.</p>
+<p><code>webc.json</code>:</p>
+<div class="code" data-lang="json"><div class="code__bar"><span class="code__lang">json</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-json">{ &quot;name&quot;: &quot;myapp&quot;, &quot;version&quot;: &quot;0.1.0&quot;, &quot;entry&quot;: &quot;src/main.c&quot;,
+  &quot;database&quot;: &quot;sqlite:data/dev.db&quot;, &quot;port&quot;: 8080,
+  &quot;dev&quot;: { &quot;port&quot;: 9999, &quot;connect&quot;: [&quot;https://api.example.com&quot;] } }</code></pre></div>
+<p><code>dev.connect</code> is the Content-Security-Policy <code>connect-src</code> the dev server sends: a browser half exists to call somebody's API, and <code>webc dev</code> serves that half, so the dev policy already allows any <code>https:</code> origin. Name the origins your app actually calls and the policy becomes exactly those (plus the reload websocket) — a narrowing knob, never a widening one, and it only ever applies to <code>webc dev</code>.</p>
+<hr>
+<h2 id="lsp">14d. The language server<a class="h-anchor" href="#lsp" aria-label="Link to this section">#</a></h2>
+<p><code>webc lsp</code> speaks LSP over stdio, from the same binary as the rest of the CLI: no Node, no second download, no build. Point any editor at <code>webc lsp</code> and it has diagnostics, completion, hover, definition, references, an outline and quick fixes for a WebC project.</p>
+<p>It is two engines with one line between them, because a WebC file is two things at once. <strong>C is clang's job</strong> — a whole view type-checks in about a tenth of a second, and a second hand-written C front end would be a second source of truth about C. <strong>The DSL is ours</strong>: the macros that take a following <code>{ … }</code>, the model tuples, the three file sets, the routes, the wiring. A per-file <em>region map</em> — which bytes are inside <code>view(…)</code>, <code>el(…)</code>, <code>GET(…)</code> and which are plain C — decides which engine answers a given caret.</p>
+<p>That translator is the product. The compiler answers <code>page(Nope, …)</code> with <code>use of undeclared identifier 'view_Nope'</code> behind five frames of <code>WC_CAT</code>; the server answers &quot;no view named <code>Nope</code> in this project — <code>view(Nope)</code> draws it, or <code>declare_view(Nope)</code> in the shared header announces it&quot;, and offers the line to add. <code>GET(…)</code> in a <code>shared</code> source is a caret error naming the half, not eight cascading syntax errors about parameter declarators.</p>
+<p>The compiler half is the same compiler <code>webc build</code> runs, asked about the buffer the editor is holding rather than the file on disk. Two rules keep it from being a second opinion: a diagnostic inside a DSL macro's own parentheses is dropped (those bytes are the WebC engine's to explain, and the compiler speaks about them in names like <code>view_Nope</code>), and a block that never closed stops the compiler from running at all. <code>WEBC_CC</code> picks the compiler; when a project's check costs more than 120 ms it moves from every keystroke to every save, because a language server that stutters is a language server people turn off.</p>
+<p>What it knows, it knows from the sources: the models (including the ones declared in headers, which no <code>webc.json</code> ever lists), the views and where they are drawn, the actions and what is wired to them, the routes and the view each returns, and which standard-library module may appear in which half. Nothing under <code>.webc/</code> is read, so a fresh clone is a working workspace.</p>
+<p>It deliberately does <strong>not</strong> reformat a view. <code>clang-format</code> rewrites <code>el(&quot;h1&quot;) { text(&quot;Todos&quot;); }</code> into four lines, which is not this language's style; document formatting is therefore refused with a reason, and range formatting outside a DSL block is what <code>webc lsp</code> offers instead.</p>
+<p>There is a second opinion in most C editors, and it is clangd. So the server writes <code>compile_commands.json</code> at the project root — the flags <code>webc build</code> uses, one entry per source — which clangd finds without being told anything. Without it clangd invents errors on a WebC file it cannot resolve; with it, the twenty-one it invented in this repository became none. The file is generated, gitignored, and the server never reads it back.</p>
+<p>The editor client lives at <code>editors/vscode/</code>: no dependencies, no build step, nothing <code>require</code>d from a registry. Where the binary is comes from <code>resolve.js</code> — the setting with <code>~</code> and <code>${…}</code> expanded, else <code>build/webc</code> in the workspace or a parent, else the PATH — because a settings field is typed by a human and <code>spawn(2)</code> expands no tilde. <code>make lsp</code> checks that the client still loads and that the resolver is right about every way a path can be wrong (missing, a directory, not executable, relative, on no PATH), so a client that silently ignores the setting is a red gate rather than a broken window.</p>
+<p><code>make lsp</code> is the gate: <code>--selftest</code> asserts what the server says about a real project, and <code>--replay</code> diffs the protocol against a recorded session (<code>tests/lsp/sessions/*.jsonl</code>), so a wire change is a diff in review rather than a bug report. <code>--bench</code> prints what one request costs, and <code>--trace FILE</code> writes every message it saw as JSONL.</p>
+<h2 id="vscode">14e. The VS Code extension<a class="h-anchor" href="#vscode" aria-label="Link to this section">#</a></h2>
+<p><code>editors/vscode/</code> is that client: <code>extension.js</code> speaks JSON-RPC to <code>webc lsp</code> over stdio itself (no <code>vscode-languageclient</code>), and <code>resolve.js</code> decides which binary to spawn. It is three settings and two commands:</p>
+<div class="table-wrap"><table><thead><tr><th>setting</th><th>default</th><th>meaning</th></tr></thead><tbody><tr><td><code>webc.lsp.path</code></td><td><code>&quot;&quot;</code></td><td>the binary. <code>~</code>, <code>${workspaceFolder}</code>, <code>${userHome}</code> and <code>${env:NAME}</code> are expanded; a relative path is taken from the workspace folder; empty means <code>build/webc</code> in the workspace or a parent, else <code>webc</code> on the <code>PATH</code></td></tr><tr><td><code>webc.lsp.args</code></td><td><code>[]</code></td><td>extra arguments, e.g. <code>[&quot;--trace&quot;, &quot;/tmp/lsp.jsonl&quot;]</code></td></tr><tr><td><code>webc.lsp.enabled</code></td><td><code>true</code></td><td>start the server at all</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>command</th><th>what it does</th></tr></thead><tbody><tr><td><code>WebC: Show the language server log</code></td><td>the output channel, including every diagnostic the server published</td></tr><tr><td><code>WebC: Restart the language server</code></td><td>respawn, without reloading the window</td></tr></tbody></table></div>
+<p>It spawns <code>&lt;bin&gt; lsp --root &lt;workspace&gt; &lt;args&gt;</code>, clears its diagnostic collection whenever the server stops (a dead server must not leave yesterday's errors on screen), and re-reads its settings on change — a setting that is only read once at activation is indistinguishable, from the outside, from one that is ignored. A failed start is <strong>one</strong> message that says which failure it was (not found, not executable, exited) and quotes the last lines of the server's stderr, with the <em>resolved</em> path in it.</p>
+<p>Installation is a copy, a symlink, or a <code>.vsix</code>; <code>code --extensionDevelopmentPath= &quot;$PWD/editors/vscode&quot;</code> runs it out of the tree. The guide <a href="../guides/editor.html">The editor</a> has the commands for VS Code, Cursor, Antigravity, Neovim and Emacs, and the troubleshooting table.</p>
+<hr>
+<h2 id="mcp">14f. The MCP server<a class="h-anchor" href="#mcp" aria-label="Link to this section">#</a></h2>
+<p><code>webc mcp</code> speaks the Model Context Protocol over stdio, from the same binary as everything else — no Node, no second download, no version skew between the server that answers and the compiler it answers about. The argument is the one that gave us <code>webc lsp</code>, and it is stronger here: a server that reports diagnostics must <em>be</em> the compiler.</p>
+<p>It exists for one reason, stated as four:</p>
+<div class="table-wrap"><table><thead><tr><th>What an agent needs</th><th>A shell already gives it</th><th>What MCP adds</th></tr></thead><tbody><tr><td>the gate, after a change</td><td><code>webc check</code></td><td><code>{ok, steps:[{name, ok, output}]}</code> — no prose to parse</td></tr><tr><td>the project's own index</td><td><code>grep</code></td><td>models, fields, views, actions, routes and each file's half, with positions</td></tr><tr><td>the whole public surface</td><td><code>grep api.txt</code></td><td>a search that returns the declaration, its header and its doc line</td></tr><tr><td>the page it just built</td><td>two processes and <code>curl</code></td><td>a dev server held across calls, and <code>webc_fetch</code></td></tr></tbody></table></div>
+<p>Seven tools, and one rule: <strong>every tool is a door onto something the CLI already does, and nothing parses human output.</strong> If a tool needs data, the command that owns it learned <code>--json</code> first. That is what keeps this from becoming a second, disagreeing front end.</p>
+<div class="table-wrap"><table><thead><tr><th>tool</th><th>returns</th><th>writes</th></tr></thead><tbody><tr><td><code>webc_check</code></td><td>the <code>--json</code> gate: build, tests, doctor, boot, schema, routes, lint, consistency</td><td>—</td></tr><tr><td><code>webc_facts</code></td><td>models (+fields, qualifiers), views (+context), actions, routes (+view), files (+half, modules)</td><td>—</td></tr><tr><td><code>webc_api</code></td><td><code>{query} → matches:[{header, line, declaration, doc}]</code></td><td>—</td></tr><tr><td><code>webc_test</code></td><td><code>{filter?} → {ok, tests:[{suite, passed, failed, output}]}</code></td><td>—</td></tr><tr><td><code>webc_dev</code></td><td><code>{action: start|stop|status} → {running, url, port}</code>; one server held by the process</td><td>✔ process</td></tr><tr><td><code>webc_fetch</code></td><td><code>{path, method?, body?} → {status, content_type, body}</code> from that server</td><td>—</td></tr><tr><td><code>webc_scaffold</code></td><td><code>{template, dir}</code> or <code>{add_module}</code> → what was written</td><td>✔ files</td></tr></tbody></table></div>
+<p>Resources: <code>webc://project</code> (the index, refreshed on read) and <code>webc://reference</code> (the heading index of this document, so a reader can ask for §9a2 instead of loading 3 392 lines).</p>
+<p>Point a client at it:</p>
+<div class="code" data-lang="json"><div class="code__bar"><span class="code__lang">json</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-json">{ &quot;mcpServers&quot;: { &quot;webc&quot;: { &quot;command&quot;: &quot;/path/to/WebC/build/webc&quot;, &quot;args&quot;: [&quot;mcp&quot;],
+                            &quot;cwd&quot;: &quot;/path/to/your/app&quot; } } }</code></pre></div>
+<p><code>webc mcp --selftest</code> is the gate: it runs a scripted session against <code>examples/todo</code> and asserts what the tools answer — the same shape as <code>webc lsp --selftest</code>, for the same reason (a protocol change should be a failing test, not a bug report). <code>make mcp</code> runs it.</p>
+<p><code>--root</code> defaults to the working directory, which is what a client passes as <code>cwd</code>; if that directory has no <code>webc.json</code> but one of its ancestors does, the nearest project wins, so a session started in <code>src/</code> still answers about the app. With no project anywhere above, the directory given is used and the tools report a project with nothing in it.</p>
+<p>Two knobs worth knowing: the dev server's own output goes to <code>.webc/mcp-dev.log</code> (stdout is the protocol channel and a stray banner corrupts every message after it), and <code>webc_dev</code> refuses to start over a build that does not compile — a serve that quietly serves the last good binary is the most confusing way to learn your change is broken.</p>
+<h2 id="agents">14g. Working with agents<a class="h-anchor" href="#agents" aria-label="Link to this section">#</a></h2>
+<p>Three surfaces, and each is authoritative for a different thing. The rule that keeps them from disagreeing: <strong>a contract is written once and the other two are generated from it or call it.</strong></p>
+<div class="table-wrap"><table><thead><tr><th>Surface</th><th>Authoritative for</th><th>Kept honest by</th></tr></thead><tbody><tr><td><code>docs/reference.md</code>, the site guides</td><td>what is true</td><td>review; <code>webc lint --all</code> over the docs</td></tr><tr><td><code>skills/webc/</code></td><td>what to <em>do</em>, and where to read</td><td><code>make skill-check</code>: regenerated from the docs</td></tr><tr><td><code>AGENTS.md</code> (scaffold and repo root)</td><td>the gate to run, and the four mistakes to avoid</td><td><code>webc lint --all</code>; a scaffold test builds and checks every template</td></tr><tr><td><code>webc mcp</code></td><td>the same answers as data</td><td><code>make mcp</code>: a scripted session, asserted</td></tr></tbody></table></div>
+<p><strong>The documentation in an app.</strong> <code>webc new</code> writes the skill — <code>SKILL.md</code> and its <code>references/</code> — into the app's <code>.webc/docs/</code>, and the scaffold's <code>AGENTS.md</code> names it. The argument is the one this section is about: an agent inside an app must not have to find the framework's sources to answer &quot;what does this name do&quot;, and a session spent grepping a checkout for <code>auth_hash_password</code> is the failure that put the files there. <code>.webc/</code> is gitignored, so the copy is never vendored and never stale; <code>webc docs</code> rewrites it, <code>webc docs --list</code> names the topics, <code>webc docs &lt;topic&gt;</code> prints one, and <code>webc api &lt;query&gt;</code> answers the narrower question (the declaration, its header and the doc line above it) from the headers this binary was built against.</p>
+<p><strong><code>AGENTS.md</code>.</strong> <code>webc new</code> writes one into every scaffold: <code>webc check</code> as the gate, the half rules (<code>db_*</code>, <code>req</code>, <code>path*</code>, <code>query</code>, <code>body</code> are server-half names), one <code>WEBC_MODEL</code> for struct/validation/JSON/SQL, <code>fmt()</code> and <code>persist()</code>, migrations, and &quot;believe <code>webc lint</code>&quot;. The repository root has its own, for a different reader: the gates, the house rules (one scanner, one index, one set of diagnostics; the api ratchet; a budget is a gate; machine output is a contract) and the layout. Neither is generated — they are short on purpose, and a change to either is a change to what every agent does next.</p>
+<p><strong>The skill.</strong> <code>skills/webc/SKILL.md</code> is written by hand: the five ideas, the loop, the project shape, recipes, the rules that bite, and a routing table into <code>references/</code>. The fourteen leaves under <code>skills/webc/references/</code> are generated by <code>tools/gen_skill.py</code> from <code>website/src/content/guides/*.md</code>, anchored sections of this document, and <code>webc lint --rules</code> (<code>traps.md</code>). Generation is the whole argument: a skill that teaches a retired spelling is a language nobody can compile, delivered with confidence, and this framework has retired forty-six of them and deleted a render macro outright; <code>webc lint --rules</code> is the table, and the table is the count.</p>
+<p><code>make skill</code> regenerates; <code>make skill-check</code> is the gate, in three parts:</p>
+<div class="table-wrap"><table><thead><tr><th>Part</th><th>Fails when</th></tr></thead><tbody><tr><td><code>tools/gen_skill.py --check</code></td><td>a leaf would change — the documentation moved and the skill did not</td></tr><tr><td><code>webc lint --skill skills/webc</code></td><td>the skill's own prose names a retired spelling (generated leaves are exempt: they quote this document, which is gated where it lives)</td></tr><tr><td><code>website/tools/snippets.py</code></td><td>a <code>c</code> block in a skill does not compile, has an ellipsis, or has no leading comment saying which file it is</td></tr></tbody></table></div>
+<p><strong>Machine output.</strong> A command with a <code>--json</code> face renders what it did; it is never a second implementation. <code>check</code>, <code>test</code>, <code>routes</code>, <code>doctor</code>, <code>api</code>, <code>stdlib</code>, <code>size</code>, <code>lint</code> and <code>explain</code> have one (§14's command table has the shapes). Terminal behaviour is a contract too: colour is off when stdout is not a terminal, <code>NO_COLOR</code> is set, or <code>TERM=dumb</code> is (with <code>WEBC_COLOR</code> as the override); a failed build prints once, after one cache-cleared retry, without the compiler's command line (<code>WEBC_VERBOSE</code> restores it); and a failed build calls the translator automatically, so <code>webc build</code> and <code>webc check</code> say the same sentence about the same mistake (<code>WEBC_NO_EXPLAIN</code> turns that off). <strong>A tool never parses human output</strong> — if a tool needs data, the command that owns the data learns <code>--json</code> first.</p>
+<p><strong><code>webc explain</code>.</strong> It reads the compiler's <code>path:line:col: error:</code> lines, asks the same engine the language server uses what that line is, and prints one sentence per mistake — deduped per <code>file:line</code>, wrapped at 92 columns at the sentence's own indent, so a transcript and a terminal agree byte for byte. <code>--project</code> skips the build and reports every finding in the sources; <code>--raw</code> also prints the compiler's own output, untranslated, for when the translation itself is what is wrong. It refuses to run over the framework checkout: that tree is a hundred example apps, not an app.</p>
+<p>The narrative version of this section — the loop, the two failures, the install — is the site's <a href="../guides/agents.html">agentic coding guide</a>.</p>
+<hr>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/docs/reference.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../reference/the-browser-bridge.html"><span class="pager__dir">Previous</span><span class="pager__title">13. The browser bridge</span></a>
+<a class="pager__link pager__link--next" href="../reference/testing.html"><span class="pager__dir">Next</span><span class="pager__title">14b. Testing</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#lsp">14d. The language server</a></li>
+<li class="toc__l2"><a href="#vscode">14e. The VS Code extension</a></li>
+<li class="toc__l2"><a href="#mcp">14f. The MCP server</a></li>
+<li class="toc__l2"><a href="#agents">14g. Working with agents</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

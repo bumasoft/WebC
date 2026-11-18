@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A page called The JavaScript Seam</title>
+    <meta
+      name="description"
+      content="The five doors across the JavaScript seam in WebC: a call, a read, a typed failure, a promise, and the page driving the module."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234b56e8'/%3E%3Ctext x='16' y='22' font-family='ui-monospace,Menlo,monospace' font-size='14' font-weight='700' fill='white' text-anchor='middle'%3E%7B%7D%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <!-- the component renders here, from wasm; nothing on this page is server-rendered -->
+    <div id="root"></div>
+    <!-- The other direction across the seam: the page calls into the module. Two calls, and
+         nothing else on this page knows what they do. -->
+    <footer class="page">
+      <button onclick="WebC.dispatch('bump')">WebC.dispatch('bump')</button>
+      <button onclick="WebC.call('note', {text: 'hello from the page'})">WebC.call('note', …)</button>
+    </footer>
+    <script>
+      // A promise that resolves with *data* needs one line of page-side glue: `fetch`
+      // resolves with a Response, which is an object with no fields a C side can read.
+      // Keeping that line here, where JavaScript is written, is the trade this seam makes.
+      window.api = { get: async (url) => (await fetch(url)).json() };
+    </script>
+    <script src="/webc.js"></script>
+    <script>
+      (async () => {
+        await WebC.start({ el: '#root', wasm: '/app.wasm' });
+      })().catch((e) => {
+        document.querySelector('#root').textContent = 'wasm failed: ' + e.message;
+        console.error(e);
+      });
+    </script>
+  </body>
+</html>

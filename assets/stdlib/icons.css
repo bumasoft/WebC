@@ -1,0 +1,20 @@
+/* icons: one line. An icon sits on the text baseline and takes the colour around it. */
+.icon {
+  display: inline-block;
+  vertical-align: -0.155em;
+  flex: none;
+}
+/* an icon that is the whole content of a control */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 6px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.icon-btn:hover { background: color-mix(in srgb, currentColor 10%, transparent); }

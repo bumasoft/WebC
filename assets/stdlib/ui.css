@@ -1,0 +1,60 @@
+/* ui: switch, segmented control, tab, meter, kbd, badge, stat, empty state, skeleton.
+   Colours come from the theme tokens; if a page has no theme, the fallbacks keep it
+   readable rather than grey-on-grey. */
+.switch, .seg, .tab {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border: 1px solid var(--line, #ddd); border-radius: 8px;
+  background: none; color: inherit; font: inherit; cursor: pointer;
+}
+.switch .track {
+  width: 34px; height: 20px; border-radius: 999px; background: var(--line, #ddd);
+  position: relative; transition: background 120ms;
+}
+.switch .track::after {
+  content: ""; position: absolute; inset: 3px auto 3px 3px; width: 14px;
+  border-radius: 999px; background: var(--bg, #fff); transition: transform 120ms;
+}
+.switch.on .track { background: var(--acc, #3d4ee0); }
+.switch.on .track::after { transform: translateX(14px); }
+.seg.on, .tab.on { background: color-mix(in srgb, var(--acc, #3d4ee0) 12%, transparent); border-color: var(--acc, #3d4ee0); }
+.seg-count { color: color-mix(in srgb, currentColor 55%, transparent); font-variant-numeric: tabular-nums; }
+
+.meter { display: grid; gap: 4px; }
+.meter-top { display: flex; justify-content: space-between; font-size: 13px; }
+.meter-track { height: 6px; border-radius: 999px; background: var(--line, #eee); overflow: hidden; }
+.meter-track > i { display: block; height: 100%; background: var(--acc, #3d4ee0); }
+
+kbd {
+  padding: 1px 5px; border: 1px solid var(--line, #ddd); border-bottom-width: 2px;
+  border-radius: 5px; font-size: 12px; background: var(--bg, #fff);
+}
+
+.badge { padding: 1px 7px; border-radius: 999px; font-size: 12px; background: var(--line, #eee); }
+.badge.ok { background: color-mix(in srgb, #2f9e5f 20%, transparent); }
+.badge.warn { background: color-mix(in srgb, #c98a00 22%, transparent); }
+.badge.bad { background: color-mix(in srgb, #cc3b3b 20%, transparent); }
+
+.stat { display: grid; gap: 2px; }
+.stat-label { font-size: 12px; color: color-mix(in srgb, currentColor 60%, transparent); }
+.stat-value { font-size: 24px; font-variant-numeric: tabular-nums; }
+.stat-delta.good { color: #2f9e5f; }
+.stat-delta.bad { color: #cc3b3b; }
+
+.empty {
+  display: grid; gap: 8px; justify-items: start;
+  padding: 28px; border: 1px dashed var(--line, #ddd); border-radius: 12px;
+}
+.empty-title { margin: 0; font-weight: 600; }
+.empty-body { margin: 0; color: color-mix(in srgb, currentColor 65%, transparent); }
+
+.skel { display: grid; gap: 8px; }
+.skel > i {
+  display: block; height: 12px; border-radius: 6px;
+  background: linear-gradient(90deg, var(--line, #eee), color-mix(in srgb, var(--line, #eee) 40%, transparent), var(--line, #eee));
+  background-size: 200% 100%; animation: skel 1.4s linear infinite;
+}
+.skel > i:nth-child(3n) { width: 70%; }
+.skel-card > i { height: 96px; }
+.skel-row { grid-auto-flow: row; }
+@keyframes skel { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .skel > i { animation: none; } }

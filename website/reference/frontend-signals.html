@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en" data-root="../" data-page-group="Reference">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11. Frontend: signals · WebC</title>
+<meta name="description" content="Reference §11.">
+<meta property="og:title" content="11. Frontend: signals · WebC">
+<meta property="og:description" content="Reference §11.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="WebC">
+<meta property="og:url" content="https://bumasoft.github.io/WebC/reference/frontend-signals.html">
+<meta property="og:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WebC — web apps in C, one language from the route to the DOM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="11. Frontend: signals · WebC">
+<meta name="twitter:description" content="Reference §11.">
+<meta name="twitter:image" content="https://bumasoft.github.io/WebC/assets/og.png">
+<meta name="theme-color" content="#080a0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  // The theme is set before the first paint, so a dark page never flashes white.
+  (function () {
+    try {
+      var saved = localStorage.getItem("webc-theme");
+      var theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = "dark"; }
+  })();
+</script>
+</head>
+<body class="page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="../index.html">
+    <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand__word">WebC</span>
+    <span class="brand__ver">v0.1.0</span>
+  </a>
+
+  <nav class="topnav" aria-label="Sections">
+<a href="../docs/index.html">Docs</a>
+<a href="../guides/http.html">Guides</a>
+<a href="../reference/index.html" aria-current="true">Reference</a>
+<a href="../examples/index.html">Examples</a>
+<a href="../project/contributing.html">Project</a>
+</nav>
+
+  <div class="topbar__tools">
+    <button class="searchbtn" type="button" data-search-open aria-label="Search the documentation">
+      <svg viewBox="0 0 20 20" aria-hidden="true" class="searchbtn__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="searchbtn__text">Search</span>
+      <kbd class="searchbtn__kbd">⌘K</kbd>
+    </button>
+    <button class="iconbtn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 1.6v2.2M10 16.2v2.2M1.6 10h2.2M16.2 10h2.2M3.9 3.9l1.6 1.6M14.5 14.5l1.6 1.6M16.1 3.9l-1.6 1.6M5.5 14.5l-1.6 1.6"/></g></svg>
+      <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.4A6.6 6.6 0 0 1 7.6 4a6.6 6.6 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="iconbtn iconbtn--gh" href="https://github.com/bumasoft/WebC" aria-label="WebC on GitHub" title="WebC on GitHub" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 .8a9.2 9.2 0 0 0-2.9 17.9c.5.1.6-.2.6-.4v-1.5c-2.5.6-3.1-1.2-3.1-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.2 1 2.7.8.1-.6.3-1 .6-1.3-2-.2-4.1-1-4.1-4.5 0-1 .3-1.8.9-2.4-.1-.2-.4-1.2.1-2.4 0 0 .8-.3 2.5 1a8.6 8.6 0 0 1 4.5 0c1.7-1.3 2.5-1 2.5-1 .5 1.2.2 2.2.1 2.4.6.6.9 1.4.9 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.9.6 1.7v2.5c0 .2.1.5.6.4A9.2 9.2 0 0 0 10 .8z"/></svg>
+    </a>
+    <button class="iconbtn menubtn" type="button" data-menu aria-label="Open the menu" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="sidebar" data-sidebar>
+    <div class="sidebar__inner">
+      <nav class="sidenav" aria-label="Documentation">
+<div class="sidenav__group">
+<div class="sidenav__label">Start</div>
+<ul>
+<li><a href="../docs/index.html">What is WebC?</a></li>
+<li><a href="../docs/install.html">Install</a></li>
+<li><a href="../docs/quickstart.html">Quickstart</a></li>
+<li><a href="../docs/layout.html">Project layout</a></li>
+<li><a href="../docs/mental-model.html">Mental model</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Guides</div>
+<ul>
+<li><a href="../guides/http.html">Routes, requests, responses</a></li>
+<li><a href="../guides/models.html">Models and migrations</a></li>
+<li><a href="../guides/orm.html">The ORM: filters, relations, writes</a></li>
+<li><a href="../guides/mysql.html">MySQL and MariaDB</a></li>
+<li><a href="../guides/forms.html">Forms, with and without JS</a></li>
+<li><a href="../guides/auth.html">Auth: passwords and sessions</a></li>
+<li><a href="../guides/signals.html">Signals and the DOM</a></li>
+<li><a href="../guides/components.html">Parts and components</a></li>
+<li><a href="../guides/stdlib.html">The standard library</a></li>
+<li><a href="../guides/data.html">Redis and the query cache</a></li>
+<li><a href="../guides/live.html">Real-time: SSE and live rooms</a></li>
+<li><a href="../guides/testing.html">Testing</a></li>
+<li><a href="../guides/editor.html">The editor: LSP and VS Code</a></li>
+<li><a href="../guides/agents.html">Agentic coding</a></li>
+<li><a href="../guides/api.html">The API boundary</a></li>
+<li><a href="../guides/rosetta.html">Coming from React, Solid and Next</a></li>
+<li><a href="../guides/deploy.html">Deploying</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Reference</div>
+<ul>
+<li><a href="../reference/index.html">Reference: how to read it</a></li>
+<li><a href="../reference/house-rules.html">1. House rules</a></li>
+<li><a href="../reference/core-strings-memory-errors.html">2. Core: strings, memory, errors</a></li>
+<li><a href="../reference/collections.html">3. Collections</a></li>
+<li><a href="../reference/models.html">4. Models</a></li>
+<li><a href="../reference/json-and-forms.html">5. JSON and forms</a></li>
+<li><a href="../reference/concurrency.html">6. Concurrency</a></li>
+<li><a href="../reference/http.html">7. HTTP</a></li>
+<li><a href="../reference/middleware.html">8. Middleware</a></li>
+<li><a href="../reference/database.html">9. Database</a></li>
+<li><a href="../reference/auth.html">10. Auth</a></li>
+<li><a href="../reference/frontend-signals.html" class="is-active" aria-current="page">11. Frontend: signals</a></li>
+<li><a href="../reference/frontend-dom-and-ssr.html">12. Frontend: DOM and SSR</a></li>
+<li><a href="../reference/the-browser-bridge.html">13. The browser bridge</a></li>
+<li><a href="../reference/the-cli.html">14. The CLI</a></li>
+<li><a href="../reference/testing.html">14b. Testing</a></li>
+<li><a href="../reference/ops.html">15. Ops</a></li>
+<li><a href="../reference/limits-and-deviations.html">16. Limits and deviations</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Project</div>
+<ul>
+<li><a href="../project/contributing.html">Contributing</a></li>
+<li><a href="../project/changelog.html">Changelog</a></li>
+<li><a href="../project/security.html">Security</a></li>
+<li><a href="../project/decisions.html">Decisions</a></li>
+<li><a href="../project/roadmap.html">Roadmap</a></li>
+<li><a href="../project/about.html">About</a></li>
+</ul></div>
+<div class="sidenav__group">
+<div class="sidenav__label">Examples</div>
+<ul>
+<li><a href="../examples/index.html">All examples</a></li>
+<li><a href="../examples/hello.html">Hello</a></li>
+<li><a href="../examples/todo.html">Todo</a></li>
+<li><a href="../examples/accounts.html">Accounts</a></li>
+<li><a href="../examples/web.html">Web</a></li>
+<li><a href="../examples/js.html">JS interop</a></li>
+<li><a href="../examples/stdlib.html">Stdlib</a></li>
+<li><a href="../examples/board.html">Board</a></li>
+<li><a href="../examples/minimal.html">Minimal</a></li>
+</ul></div>
+</nav>
+      <div class="sidebar__foot">
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Repository</a>
+        <a href="../reference/index.html">Reference</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="crumbs"><a href="../docs/index.html">Docs</a><span class="crumbs__sep">/</span><a href="../reference/index.html">Reference</a><span class="crumbs__sep">/</span><span class="crumbs__here">11. Frontend: signals</span></div>
+    <article class="article">
+      <h1 id="top">11. Frontend: signals</h1>
+<p class="page-kicker" id="signals">Reference · <code>docs/reference.md</code></p><div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">state(int, count, 0);           // get(count) / set(count, v)
+computed(int, doubled) { return get(count) * 2; }
+effect(log_it) { printf(&quot;%d\n&quot;, get(doubled)); }
+batch { set(count, 1); set(count, 2); }   // one effect run</code></pre></div>
+<ul><li>Writing the same value does not re-run effects (byte comparison).</li><li>Effects run in topological order, once per batch.</li><li><code>signal</code>, <code>computed</code> and <code>effect</code> declare file-scope statics (they define functions),<p>so they do not work inside a function body.</p></li><li>That makes them <strong>one per translation unit</strong>: right for app-wide state, wrong for a<p>view that appears twice on a page. For that there is the <code>_in</code> family below, and for a list there is <code>state_own</code> (§11c).</p></li></ul>
+<p>Three declarations, one rule between them — <em>what is the state one of?</em></p>
+<div class="table-wrap"><table><thead><tr><th>declaration</th><th>one value per</th><th>you reach it with</th><th>fits</th></tr></thead><tbody><tr><td><code>state(T, n, init)</code></td><td>page (translation unit)</td><td><code>get(n)</code> / <code>set(n, v)</code></td><td>the app's own state</td></tr><tr><td><code>state_in(T, n, init)</code></td><td><code>WInst</code> you create</td><td><code>get_in(&amp;inst, n)</code>, or <code>get(n)</code> inside <code>with_inst</code></td><td>a view mounted N times by <em>your</em> code</td></tr><tr><td><code>state_own(T, n, init)</code></td><td>render position</td><td><code>get(n)</code> / <code>set(n, v)</code></td><td>a row of a list, a mounted view's own copy</td></tr></tbody></table></div>
+<h2 id="11a-what-re-renders-a-view-and-what-does-not">11a. What re-renders a view (and what does not)<a class="h-anchor" href="#11a-what-re-renders-a-view-and-what-does-not" aria-label="Link to this section">#</a></h2>
+<p>The one thing every client author asks first, because the answer is not &quot;the signal&quot;:</p>
+<aside class="callout callout--note"><p><strong>A render follows every action and every host callback.</strong> The bridge re-renders each mounted view — and diffs it — when control returns to it: after a click, after a typed field, after a <code>webc_later</code> timer fires, after a fetch or an SSE frame settles, after a <code>push_url</code>-driven nav. Writing a signal does not by itself schedule a render; the flush point is the bridge boundary.</p></aside>
+<p>So an action never has to &quot;touch the view&quot;:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">action(toggle, Todo *t) { t-&gt;done = !t-&gt;done; }   // the view runs again when this returns</code></pre></div>
+<p>There is no <code>tick</code> signal to bump, and a <code>set(tick, get(tick) + 1)</code> is a write nobody reads — the render would have happened anyway. What a render <em>costs</em> is a different question: the whole view runs again, so keep expensive work out of it — that is what §12b2's jobs are for.</p>
+<p>The exception is the one §12j adds: a node the view declared as <strong>live</strong> (<code>text_live</code>, <code>attr_live</code>, <code>class_live</code>, <code>show_live</code>) is written in place when its signal changes, and an action marked <code>action_live</code> skips the render entirely. Everything structural — <code>if</code>, <code>for_each</code>, <code>part</code>, <code>markup()</code>, a new node — still needs the render.</p>
+<p><code>webc check --wiring</code> also names the trap this rule creates for lists — a live binding on a page-wide signal <strong>inside</strong> a <code>for_each</code> (every row then shows the same value, which is what <code>state_own</code> in §11c is for) — and it knows <code>state_own</code>, so the never-read rule below still applies to it.</p>
+<p><code>webc check --wiring</code> notes a signal that a write feeds and nothing else reads, because that is exactly what a leftover <code>tick</code> looks like: <code>set(tick, get(tick) + 1)</code> <em>reads</em> the signal it writes, which is why a plain &quot;never read&quot; rule misses the idiom the framework teaches (<code>set(tick, get(tick) + 1)</code>). The check counts a read that happens on a line with no write of the same signal, so the self-feeding write is not mistaken for a reader.</p>
+<h2 id="11b-the-store-frames-in-generations-out">11b. The store: frames in, generations out<a class="h-anchor" href="#11b-the-store-frames-in-generations-out" aria-label="Link to this section">#</a></h2>
+<p>A live document arrives as frames (a seed, then a stream), and each frame's strings must die when the frame two later replaces it. <code>WStore</code> owns that rotation — the ~100 lines every streaming client would otherwise write first:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">static WStore room;                                        // once
+store_init(&amp;room, BoardDoc_docof(), sizeof(BoardDoc));
+
+BoardDoc *d = store_read(&amp;room, frame);  // NULL = a bad frame; state unchanged
+// d lives until the frame after next; ref() reads find it (wc_ref_epoch is set)</code></pre></div>
+<p><code>store_cur()</code> is the live document between frames, <code>store_arena()</code> the generation it lives in; <code>store_free()</code> returns everything. The server twin is <code>WFrame</code> (§7d).</p>
+<h2 id="per-instance-signals">Per-instance signals<a class="h-anchor" href="#per-instance-signals" aria-label="Link to this section">#</a></h2>
+<p>The same declarations, but the state lives in a <code>WInst</code> you own, so the same view can exist any number of times:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">state_in(int, count, 0);                       // get_in(&amp;inst, count) / set_in(&amp;inst, count, v)
+computed_in(int, doubled) { return get(count) * 2; }
+effect_in(log_it)        { printf(&quot;%d\n&quot;, get(doubled)); }
+
+view(Card) { el(&quot;span&quot;) { text(&quot;%d&quot;, get(count)); } }   // get(): the ambient instance
+
+WInst side, page;                               // two cards, two counts
+winst_init(&amp;side, nullptr);                     // nullptr = heap; an arena also works
+winst_init(&amp;page, nullptr);
+set_in(&amp;side, count, 3);
+with_inst(&amp;side) { html1 = wcomp_html_ctx(&amp;c1, view_Card, nullptr); }
+with_inst(&amp;page) { html2 = wcomp_html_ctx(&amp;c2, view_Card, nullptr); }   // renders 0
+mount_in(log_it, &amp;side);                        // effects are started per instance
+winst_free(&amp;side);                              // kills its nodes; nothing left behind</code></pre></div>
+<ul><li><code>get</code> / <code>set</code> reach the instance bound by <code>with_inst</code>, and <strong>panic</strong> outside one:<p>a per-instance read that cannot know which copy it means is a bug, not a default. Where there is no ambient instance — an action, a test, the other card — name it: <code>get_in(&amp;inst, count)</code>. There is no second spelling: <code>get</code> reads a signal whether it lives in the process or in an instance, and picks the right one.`</p></li><li>Instances are values. <code>winst_init(&amp;x, nullptr)</code> is heap-backed and <code>winst_free</code><p>returns every byte; <code>winst_init(&amp;x, arena)</code> allocates from the arena and needs no free, but must not outlive it.</p></li><li><code>CELL(T)</code> + <code>cell_init</code> / <code>cget</code> / <code>cset</code> is still there for one signal inside a<p>struct you already have. <code>WInst</code> is for a whole view's worth of state.</p></li></ul>
+<hr>
+<h2 id="11c-per-row-state-state-own">11c. Per-row state: <code>state_own</code><a class="h-anchor" href="#11c-per-row-state-state-own" aria-label="Link to this section">#</a></h2>
+<p>A list is where local state lives — a row's open flag, a row's draft text, a row's quantity — and a row has no name to hang a <code>WInst</code> on. <code>state_own</code> is the declaration whose owner is the <strong>position that drew the node</strong>: the <code>for_each</code> row, or the mounted view. (A view rendered into an email is a third — one render, its own copy, discarded after — so a view with per-row state can be both a page and a mail part.)</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">state_own(i64, qty, 0);
+state_own(bool, open, false);
+state_own(Text, label, &quot;&quot;);
+computed_own(i64, twice) { return get(qty) * 2; }
+
+view(Line) {
+  el(&quot;tr&quot;) {
+    el(&quot;td&quot;) { text_live(&quot;%lld&quot;, qty); }          // this row's value, live
+    el(&quot;td&quot;) { bind_str(label); }                 // this row's field
+    el(&quot;button&quot;) { named(&quot;bump&quot;); text(&quot;+1&quot;); }
+  }
+}
+// client: bind(&quot;bump&quot;, &quot;click&quot;, bump);
+action(bump) { set(qty, get(qty) + 1); }          // the row the clicked button drew</code></pre></div>
+<ul><li><strong>Identity is <code>(position, declaration)</code>.</strong> Two rows are two values; the same view mounted<p>twice is two values, with no plumbing at all. A row that moves in a keyed list keeps its value, because the position is the key.</p></li><li><strong>A live binding may target it.</strong> <code>text_live</code>, <code>attr_live</code>, <code>class_live</code> and <code>show_live</code><p>all take a <code>state_own</code> name — one write, one op, the row the action belongs to and no other. This is the part <code>state_in</code> cannot do (a <code>WInst</code> signal is refused, §12j) and the part that makes a 1 600-row table interactive.</p></li><li><strong>An action resolves it through the node it came from.</strong> The bridge knows which element<p>the event carried a hook for, and pushes that element's owner before the action runs; so <code>get(qty)</code> means &quot;the row of the button that was clicked&quot;, not &quot;the row rendered last&quot;. <code>get_N()</code> / <code>set_N()</code> are the same thing spelled out, for code that is inside a row body.</p></li><li><strong>Lazily created, disposed with the position.</strong> A row that never reads its slot allocates<p>nothing; the keyed sweep, <code>wcomp_destroy</code> and the component's own render kill the slots with the row. Cost when it is used: ~184 B per live row (<code>WInst</code> + one node per declaration), so a 20 000-row table with per-row state is still the wrong shape (§16.8).</p></li><li><strong>Reading it outside a position panics</strong>, naming the declaration — the same rule as<p><code>state_in</code>: a per-position read with no position cannot know which copy it means. <code>state(…)</code> is the declaration for &quot;one value, anywhere in the page&quot;.</p></li><li><strong>The server half is unchanged.</strong> SSR draws the declaration's initial values and registers<p>nothing, so hydration is byte-for-byte what it was.</p></li><li><code>state_own</code> and <code>state_in</code> answer different questions and both can be live in one app: a<p>position resolves first (<code>state_own</code>), and with no position in scope <code>with_inst</code> answers (<code>state_in</code>).</p></li></ul>
+<p><strong><code>toggle(name)</code></strong> flips a flag in place — <code>set(x, get(x) ? 0 : 1)</code> written out is an inversion the reader decodes; the macro is the name of the thing. And <code>state(T_, N_, …)</code> is generic: <code>state(bool, ahead, false)</code> works, and a flag that is a boolean reads as one in an <code>if</code> instead of carrying a comment that says which integers mean what.</p>
+<h2 id="11d-component-instances-comp">11d. Component instances: <code>comp()</code><a class="h-anchor" href="#11d-component-instances-comp" aria-label="Link to this section">#</a></h2>
+<p><code>state_own</code> is one value per <em>render position</em>, and a position is a mounted view or a <code>for_each</code> row. That leaves the unit a component author actually writes — <strong>the call</strong> — without one: a <code>PART</code> is a plain C function, so calling it pushes no position and two calls of one part in the same view shared one slot. <code>comp()</code> says which call is which:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">state_own(i64, qty, 0);
+
+PART(Stepper, (label, Text));
+void Stepper(Text label) {
+  el(&quot;div&quot;) { class_(&quot;stepper&quot;);
+    el(&quot;button&quot;) { named(fmt(&quot;dec-%s&quot;, label)); text(&quot;−&quot;); }
+    el(&quot;span&quot;)   { text_live(&quot;%lld&quot;, qty); }       // this call's slot
+    el(&quot;button&quot;) { named(fmt(&quot;inc-%s&quot;, label)); text(&quot;+&quot;); }
+  }
+}
+
+view(Order) {
+  el(&quot;main&quot;) {
+    comp(Stepper, &quot;Chairs&quot;);   // its own qty
+    comp(Stepper, &quot;Tables&quot;);   // and this one's
+  }
+}
+
+action(inc_chairs) { set(qty, get(qty) + 1); }     // the instance of the button clicked</code></pre></div>
+<ul><li><strong>Identity is <code>(the position that drew it, the call site)</code>.</strong> The call site is a<p><code>__COUNTER__</code> captured where <code>comp()</code> was written, so the same call on the next render finds the same instance, two calls never share one, a row that moves in a keyed list keeps its components, and a branch that stops drawing one disposes it.</p></li><li><strong>Nothing is allocated for a component that asks for nothing.</strong> The instance is created<p>the first time a <code>state_own</code>/<code>computed_own</code> is read or an <code>effect_own</code> is started, and killed when the position is swept (the sweep is the keyed list's, keyed by call site).</p></li><li><strong>Everything downstream already resolves the instance</strong>, because it resolves the node's<p>owner: <code>text_live</code>/<code>attr_live</code>/<code>class_live</code>/<code>show_live</code>, <code>bind_str</code>, <code>input_hook</code>, and every <code>action</code> (<code>get(qty)</code> in an action means &quot;the instance of the button that was clicked&quot;, exactly as it means &quot;the row&quot; inside a <code>for_each</code>).</p></li><li><strong>It is opt-in.</strong> A part called without <code>comp()</code> keeps the older rule — it draws in the<p>position that called it, so its <code>state_own</code> is shared with every other call in that position. That is what makes the change additive, and <code>webc check --wiring</code> points at the parts where it matters: a part that declares <code>state_own</code> and is called twice in one function gets a note naming both, which <code>comp()</code> at the call sites clears.</p></li><li><strong>No wrapper element.</strong> <code>comp()</code> is a position, not an element: the part's markup is a<p>direct child of whatever element it was written in, so CSS sees the tree you wrote.</p></li><li><strong>SSR is unchanged.</strong> The server draws the declaration's initial values and releases the<p>instances when the html is text; the browser builds its instances from the same call sites, so hydration is byte-for-byte what it was.</p></li></ul>
+<h3 id="lifecycle-effect-own-mount-own-on-cleanup-on-mount">Lifecycle: <code>effect_own</code>, <code>mount_own</code>, <code>on_cleanup</code>, <code>on_mount</code><a class="h-anchor" href="#lifecycle-effect-own-mount-own-on-cleanup-on-mount" aria-label="Link to this section">#</a></h3>
+<p>An instance is worth little without a way to clean up after it, and the framework had no per-position effect and no teardown hook at all:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">effect_own(save) {                        // file scope: the body
+  webc_later(800, flush_draft);           // one timer per instance, not one per page
+  on_cleanup(cancel_pending);             // before the next run, and when the instance dies
+}
+
+view(Editor) {
+  mount_own(save);                        // start it in *this* position; idempotent
+  on_cleanup(drop_draft, nullptr);        // once per position, registered on its first render
+  el(&quot;textarea&quot;) { bind_str(draft); }
+}</code></pre></div>
+<ul><li><code>effect_own(N_) { … }</code> declares an effect that belongs to the ambient position; the<p>body runs with that position bound, so <code>get</code>/<code>set</code> work as they do in the view. <code>mount_own(N_)</code> starts it, once: a second call on a later render is a no-op, which is what lets the line sit in the view body. (An effect body cannot be spliced into a view — there are no closures — which is the whole reason the pair exists, the same pair <code>effect_in</code> + <code>mount_in</code> already had with the app owning the lifetime.)</p></li><li><code>on_cleanup(fn, ctx)</code> inside an effect registers with <strong>that run</strong> — it runs before the<p>next run and when the effect is disposed. Outside an effect it registers with the <strong>position</strong>, on the position's first render only (a view that re-renders sixty times a second must not register sixty teardowns for one subscription).</p></li><li><code>on_mount(fn, ctx)</code> runs once, after the batch that drew the position has gone out —<p>which is when the node it wants to focus or measure exists. It is a client gesture: a server render queues nothing, and a native test runs the queue with <code>wc_mount_run()</code> after calling <code>wc_client_mode()</code>.</p></li><li><code>winst_release</code> is recursive: an instance's children are torn down first, with the<p>parent still intact, so a nested component's cleanup can read the state it was drawn in.</p></li></ul>
+<h2 id="11e-children-wkids">11e. Children: <code>WKids</code><a class="h-anchor" href="#11e-children-wkids" aria-label="Link to this section">#</a></h2>
+<p>A function cannot take a block, so a component that wraps other markup takes a callback and a context — the <code>(fn, ctx)</code> pair <code>wkeyed_list</code> and <code>prose_with</code> already use:</p>
+<div class="code" data-lang="c"><div class="code__bar"><span class="code__lang">c</span><button class="code__copy" type="button" data-copy aria-label="Copy code">Copy</button></div><pre><code class="lang-c">PART(Card, (title, Text), (inner, WKids));
+void Card(Text title, WKids inner) {
+  el(&quot;section&quot;) { class_(&quot;card&quot;); el(&quot;h3&quot;) { text(title); } kids(inner); }
+}
+
+static void body(void *ctx) { el(&quot;p&quot;) { text(&quot;%s&quot;, (char *)ctx); } }
+comp(Card, &quot;Hello&quot;, kids_of(body, msg));</code></pre></div>
+<p><code>kids_of</code> captures the position that <em>wrote</em> the call (the component's parent), so a <code>state_own</code> read inside the children block is the caller's — React's rule too: children are created by the parent. <code>no_kids</code> is the empty value, so an optional body is <code>kids(inner)</code> where <code>inner</code> may be <code>{0}</code> and nothing is drawn.</p>
+      <footer class="article__foot"><a class="editlink" href="https://github.com/bumasoft/WebC/blob/main/docs/reference.md" target="_blank" rel="noreferrer">Edit this page on GitHub</a></footer>
+      <nav class="pager" aria-label="Previous and next">
+<a class="pager__link pager__link--prev" href="../reference/auth.html"><span class="pager__dir">Previous</span><span class="pager__title">10. Auth</span></a>
+<a class="pager__link pager__link--next" href="../reference/frontend-dom-and-ssr.html"><span class="pager__dir">Next</span><span class="pager__title">12. Frontend: DOM and SSR</span></a>
+</nav>
+    </article>
+  </main>
+
+  <div class="rail"><aside class="toc" aria-label="On this page">
+<div class="toc__label">On this page</div>
+<ul>
+<li class="toc__l2"><a href="#11a-what-re-renders-a-view-and-what-does-not">11a. What re-renders a view (and what does not)</a></li>
+<li class="toc__l2"><a href="#11b-the-store-frames-in-generations-out">11b. The store: frames in, generations out</a></li>
+<li class="toc__l2"><a href="#per-instance-signals">Per-instance signals</a></li>
+<li class="toc__l2"><a href="#11c-per-row-state-state-own">11c. Per-row state: state_own</a></li>
+<li class="toc__l2"><a href="#11d-component-instances-comp">11d. Component instances: comp()</a></li>
+<li class="toc__l2"><a href="#11e-children-wkids">11e. Children: WKids</a></li>
+</ul></aside></div>
+</div>
+
+<footer class="sitefoot">
+  <div class="sitefoot__in">
+    <div class="sitefoot__brand">
+      <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6 9.5 L9.6 19 L13 12.4 L16.4 19 L22 9.5" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sitefoot__name">WebC</div>
+        <p>Web apps in C. Arenas instead of a collector, one set of views for both halves, and a
+           gate for every surface.</p>
+      </div>
+    </div>
+    <div class="sitefoot__cols">
+      <div>
+        <h4>Learn</h4>
+        <a href="../docs/index.html">What is WebC?</a>
+        <a href="../docs/install.html">Install</a>
+        <a href="../docs/quickstart.html">Quickstart</a>
+        <a href="../docs/mental-model.html">Mental model</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="../guides/http.html">Routes and responses</a>
+        <a href="../guides/models.html">Models</a>
+        <a href="../guides/components.html">Parts and components</a>
+        <a href="../guides/stdlib.html">Standard library</a>
+      </div>
+      <div>
+        <h4>Deep</h4>
+        <a href="../reference/index.html">Reference</a>
+        <a href="../examples/index.html">Examples</a>
+        <a href="https://github.com/bumasoft/WebC" target="_blank" rel="noreferrer">Source</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="../project/contributing.html">Contributing</a>
+        <a href="../project/changelog.html">Changelog</a>
+        <a href="../project/roadmap.html">Roadmap</a>
+        <a href="../project/decisions.html">Decisions</a>
+        <a href="../project/security.html">Security</a>
+        <a href="../project/about.html">About</a>
+      </div>
+    </div>
+  </div>
+  <div class="sitefoot__base">
+    <span>Built from the framework's own document — <code>docs/reference.md</code> — and the examples.</span>
+    <span>Documentation for v0.1.0 · v0.1.0 · <a href="https://github.com/bumasoft/WebC/blob/main/LICENSE">Apache-2.0</a> · © 2026 Victor-Marian Bușoi</span>
+  </div>
+</footer>
+
+<dialog class="search" data-search-dialog aria-label="Search">
+  <form class="search__form" method="dialog" onsubmit="return false">
+    <svg viewBox="0 0 20 20" aria-hidden="true" class="search__icon"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <input class="search__input" type="search" placeholder="Search the docs — try “arena”, “model”, “comp”" data-search-input autocomplete="off" spellcheck="false">
+    <button class="search__esc" type="button" data-search-close><kbd>esc</kbd></button>
+  </form>
+  <div class="search__results" data-search-results></div>
+  <div class="search__hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>↵</kbd> to open · <kbd>esc</kbd> to close</div>
+</dialog>
+
+<script src="../assets/search.js"></script>
+<script src="../assets/highlight.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

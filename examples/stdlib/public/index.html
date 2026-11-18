@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebC · the standard library</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- mounted from wasm: theme tokens, the table, the dialog and the keys sheet are all
+       rendered by the modules this app includes -->
+  <div id="root"></div>
+  <script src="/webc.js"></script>
+  <script>
+    // the dialog's reset door (see app.c's new_open): set a form field's value
+    // property through the bridge — js() reads and calls, it does not set
+    function webc_set_value(id, value) { document.getElementById(id).value = value; }
+    (async () => {
+      await WebC.start({ el: '#root', wasm: '/app.wasm' });
+    })().catch((e) => {
+      document.querySelector('#root').textContent = 'wasm failed: ' + e.message;
+      console.error(e);
+    });
+  </script>
+</body>
+</html>
