@@ -13,6 +13,11 @@
 #   4. the toolchain pins agree                -> --wasi installs a wasi-sdk the framework can
 #                                                 actually use (clang 21+), not an older one that
 #                                                 cannot compile the browser half it is there for
+#   5. a mirror that publishes latest/         -> resolves to it without asking GitHub
+#   6. no pin and nothing to resolve           -> exit 1 and the pin advice, not a second,
+#                                                 wrong error about the platform
+#   7. the README's line asks for the tag      -> --version prints a tag, and the parse that
+#      (network)                                  finds it is the one that ships
 #
 #   sh scripts/test-install.sh        (or: make install-test)
 set -eu
@@ -115,4 +120,46 @@ CI_PIN=$(sed -n 's/.*default: "\([0-9][0-9.]*\)".*/\1/p' "$REPO_ROOT/.github/act
 [ "$SH_PIN" = "$CI_PIN" ] || fail "install.sh wants wasi-sdk $SH_PIN, CI installs $CI_PIN"
 echo "   ok — both say wasi-sdk $SH_PIN"
 
-echo "test-install: 4/4"
+# ---------------------------------------------------------------- 5. a mirror with a latest/
+# Not every mirror redirects; one that lays releases out as latest/ answers directly, and there is
+# no reason to ask GitHub in that case.
+echo "== a mirror that publishes latest/"
+mkdir -p "$REL/latest"
+cp "$REL/webc-$PLATFORM.tar.gz" "$REL/webc-$PLATFORM.tar.gz.sha256" "$REL/latest/" 2>/dev/null || true
+OUT=$(WEBC_BASE_URL="file://$REL" WEBC_LATEST_URL="file://$TMP/no-such-redirect" \
+      sh "$REPO_ROOT/scripts/install.sh" --version 2>&1) || fail "a mirror with latest/ failed: $OUT"
+case "$OUT" in *"latest ($PLATFORM)"*) echo "   ok — resolved to latest without GitHub" ;;
+  *) fail "expected 'latest ($PLATFORM)', got: $OUT" ;; esac
+
+# ---------------------------------------------------------------- 6. nothing to resolve
+# The bug this exists for: with no tag resolved, the script used to carry on and download
+# "latest", fail, and report "no prebuilt webc for <platform> at latest" — a platform problem
+# where the problem was that nothing was ever resolved, and the advice about pinning a release
+# already printed above a second, contradictory error.
+echo "== no pin, nothing to resolve"
+if OUT=$(WEBC_BASE_URL="file://$TMP/no-such-mirror" WEBC_LATEST_URL="file://$TMP/no-such-redirect" \
+         sh "$REPO_ROOT/scripts/install.sh" 2>&1); then
+  printf '%s\n' "$OUT" >&2
+  fail "an unresolvable latest exited 0"
+fi
+case "$OUT" in *"--ref"*) ;; *) fail "no pin advice: $OUT" ;; esac
+case "$OUT" in *"prebuilt"*) fail "the misleading platform error is back: $OUT" ;; esac
+echo "   ok — exit 1, says to pin a release, and stops"
+
+# ---------------------------------------------------------------- 7. the README's line, for real
+# Cases 1-6 run against file://, which is why the shipped script could resolve nothing at all
+# against real GitHub and still pass its own gate: a mirror with a pinned --ref never asks the
+# question. This asks it. Skipped when there is no network, because an offline machine is not a
+# failing installer.
+echo "== the tag really resolves (needs network)"
+if curl -fsSI https://github.com/bumasoft/WebC/releases/latest >/dev/null 2>&1; then
+  OUT=$(sh "$REPO_ROOT/scripts/install.sh" --version 2>&1) || fail "install.sh --version failed: $OUT"
+  case "$OUT" in
+    v[0-9]*.[0-9]*.[0-9]*" ($PLATFORM)") echo "   ok — it resolves $OUT" ;;
+    *) fail "expected a tag, got: $OUT" ;;
+  esac
+else
+  echo "   skipped: github.com is unreachable from here"
+fi
+
+echo "test-install: 7/7"

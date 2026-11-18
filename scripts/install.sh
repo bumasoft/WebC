@@ -13,7 +13,9 @@
 # WEBC_BASE_URL points the download somewhere other than GitHub releases (a mirror, an
 # air-gapped share, `file:///tmp/fake-release` in scripts/test-install.sh). It still gets
 # the same checksum treatment: there is no path through this script that unpacks a tarball
-# nobody vouched for.
+# nobody vouched for. WEBC_LATEST_URL points the "which release is newest" question at
+# something other than GitHub's /releases/latest — a mirror's redirector, or a file:// URL
+# in the tests, which is the only way to see this path fail without unplugging the network.
 #
 # The tree it lays out is the one the CLI already knows how to find: share/webc/<ver>/
 # with bin/, build/libwebc.a, include/, src/, assets/, skills/, docs/, examples/board/,
@@ -50,23 +52,39 @@ case "$ARCH" in
 esac
 PLATFORM="$OS-$ARCH"
 
-# the tag, when the caller did not pin one: GitHub redirects latest/download to it,
-# and the Location header is the answer without parsing the API
+# The tag, when the caller did not pin one.
+#
+# `releases/latest` answers with a redirect and the Location header names the tag: one HEAD
+# request, no API call (60/hour unauthenticated is a limit a shared network can hit), no asset
+# bytes. This used to ask for the *asset* and read curl's %{url_effective} — which is the URL you
+# asked for, not where it landed, unless curl is allowed to follow redirects (it was not), and
+# with -L the last hop is signed storage where the tag no longer appears. So it always resolved
+# nothing, and then told anyone running the README's install line that their repository was
+# private.
+#
+# A mirror may publish a `latest/` of its own; if it does, that is the answer and GitHub is not
+# asked at all.
 PINNED=${REF:+yes}
 if [ -z "$REF" ]; then
-  REF=$(curl -fsSI -o /dev/null -w '%{url_effective}' \
-        "https://github.com/$REPO/releases/latest/download/webc-$PLATFORM.tar.gz" \
-        2>/dev/null | sed 's|.*/tag/||' || true)
+  if [ -n "${WEBC_BASE_URL:-}" ] &&
+     curl -fsSI "${WEBC_BASE_URL%/}/latest/webc-$PLATFORM.tar.gz" >/dev/null 2>&1; then
+    REF=latest
+  else
+    REF=$(curl -fsSI "${WEBC_LATEST_URL:-https://github.com/$REPO/releases/latest}" 2>/dev/null |
+          tr -d '\r' | sed -n 's|^[Ll]ocation:.*/tag/||p' | tail -n 1)
+  fi
 fi
-case "$REF" in ""|https*) REF=latest; UNRESOLVED=1 ;; esac # a redirect that never happened named no tag
-# When the reply was not a tag, say why in the words of the person who just hit it: a private
-# repository, no network, or an air-gapped mirror all land here, and the release they want is one
-# flag away. The "build from source" advice further down is for a platform with no artefacts,
-# which is a different problem.
-if [ -n "${UNRESOLVED:-}" ] && [ -z "${PINNED:-}" ]; then
-  echo "install.sh: could not resolve the latest release tag (private repository, no network," >&2
-  echo "  or a mirror without a 'latest' entry). Pin the release you want:" >&2
+# A tag, not a URL and not a path: anything else means no redirect happened and no tag was named.
+case "$REF" in ""|*/*|https*) REF=latest; UNRESOLVED=1 ;; esac
+# Say it in the words of the person who just hit it, and stop: carrying on to download "latest"
+# produced a second, wrong error ("no prebuilt webc for linux-aarch64 at latest") that named a
+# platform problem where the problem was that no release was ever resolved.
+if [ -n "${UNRESOLVED:-}" ]; then
+  if [ "$JUST_PRINT" = 1 ]; then echo "latest ($PLATFORM)"; exit 0; fi
+  echo "install.sh: could not work out which release is the latest one. That is a network or a" >&2
+  echo "  proxy in the way, not this machine. Pin the release you want and it will not ask:" >&2
   echo "    sh install.sh --ref v0.1.0   # the tag, as /releases lists it" >&2
+  exit 1
 fi
 if [ "$JUST_PRINT" = 1 ]; then echo "$REF ($PLATFORM)"; exit 0; fi
 
