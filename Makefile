@@ -139,13 +139,20 @@ examples: $(addprefix example-,$(CLI_EXAMPLES))
 # what it skipped, not stop at the first of them: this rule is why the default target
 # failed on every CI runner — no wasi-sdk there — and a red default target is worse than
 # a skipped example. Only that one failure is tolerated; anything else is still fatal.
+#
+# One log file **per example**, not one between them: `make -j` builds web and js at the
+# same time, both take the wasi-missing path on a machine without it, and a shared
+# build/.example.log meant one recipe's cleanup deleted the file the other was about to
+# grep — "grep: build/.example.log: No such file or directory", the example reported as
+# broken, and the docs job red on a Mac that had nothing wrong with it.
 $(addprefix example-,$(CLI_EXAMPLES)): example-%: $(CLI)
 	@echo "  webc build examples/$*"
-	@cd examples/$* && { ../../build/webc build >/dev/null 2>../../build/.example.log || \
-	  { if grep -q "needs wasi-sdk" ../../build/.example.log; then \
-	      echo "    skipped: this example has a browser half and wasi-sdk is not installed (README)"; \
-	    else cat ../../build/.example.log; rm -f ../../build/.example.log; exit 1; fi; }; }
-	@rm -f build/.example.log
+	@log="$(CURDIR)/build/.example-$*.log"; \
+	if ! ( cd examples/$* && ../../build/webc build >/dev/null 2>"$$log" ); then \
+	  if grep -q "needs wasi-sdk" "$$log"; then \
+	    echo "    skipped: this example has a browser half and wasi-sdk is not installed (README)"; \
+	  else cat "$$log"; rm -f "$$log"; exit 1; fi; \
+	fi; rm -f "$$log"
 
 # Fuzzers: libFuzzer + ASan + UBSan over the parsers (SPEC §11). Each harness runs
 # for FUZZ_TIME seconds; a crash or a failed property is a non-zero exit.
