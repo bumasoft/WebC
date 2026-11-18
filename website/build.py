@@ -45,9 +45,21 @@ CONTENT = SRC / "content"
 GITHUB = "https://github.com/bumasoft/WebC"
 # The site's footer says the version it documents, so it reads the same file the CLI does.
 VERSION = (REPO / "VERSION").read_text().strip() if (REPO / "VERSION").exists() else "0.0.0-dev"
+SITE_NAME = "WebC"
 # Where the site is published. `og:image` and friends want an absolute URL, and this is the one
-# address that is not a guess: GitHub Pages serves `main /website` under the repository's name.
+# address that is not a guess: GitHub Pages serves the uploaded `website/` under the repository's
+# name (see .github/workflows/pages.yml and docs/decisions.md D8 — branch publishing cannot be
+# pointed at a directory called `website`).
 SITE = "https://bumasoft.github.io/WebC"
+
+
+def page_title(title: str) -> str:
+    """The <title> and the share-card title of a page: "Thing · WebC".
+
+    Every page says what it is and then whose it is. The home page *is* the site, so it says
+    "WebC — web apps in C" once instead of "... · WebC" twice — which is what the tab, the search
+    result and the share card all showed before this."""
+    return title if SITE_NAME in title else f"{title} · {SITE_NAME}"
 
 
 # Is this site the documentation *for the release*, or for the tree ahead of it?
@@ -654,7 +666,7 @@ def main():
         if p.kind in ("md", "ref", "repo", "example", "examples"):
             content = f'<h1 id="top">{html.escape(p.title)}</h1>\n' + content
         out_html = shell.substitute(
-            title=html.escape(p.title),
+            title=page_title(html.escape(p.title)),
             description=html.escape(p.description),
             prefix=prefix,
             version=VERSION,
@@ -697,7 +709,7 @@ def main():
     )
     (ROOT / "index.html").write_text(
         shell.substitute(
-            title="WebC — web apps in C",
+            title=page_title(html.escape("WebC — web apps in C")),
             description="A framework for web apps in C: one language from the route to the DOM, "
                         "arenas instead of a collector, and a browser half compiled from the same views.",
             prefix="",
@@ -722,7 +734,7 @@ def main():
 
     (ROOT / "404.html").write_text(
         shell.substitute(
-            title="Not found",
+            title=page_title(html.escape("Not found")),
             description="That page does not exist.",
             prefix="",
             version=VERSION,
