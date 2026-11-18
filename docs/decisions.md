@@ -109,3 +109,22 @@ work: `scripts/test-install.sh` builds a fake release in a temp directory, serve
 drives three cases — matching digest installs and the installed CLI reports the version, one
 changed byte is refused with exit 1 and nothing unpacked, and an unpublished digest is refused
 too. `make install-test`, in CI.
+
+## D8 — Pages publishes `website/` from a workflow, because branch publishing cannot
+
+The plan was "Settings → Pages → `main` / `website`". GitHub does not offer that: branch publishing
+accepts exactly two paths, `/` and `/docs`, and the API answers `422 /source/path: "/website" is not
+a possible value` for anything else. The two ways out were to rename the generated site to `docs/` —
+where the Markdown it is built from already lives, so the two would have to be separated first — or
+to deploy with GitHub Actions, where the directory is ours to choose, and fail *before* anyone gets
+a 404 that looks like a broken repository.
+
+`.github/workflows/pages.yml` uploads the committed `website/` and deploys it. It builds nothing: the
+site is generated and committed, and the `docs` job in `ci.yml` fails when `website/` and its sources
+disagree — so a published page cannot differ from the reviewed one, because the bytes served are the
+bytes in the commit. The workflow checks that what it is about to publish is a site (`index.html`,
+`404.html`, `.nojekyll`, and the `.release` marker that makes the footer's version line reproducible)
+and prints the version it documents before deploying.
+
+The cost is one more workflow and the fact that the deployed site is a Pages artifact rather than a
+branch checkout. The benefit is that `website/` keeps its name and CI keeps its hold on it.

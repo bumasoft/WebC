@@ -1,0 +1,64 @@
+# Publish the documentation site to GitHub Pages.
+#
+# The site is generated and committed (`website/`) — `make site` rewrites it and the `docs` job in
+# ci.yml fails when the two disagree, so this workflow builds nothing. It uploads the directory that
+# is already in the commit and lets Pages serve it.
+#
+# Why a workflow rather than "Settings → Pages → main /website": GitHub's branch publishing offers
+# exactly two paths, `/` and `/docs`, and 422s on anything else. The alternative — renaming the
+# generated site to `docs/` — would collide with `docs/`, where the Markdown the site is built from
+# lives. So the source is "GitHub Actions" and the directory is ours to choose. (docs/decisions.md D8.)
+#
+# No build step also means no way for the published site to differ from the reviewed one: the bytes
+# served are the bytes in the commit.
+
+name: pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer commit supersedes a queued run, but never cancels one that is
+# already publishing (a half-published site is worse than a stale one).
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: publish website/
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: The committed site is what will be served
+        run: |
+          set -eu
+          test -f website/index.html
+          test -f website/404.html
+          test -f website/.nojekyll
+          test -f website/.release
+          printf 'website: %s files, %s\n' \
+            "$(find website -type f | wc -l)" \
+            "$(cat website/.release | sed 's/^/documenting v/')"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: website
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
